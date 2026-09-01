@@ -16,7 +16,8 @@ doc = ''.join(out)
 
 geo = json.dumps(json.load(open('geo.json', encoding='utf-8')), separators=(',', ':'), ensure_ascii=True)
 ven = json.dumps(json.load(open('venues.json', encoding='utf-8')), separators=(',', ':'), ensure_ascii=True)
-doc = doc.replace('/*__GEO__*/', geo).replace('/*__VENUES__*/', ven)
+img = json.dumps(json.load(open('img/embed.json', encoding='utf-8')), separators=(',', ':'), ensure_ascii=True)
+doc = doc.replace('/*__GEO__*/', geo).replace('/*__VENUES__*/', ven).replace('/*__IMAGES__*/', img)
 assert doc.isascii(), "non-ascii survived"
 open(OUT, 'w', encoding='ascii').write(doc)
 print(f"{TPL} -> {OUT}: {len(doc)/1024:.0f} KB, pure ASCII")

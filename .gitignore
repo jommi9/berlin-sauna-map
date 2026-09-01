@@ -5,3 +5,8 @@ src/roads.json
 src/rail.json
 src/parks.json
 src/water.json
+# Full-size Commons downloads - re-fetch with src/fetch_images.py
+src/img/raw/
+# Derived from src/img/card/*.webp by src/embed_images.py
+src/img/embed.json
+src/contact.html

@@ -167,6 +167,15 @@ svg.map{display:block; width:100%; height:auto}
 }
 .card:hover{background:var(--panel-2)}
 .card.on{background:var(--panel-2); border-left-color:var(--gold)}
+.shot{margin:0 0 13px; position:relative; background:var(--panel-3); overflow:hidden; border-radius:2px}
+.shot img, .shot svg{display:block; width:100%; height:auto; aspect-ratio:16/9; object-fit:cover}
+.shot.maptile svg{background:var(--land)}
+.shot figcaption{
+  position:absolute; left:0; right:0; bottom:0; padding:14px 9px 5px;
+  font-family:var(--hud); font-weight:500; font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+  color:#E6E9EA; background:linear-gradient(180deg, transparent, rgba(0,0,0,.78));
+}
+.shot figcaption a{color:#FFD98A}
 .chead{display:flex; align-items:flex-start; gap:11px}
 .chead .ic{flex:none; margin-top:2px}
 .ct{flex:1 1 auto; min-width:0}
@@ -327,6 +336,7 @@ svg.map{display:block; width:100%; height:auto}
 <script>
 const GEO = /*__GEO__*/;
 const V = /*__VENUES__*/;
+const IMG = /*__IMAGES__*/;
 const NS = "http://www.w3.org/2000/svg";
 const el = (n, a) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); return e; };
 
@@ -337,7 +347,8 @@ const dollars = p => p == null ? null : "$".repeat(band(p));
 /* ---------- map ---------- */
 const map = document.getElementById("map");
 map.setAttribute("viewBox", `0 0 ${GEO.w} ${GEO.h}`);
-const put = (d, cls, w) => { if (!d) return; const a = { d, class: cls }; if (w) a["stroke-width"] = w; map.appendChild(el("path", a)); };
+const defs = el("defs"), atlas = el("g", { id: "atlas" });
+const put = (d, cls, w) => { if (!d) return; const a = { d, class: cls }; if (w) a["stroke-width"] = w; atlas.appendChild(el("path", a)); };
 put(GEO.parks, "parks");
 put(GEO.water, "water");
 put(GEO.river, "river", 3.6); put(GEO.canal, "river", 2.0);
@@ -346,6 +357,8 @@ put(GEO.secondary, "rcase", 2.3); put(GEO.secondary, "rfill", 1.25);
 put(GEO.primary, "rcase", 3.6);   put(GEO.primary, "rfill", 2.3);
 put(GEO.motorway, "mcase", 5.0);  put(GEO.motorway, "mfill", 3.2);
 put(GEO.districts, "districts");
+defs.appendChild(atlas); map.appendChild(defs);
+map.appendChild(el("use", { href: "#atlas" }));
 GEO.labels.forEach(l => { const t = el("text", { x: l.x, y: l.y, class: "dlabel" }); t.textContent = l.t; map.appendChild(t); });
 
 /* scale bar: 1 map unit = 12.88 m at this latitude, so 2 km = 155.3 units */
@@ -401,7 +414,25 @@ V.forEach(v => {
   const li = document.createElement("li");
   li.className = "card"; li.tabIndex = 0;
   const known = v.price != null, d = dollars(v.price);
+  const im = v.img ? IMG[v.img] : null;
+  const TW = 200, TH = 112.5;                     // 16:9, matching .shot - ~2.6 km across
+  const media = im
+    ? `<figure class="shot">
+         <img src="${im.src}" alt="${v.name}" loading="lazy" width="640" height="400">
+         <figcaption>Photo: ${im.by} &middot; <a href="${im.page}" target="_blank" rel="noopener noreferrer">${im.lic}</a></figcaption>
+       </figure>`
+    : `<figure class="shot maptile">
+         <svg viewBox="${(v.x - TW / 2).toFixed(1)} ${(v.y - TH / 2).toFixed(1)} ${TW} ${TH}" preserveAspectRatio="xMidYMid slice" aria-label="Map around ${v.name}">
+           <use href="#atlas"></use>
+           <g transform="translate(${v.x} ${v.y}) scale(0.42)">
+             <rect class="b" x="-11" y="-11" width="22" height="22" rx="6" fill="${heat(v.price)}"/>
+             <path d="${FLAME}" fill="${v.price != null ? "#FFFFFF" : "#5A5246"}"/>
+           </g>
+         </svg>
+         <figcaption>${v.district} &middot; map data &copy; OpenStreetMap</figcaption>
+       </figure>`;
   li.innerHTML = `
+    ${media}
     <div class="chead">
       <svg class="ic" width="24" height="24" viewBox="-12 -12 24 24" aria-hidden="true">
         <rect x="-11" y="-11" width="22" height="22" rx="6" fill="${heat(v.price)}" stroke="#201C15" stroke-width="1.8"/>

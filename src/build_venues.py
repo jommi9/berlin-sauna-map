@@ -69,11 +69,24 @@ V = [
   "Indoor sauna on the 2nd floor, adjacent shower and small changing room, fireplace room on the same floor; BYO drinks allowed, take the empties with you","No pool; cool off by the changing-room windows or in the rear courtyard","Booking by email or phone (+49 30 781 81 89); weekend availability varies","Private group sauna with BYO drinks",None,"Booked privately by phone or email, not walk-in - no published per-person price.",
   "https://www.finnlandzentrum.de/sauna/"],
 ]
+
+# Wikimedia Commons photo per venue, where a freely licensed one exists.
+# The standalone saunas have none - they get a generated map tile instead.
+IMG = {
+ "Grand Hyatt \u2014 Club Olympus":"hyatt", "Hilton Berlin \u2014 LivingWell":"hilton",
+ "Steigenberger \u2014 Sky Spa":"steigenberger", "Hotel de Rome \u2014 De Rome Spa":"derome",
+ "Hotel Adlon Kempinski":"adlon", "Hotel Palace \u2014 Palace Spa":"palace",
+ "Titanic Gendarmenmarkt \u2014 BeFine":"titanic", "Park Inn Alexanderplatz \u2014 Gezer Spa":"parkinn",
+ "InterContinental Berlin":"intercon", "The Westin Grand \u2014 Gezer Spa":"westin",
+ "LIQUIDROM":"liquidrom", "Stadtbad Neuk\u00f6lln":"neukoelln",
+}
+
 keys = ["name","lat","lon","kind","district","price","priceLabel","usc","uscLabel","sauna","pool","hours","bestFor","badge","flag","url"]
 venues = []
 for i, row in enumerate(V):
     d = dict(zip(keys, row))
     d["x"], d["y"] = proj(d["lon"], d["lat"])
+    d["img"] = IMG.get(d["name"])
     d["id"] = i
     venues.append(d)
 json.dump(venues, open('venues.json','w'), separators=(',',':'), ensure_ascii=False)

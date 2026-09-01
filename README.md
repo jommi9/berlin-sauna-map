@@ -23,7 +23,7 @@ HTML file — no runtime API calls, no keys, no build server.
 
 | File | What it is |
 |---|---|
-| `index.html` | The built page (~339 KB). This is what gets published, and what a static host serves at the site root. |
+| `index.html` | The built page (~858 KB, images inlined). This is what gets published, and what a static host serves at the site root. |
 | `src/tpl2.html` | **Current design.** Template with `/*__GEO__*/` and `/*__VENUES__*/` placeholders. Edit look and feel here. |
 | `src/tpl.html` | The previous, quieter atlas design, kept as a fallback. |
 | `src/build_venues.py` | The venue table transcribed from Notion, plus map projection. **Edit content here.** |
@@ -40,13 +40,42 @@ HTML file — no runtime API calls, no keys, no build server.
 2. From `src/`:
 
    ```
-   python3 build_venues.py && python3 declutter.py && python3 assemble.py tpl2.html ../index.html
+   python3 build_venues.py && python3 declutter.py && python3 embed_images.py && python3 assemble.py tpl2.html ../index.html
    ```
 
 3. Republish `index.html` to the same artifact URL (pass the URL so the link stays stable).
 
 `build_geo2.py` only needs re-running if you change the map's bounding box — it reads
 the cached OSM files. To refresh those from Overpass, see the queries in `fetch.sh`.
+
+## Images
+
+Twelve venues carry a real photo; the other eight carry a generated map tile.
+
+That split is not a stylistic choice - it is what free licensing allows. Wikimedia
+Commons has good, high-resolution photographs of every **hotel** on the list (the Adlon
+alone is 7225x4912) and of Stadtbad Neukoelln and the Tempodrom that houses Liquidrom.
+It has **nothing** for Vabali, KIEZ SAUNA, Olivin, Saunabad, Luetzow, ANTI SPA, sly or
+Finnland Zentrum - searches for those return mineral crystals and 19th-century
+magazines. The venues' own photographs are copyrighted marketing material and are not
+reused here.
+
+So the eight without a free photo get a zoomed crop of the atlas instead, centred on
+their blip. Tiles cost almost nothing: they are `<svg>` elements whose `<use href="#atlas">`
+points at the single map definition in `<defs>`, so the road geometry exists once in the
+DOM rather than nine times.
+
+Every photo is credited in place - photographer and licence, linking to the Commons file
+page - as CC BY-SA and FAL require.
+
+| Script | Does |
+|---|---|
+| `src/fetch_images.py` | Pulls the chosen Commons files at 900 px plus their licence metadata into `img/credits.json`. |
+| `src/embed_images.py` | Encodes `img/card/*.webp` into `img/embed.json` as data URIs. |
+
+Card images are committed as 640x400 WebP (409 KB total). They are inlined as data URIs
+rather than linked so the page stays a single self-contained file that also works as an
+Artifact, where the CSP blocks external images.
 
 ## Design notes
 
