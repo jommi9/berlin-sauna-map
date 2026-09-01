@@ -39,7 +39,7 @@ V = [
   "Large sauna area, whirlpool, terrace","Pool","07:00–21:00","Large conventional hotel spa",None,None,
   "https://www.berlin.intercontinental.com/wellness/"],
  ["The Westin Grand — Gezer Spa",52.51587,13.38860,"Hotel spa","Mitte",None,"Separate sauna cards exist; current single cash price not clearly published","yes","Classic 4×/mo · Premium & Max 8×/mo · max 2h",
-  "Three saunas at roughly 60°C, 85°C and 95°C","Check current spa setup","Currently shown around 14:00–22:00; verify before going","Central USC alternative",None,"Hours and cash pricing both unverified — call ahead.",
+  "Three saunas at roughly 60°C, 85°C and 95°C","Check current spa setup","Currently shown around 14:00–22:00; verify before going","Central USC alternative",None,"Sauna and gym were closed for renovation; the Urban Sports Club listing still shows that banner even though it expired on 31 May 2026. Cash pricing is unpublished too \u2014 call before going.",
   "https://urbansportsclub.com/en/venues/gezer-spa-fitness?view=new"],
  ["sly Berlin",52.50999,13.40558,"Hotel spa","Mitte",None,"No public day pass currently verified; hotel guest access confirmed","no","No current USC listing",
   "KLAFS panoramic rooftop sauna, steam bath, roof terrace, tea, towels and bathrobes","No pool","About 06:00–23:00; hotel pages differ","Top-tier sauna, but access is the problem",None,"No verified public day pass — realistically hotel guests only.",
