@@ -1,0 +1,7 @@
+*.pyc
+__pycache__/
+# Raw Overpass dumps - regenerate with src/fetch.sh only if the map bbox changes
+src/roads.json
+src/rail.json
+src/parks.json
+src/water.json

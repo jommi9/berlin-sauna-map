@@ -1,0 +1,504 @@
+<title>Berlin Sauna Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Archivo:wght@400;500;600&display=swap">
+
+<style>
+/* A committed single-theme design: a game-map HUD reads as one fixed world,
+   so every colour is painted explicitly and nothing follows the host theme. */
+:root{
+  --void:#0A0D0F; --panel:#151A1D; --panel-2:#1C2327; --panel-3:#232B30;
+  --line:#2E373C; --line-2:#3C474D;
+  --ink:#F4F6F6; --ink-2:#C8D1D4; --dim:#8C979C; --faint:#6A7479;
+  --gold:#FFC12B; --gold-deep:#C98F12; --cyan:#3FD0F5; --red:#E8402F;
+  --land:#E4DDC9; --park:#C3CFA4; --water:#3C6076;
+  --road-case:#C6BEA6; --road:#FFFFFF; --mtw:#F3C24E; --mtw-case:#C1932C;
+  --rail:#A9A08A; --dist:#7C7259; --border:#9A907A;
+  --b1:#F5C542; --b2:#E8801F; --b3:#CE3B18; --b4:#8F2410; --b0:#EDE7D6;
+  /* Rockstar sets the GTA logo in Pricedown and the UI in Chalet 1960 /
+     Chalet Comprime 1960. Pricedown's free licence is desktop-only - no web
+     embedding - so these are the closest Google Fonts stand-ins. */
+  --disp:"Anton","Arial Narrow",Impact,sans-serif;
+  --hud:"Oswald","Arial Narrow",Impact,sans-serif;
+  --body:"Archivo","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--void); color:var(--ink);
+  font-family:var(--body); font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
+.wrap{max-width:1500px; margin:0 auto; padding:0 clamp(12px,2.4vw,32px)}
+.hud{font-family:var(--hud); font-weight:600; letter-spacing:.14em; text-transform:uppercase}
+
+/* ---------------- cover grid ---------------- */
+.cover{
+  display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:minmax(118px,auto);
+  gap:3px; margin:clamp(12px,2.4vw,26px) 0 0;
+}
+.tile{background:var(--panel); padding:20px 22px; display:flex; flex-direction:column; justify-content:space-between}
+.tile.mark{
+  grid-column:span 2; grid-row:span 2; justify-content:center; gap:14px;
+  background:
+    radial-gradient(120% 90% at 12% 0%, rgba(255,193,43,.13), transparent 62%),
+    linear-gradient(180deg, var(--panel-2), var(--panel));
+}
+.stamp{font-family:var(--hud); font-weight:600; font-size:11.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold)}
+.stamp b{color:var(--dim); font-weight:600}
+.wordmark{
+  font-family:var(--disp); font-size:clamp(46px,7.6vw,104px); line-height:.82;
+  letter-spacing:.005em; text-transform:uppercase; margin:0; color:var(--ink);
+  text-shadow:
+    1px 1px 0 var(--gold-deep), 2px 2px 0 var(--gold-deep), 3px 3px 0 var(--gold-deep),
+    4px 4px 0 var(--gold-deep), 5px 5px 0 var(--gold-deep), 6px 6px 0 var(--gold-deep),
+    7px 8px 12px rgba(0,0,0,.5);
+}
+.wordmark span{display:block}
+.wordmark .g{
+  color:var(--gold);
+  text-shadow:
+    1px 1px 0 #7A5606, 2px 2px 0 #7A5606, 3px 3px 0 #7A5606,
+    4px 4px 0 #7A5606, 5px 5px 0 #7A5606, 6px 6px 0 #7A5606,
+    7px 8px 12px rgba(0,0,0,.5);
+}
+.strap{margin:0; max-width:44ch; color:var(--ink-2); font-size:clamp(14px,1.15vw,16px); line-height:1.5}
+.tile .k{font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--dim)}
+.tile .n{
+  font-family:var(--disp); font-size:clamp(32px,3.9vw,50px); line-height:1;
+  letter-spacing:.005em; color:var(--gold); font-variant-numeric:tabular-nums;
+}
+.tile .s{font-family:var(--hud); font-weight:500; font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--faint)}
+@media (max-width:860px){
+  .cover{grid-template-columns:repeat(2,1fr)}
+  .tile.mark{grid-column:span 2; grid-row:auto; padding:26px 22px 30px}
+}
+
+/* ---------------- HUD control bar ---------------- */
+.bar{
+  position:sticky; top:0; z-index:50; margin-top:3px;
+  background:var(--panel); border-top:2px solid var(--gold);
+  padding:11px clamp(12px,2.4vw,22px); display:flex; flex-wrap:wrap; gap:10px 20px; align-items:center;
+}
+.bar .lbl{font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--faint)}
+.find{position:relative; flex:1 1 190px; max-width:250px}
+.find input{
+  width:100%; font-family:var(--body); font-size:14px; color:var(--ink);
+  background:var(--void); border:1px solid var(--line); border-radius:2px; padding:7px 10px 7px 29px;
+}
+.find input::placeholder{color:var(--faint)}
+.find svg{position:absolute; left:8px; top:50%; transform:translateY(-50%); color:var(--faint)}
+.grp{display:flex; align-items:center; gap:5px; flex-wrap:wrap}
+.chip{
+  font-family:var(--hud); font-weight:600; font-size:12.5px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--ink-2); background:var(--panel-2); border:1px solid var(--line); border-radius:2px;
+  padding:6px 11px; cursor:pointer; transition:background .12s,color .12s,border-color .12s;
+}
+.chip:hover{border-color:var(--line-2); color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--gold); border-color:var(--gold); color:#161005}
+.slide{display:flex; align-items:center; gap:8px}
+.slide input{width:110px; accent-color:var(--gold)}
+.slide output{font-family:var(--hud); font-weight:600; font-size:13px; letter-spacing:.06em; min-width:62px; color:var(--gold)}
+.clear{
+  margin-left:auto; font-family:var(--hud); font-weight:600; font-size:11.5px; letter-spacing:.16em;
+  text-transform:uppercase; background:none; border:0; color:var(--dim); cursor:pointer; padding:6px 0;
+}
+.clear:hover{color:var(--gold)}
+
+/* ---------------- split ---------------- */
+.split{display:grid; grid-template-columns:minmax(0,1.24fr) minmax(0,1fr); gap:3px; margin-top:3px}
+@media (max-width:1000px){ .split{grid-template-columns:minmax(0,1fr)} }
+.mapcol{background:var(--panel); padding:12px}
+.mapcol .inner{position:sticky; top:70px}
+@media (max-width:1000px){ .mapcol .inner{position:static} }
+.mapbox{position:relative; background:var(--land)}
+svg.map{display:block; width:100%; height:auto}
+.brk{position:absolute; width:16px; height:16px; border:2px solid var(--gold); pointer-events:none}
+.brk.tl{top:5px;left:5px;border-right:0;border-bottom:0}
+.brk.tr{top:5px;right:5px;border-left:0;border-bottom:0}
+.brk.bl{bottom:5px;left:5px;border-right:0;border-top:0}
+.brk.br{bottom:5px;right:5px;border-left:0;border-top:0}
+
+.parks{fill:var(--park)} .water{fill:var(--water)}
+.river{fill:none;stroke:var(--water);stroke-linecap:round;stroke-linejoin:round}
+.districts{fill:none;stroke:var(--border);stroke-width:1.1;opacity:.38}
+.rail{fill:none;stroke:var(--rail);stroke-width:.9;stroke-dasharray:3.4 3.6;opacity:.5}
+.rcase,.mcase,.rfill,.mfill{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.rcase{stroke:var(--road-case)} .rfill{stroke:var(--road)}
+.mcase{stroke:var(--mtw-case)} .mfill{stroke:var(--mtw)}
+.dlabel{
+  font-family:var(--hud); font-weight:600; font-size:12px; letter-spacing:.22em; fill:var(--dist);
+  text-anchor:middle; paint-order:stroke; stroke:var(--land); stroke-width:3.5; opacity:.9;
+  pointer-events:none; user-select:none;
+}
+.scale{font-family:var(--hud); font-weight:600; font-size:10px; letter-spacing:.14em; fill:#5F5847}
+.blip{cursor:pointer}
+.blip rect.b{stroke:#201C15; stroke-width:1.8}
+.blip .pulse{fill:none; stroke:#fff; stroke-width:2.2; opacity:0}
+.blip.on .pulse{opacity:1}
+.blip.on{filter:drop-shadow(0 2px 5px rgba(0,0,0,.55))}
+.blip.dim{opacity:.22}
+.blip.gone{display:none}
+.bname{
+  font-family:var(--hud); font-weight:700; font-size:13px; letter-spacing:.1em; text-transform:uppercase;
+  fill:#1B1811; text-anchor:middle; paint-order:stroke; stroke:var(--land); stroke-width:4.5;
+  pointer-events:none;
+}
+.key{display:flex; flex-wrap:wrap; gap:9px 20px; align-items:center; padding:12px 2px 2px}
+.key .lbl{font-family:var(--hud); font-weight:600; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint)}
+.bands{display:flex; align-items:center; gap:4px}
+.bands i{width:15px;height:15px;border-radius:4px;border:1.5px solid #201C15;display:block}
+.bands em{font-family:var(--hud);font-weight:600;font-size:11px;letter-spacing:.1em;color:var(--dim);font-style:normal}
+
+/* ---------------- dossier list ---------------- */
+.listcol{background:var(--panel); padding:0}
+.lhead{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:14px 18px; border-bottom:1px solid var(--line); position:sticky; top:70px; background:var(--panel); z-index:20;
+}
+@media (max-width:1000px){ .lhead{position:static} }
+.lhead h2{font-family:var(--hud); font-weight:600; font-size:16px; letter-spacing:.12em; text-transform:uppercase; margin:0}
+.lhead .c{font-family:var(--hud); font-weight:600; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim)}
+.cards{list-style:none; margin:0; padding:0}
+.card{
+  border-bottom:1px solid var(--line); border-left:3px solid transparent;
+  padding:16px 18px 18px; cursor:pointer; transition:background .12s,border-left-color .12s;
+  scroll-margin-top:150px;
+}
+.card:hover{background:var(--panel-2)}
+.card.on{background:var(--panel-2); border-left-color:var(--gold)}
+.chead{display:flex; align-items:flex-start; gap:11px}
+.chead .ic{flex:none; margin-top:2px}
+.ct{flex:1 1 auto; min-width:0}
+.cname{font-family:var(--hud); font-weight:600; font-size:19px; line-height:1.18; letter-spacing:.03em; text-transform:uppercase; margin:0}
+.card.on .cname{color:var(--gold)}
+.cmeta{font-family:var(--hud); font-weight:500; font-size:12px; letter-spacing:.13em; text-transform:uppercase; color:var(--dim); margin:3px 0 0}
+.rank{
+  flex:none; font-family:var(--disp); font-size:16px; letter-spacing:.02em; color:var(--gold);
+  background:var(--void); border:1px solid var(--line); border-radius:2px; padding:4px 8px 3px;
+}
+.rank.none{color:var(--faint); font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.12em; padding:6px 8px}
+.pick-tag{
+  display:inline-block; font-family:var(--hud); font-weight:700; font-size:10.5px; letter-spacing:.15em;
+  text-transform:uppercase; background:var(--gold); color:#161005; padding:3px 8px; margin:11px 0 0;
+}
+.rows{margin:12px 0 0; display:grid; grid-template-columns:74px minmax(0,1fr); gap:6px 12px; font-size:14.6px}
+.rows dt{font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--faint); padding-top:4px}
+.rows dd{margin:0; color:var(--ink-2)}
+.rows dd b{color:var(--ink); font-weight:600}
+.usc-y{color:var(--cyan)}
+.alert{
+  margin:12px 0 0; padding:9px 12px; background:rgba(232,64,47,.09);
+  border-left:3px solid var(--red); font-size:13.8px; color:var(--ink-2);
+}
+.alert b{font-family:var(--hud); font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--red); font-size:11.5px; display:block; margin-bottom:2px}
+.go{
+  display:inline-block; margin-top:14px; font-family:var(--hud); font-weight:600; font-size:12px;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--gold); text-decoration:none;
+  border:1px solid var(--line); padding:6px 12px; border-radius:2px;
+}
+.go:hover{border-color:var(--gold); background:rgba(255,193,43,.09)}
+.none-msg{padding:44px 18px; text-align:center; color:var(--dim); font-family:var(--hud); letter-spacing:.12em; text-transform:uppercase}
+
+/* ---------------- picks ---------------- */
+.picks{margin-top:3px; background:var(--panel); padding:clamp(22px,3vw,34px) clamp(14px,2.4vw,26px)}
+.picks h2{font-family:var(--disp); font-size:clamp(26px,3.2vw,40px); letter-spacing:.01em; text-transform:uppercase; margin:0 0 6px}
+.picks .sub{color:var(--dim); margin:0 0 22px; font-size:15px; max-width:62ch}
+.pgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:3px}
+.pk{
+  background:var(--panel-2); border:0; padding:16px 16px 18px; text-align:left; cursor:pointer;
+  display:flex; flex-direction:column; gap:8px; color:inherit; font:inherit; transition:background .12s;
+  border-top:2px solid var(--line);
+}
+.pk:hover{background:var(--panel-3); border-top-color:var(--gold)}
+.pk .k{font-family:var(--hud); font-weight:600; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--gold)}
+.pk .v{font-family:var(--hud); font-weight:600; font-size:16.5px; line-height:1.2; letter-spacing:.03em; text-transform:uppercase}
+.pk .p{font-family:var(--hud); font-weight:600; font-size:12.5px; letter-spacing:.1em; color:var(--dim)}
+
+/* ---------------- credits ---------------- */
+.credits{margin-top:3px; background:var(--panel); padding:clamp(22px,3vw,32px) clamp(14px,2.4vw,26px) 46px}
+.cgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(258px,1fr)); gap:24px 38px}
+.cgrid h3{font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); margin:0 0 8px}
+.cgrid p{margin:0; font-size:14.4px; color:var(--ink-2); line-height:1.6; max-width:56ch}
+.cgrid strong{color:var(--ink); font-weight:600}
+.cgrid a{color:var(--gold)}
+@media (prefers-reduced-motion:reduce){ *{transition:none !important; animation:none !important} }
+</style>
+
+<div class="wrap">
+  <div class="cover">
+    <div class="tile mark">
+      <p class="stamp">Berlin <b>//</b> Last scan 01.09.2026</p>
+      <h1 class="wordmark"><span>Berlin</span><span>Sauna</span><span class="g">Map</span></h1>
+      <p class="strap">Nineteen saunas and spas across the city, priced and plotted. Hotel day spas, proper neighbourhood saunas, and the six you can walk into on an Urban Sports Club card.</p>
+    </div>
+    <div class="tile"><span class="k">Locations</span><span class="n" id="n-count">19</span><span class="s">Mapped by hand</span></div>
+    <div class="tile"><span class="k">Cheapest</span><span class="n">&euro;18</span><span class="s">Saunabad, 2.5h</span></div>
+    <div class="tile"><span class="k">On USC</span><span class="n">6</span><span class="s">Membership entry</span></div>
+    <div class="tile"><span class="k">Hottest</span><span class="n">95&deg;C</span><span class="s">Finnish cabin</span></div>
+  </div>
+
+  <div class="bar">
+    <label class="find">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="search" id="q" placeholder="Search name, district, feature" aria-label="Search saunas">
+    </label>
+    <div class="grp" id="g-access" role="group" aria-label="Filter by access">
+      <span class="lbl">Access</span>
+      <button class="chip" data-v="all" aria-pressed="true">Any</button>
+      <button class="chip" data-v="cash" aria-pressed="false">Cash</button>
+      <button class="chip" data-v="usc" aria-pressed="false">USC</button>
+    </div>
+    <div class="grp" id="g-kind" role="group" aria-label="Filter by venue type">
+      <span class="lbl">Type</span>
+      <button class="chip" data-v="all" aria-pressed="true">Any</button>
+      <button class="chip" data-v="sauna" aria-pressed="false">Not a hotel</button>
+      <button class="chip" data-v="hotel" aria-pressed="false">Hotel spa</button>
+      <button class="chip" data-v="pool" aria-pressed="false">Pool / plunge</button>
+    </div>
+    <label class="slide">
+      <span class="lbl">Max</span>
+      <input type="range" id="pmax" min="18" max="90" step="1" value="90" aria-label="Maximum price">
+      <output id="pout">Any</output>
+    </label>
+    <button class="clear" id="clear">Reset</button>
+  </div>
+
+  <div class="split">
+    <div class="mapcol">
+      <div class="inner">
+        <div class="mapbox">
+          <svg class="map" id="map" role="img" aria-label="Map of central Berlin showing 19 sauna and spa locations"></svg>
+          <i class="brk tl"></i><i class="brk tr"></i><i class="brk bl"></i><i class="brk br"></i>
+        </div>
+        <div class="key">
+          <span class="lbl">Price</span>
+          <span class="bands">
+            <em>&euro;18</em>
+            <i style="background:var(--b1)"></i><i style="background:var(--b2)"></i><i style="background:var(--b3)"></i><i style="background:var(--b4)"></i>
+            <em>&euro;90</em>
+          </span>
+          <span class="bands">
+            <svg width="19" height="19" viewBox="0 0 19 19" aria-hidden="true"><rect x="1.5" y="3.5" width="14" height="14" rx="4" fill="var(--b2)" stroke="#201C15" stroke-width="1.6"/><circle cx="15" cy="4" r="3.4" fill="var(--cyan)" stroke="#0B2530" stroke-width="1.2"/></svg>
+            <em>On USC</em>
+          </span>
+          <span class="bands">
+            <svg width="19" height="19" viewBox="0 0 19 19" aria-hidden="true"><rect x="2.5" y="2.5" width="14" height="14" rx="4" fill="var(--b0)" stroke="#201C15" stroke-width="1.6"/></svg>
+            <em>Price unclear or closed</em>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="listcol">
+      <div class="lhead">
+        <h2 id="l-title">All 19 locations</h2>
+        <span class="c" id="l-note">Pick order</span>
+      </div>
+      <ul class="cards" id="cards"></ul>
+      <p class="none-msg" id="none" hidden>No locations match &mdash; widen the price or clear a filter</p>
+    </div>
+  </div>
+
+  <section class="picks">
+    <h2>If you only remember one thing</h2>
+    <p class="sub">The single best answer for each way you might turn up &mdash; cash in hand, membership card, or two hours to kill.</p>
+    <div class="pgrid" id="picks"></div>
+  </section>
+
+  <section class="credits">
+    <div class="cgrid">
+      <div>
+        <h3>Before you go</h3>
+        <p>For a normal sauna session rather than a luxury spa day, <strong>KIEZ SAUNA, Saunabad, Olivin and L&uuml;tzow</strong> are better benchmarks than most hotel spas. Hotel spas make sense when the pool, terrace, relaxation area, or USC access is part of what you want.</p>
+      </div>
+      <div>
+        <h3>Two traps</h3>
+        <p><strong>Liquidrom</strong> is on Urban Sports Club, but USC entry does not include the sauna &mdash; you still pay the supplement. <strong>Stadtbad Neuk&ouml;lln&rsquo;s</strong> sauna is on summer break through 31 October 2026.</p>
+      </div>
+      <div>
+        <h3>Data</h3>
+        <p>Curated by hand and kept in Notion; prices, USC limits and opening hours change often, so recheck before making a special trip. Locations geocoded from OpenStreetMap; roads, rail, water, parks and district outlines &copy; OpenStreetMap contributors, <a href="https://www.openstreetmap.org/copyright">ODbL</a>.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const GEO = /*__GEO__*/;
+const V = /*__VENUES__*/;
+const NS = "http://www.w3.org/2000/svg";
+const el = (n, a) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); return e; };
+
+const band = p => p == null ? 0 : p <= 22 ? 1 : p <= 35 ? 2 : p <= 65 ? 3 : 4;
+const heat = p => `var(--b${band(p)})`;
+const dollars = p => p == null ? null : "$".repeat(band(p));
+
+/* ---------- map ---------- */
+const map = document.getElementById("map");
+map.setAttribute("viewBox", `0 0 ${GEO.w} ${GEO.h}`);
+const put = (d, cls, w) => { if (!d) return; const a = { d, class: cls }; if (w) a["stroke-width"] = w; map.appendChild(el("path", a)); };
+put(GEO.parks, "parks");
+put(GEO.water, "water");
+put(GEO.river, "river", 3.6); put(GEO.canal, "river", 2.0);
+put(GEO.rail, "rail");
+put(GEO.secondary, "rcase", 2.3); put(GEO.secondary, "rfill", 1.25);
+put(GEO.primary, "rcase", 3.6);   put(GEO.primary, "rfill", 2.3);
+put(GEO.motorway, "mcase", 5.0);  put(GEO.motorway, "mfill", 3.2);
+put(GEO.districts, "districts");
+GEO.labels.forEach(l => { const t = el("text", { x: l.x, y: l.y, class: "dlabel" }); t.textContent = l.t; map.appendChild(t); });
+
+/* scale bar: 1 map unit = 12.88 m at this latitude, so 2 km = 155.3 units */
+const KM = 77.66, sx = 22, sy = GEO.h - 22;
+const sg = el("g");
+sg.appendChild(el("rect", { x: sx - 9, y: sy - 17, width: KM * 2 + 52, height: 26, rx: 3, fill: "var(--land)", opacity: .82 }));
+sg.appendChild(el("path", { d: `M${sx},${sy - 6} v6 h${KM * 2} v-6 M${sx + KM},${sy} v-4`, fill: "none", stroke: "#5F5847", "stroke-width": 1.6 }));
+const st = el("text", { x: sx + KM * 2 + 6, y: sy + 1, class: "scale" }); st.textContent = "2 KM";
+sg.appendChild(st); map.appendChild(sg);
+
+const FLAME = "M0,-6.6 C3.1,-3.2 5.2,-1.1 5.2,1.6 C5.2,4.6 2.9,6.6 0,6.6 C-2.9,6.6 -5.2,4.6 -5.2,1.6 C-5.2,-1.3 -2.1,-2.6 -1.3,-5.2 Z";
+const blips = new Map();
+V.forEach(v => {
+  const g = el("g", { class: "blip", transform: `translate(${v.px} ${v.py})`, tabindex: "0", role: "button", "aria-label": v.name });
+  if (v.off > 2) g.appendChild(el("line", { x1: v.x - v.px, y1: v.y - v.py, x2: 0, y2: 0, stroke: "#8A8067", "stroke-width": 1 }));
+  g.appendChild(el("rect", { class: "pulse", x: -15, y: -15, width: 30, height: 30, rx: 8 }));
+  g.appendChild(el("rect", { class: "b", x: -11, y: -11, width: 22, height: 22, rx: 6, fill: heat(v.price) }));
+  g.appendChild(el("path", { d: FLAME, fill: v.price != null ? "#FFFFFF" : "#5A5246" }));
+  if (v.usc === "yes") g.appendChild(el("circle", { cx: 9.4, cy: -9.4, r: 3.9, fill: "var(--cyan)", stroke: "#0B2530", "stroke-width": 1.4 }));
+  map.appendChild(g); blips.set(v.id, g);
+  g.addEventListener("click", () => choose(v.id, true));
+  g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); choose(v.id, true); } });
+  g.addEventListener("mouseenter", () => peek(v.id, true));
+  g.addEventListener("mouseleave", () => peek(v.id, false));
+});
+const nameTag = el("text", { class: "bname" });
+map.appendChild(nameTag);
+function showName(id){
+  if (id == null) { nameTag.textContent = ""; return; }
+  const v = V.find(x => x.id === id);
+  nameTag.textContent = v.name.toUpperCase();
+  nameTag.setAttribute("x", Math.min(Math.max(v.px, 110), GEO.w - 110));
+  nameTag.setAttribute("y", v.py > 46 ? v.py - 20 : v.py + 32);
+}
+
+/* ---------- state ---------- */
+let sel = null;
+const F = { q: "", access: "all", kind: "all", pmax: 90 };
+function ok(v){
+  if (F.access === "usc" && v.usc !== "yes") return false;
+  if (F.access === "cash" && v.price == null) return false;
+  if (F.kind === "sauna" && /^Hotel/.test(v.kind)) return false;
+  if (F.kind === "hotel" && !/^Hotel/.test(v.kind)) return false;
+  if (F.kind === "pool" && /^(No |Check)/i.test(v.pool)) return false;
+  if (F.pmax < 90 && (v.price == null || v.price > F.pmax)) return false;
+  if (F.q && ![v.name, v.kind, v.district, v.sauna, v.pool, v.bestFor, v.priceLabel, v.uscLabel].join(" ").toLowerCase().includes(F.q)) return false;
+  return true;
+}
+
+/* ---------- dossier cards ---------- */
+const cards = document.getElementById("cards"), cardOf = new Map();
+V.forEach(v => {
+  const li = document.createElement("li");
+  li.className = "card"; li.tabIndex = 0;
+  const known = v.price != null, d = dollars(v.price);
+  li.innerHTML = `
+    <div class="chead">
+      <svg class="ic" width="24" height="24" viewBox="-12 -12 24 24" aria-hidden="true">
+        <rect x="-11" y="-11" width="22" height="22" rx="6" fill="${heat(v.price)}" stroke="#201C15" stroke-width="1.8"/>
+        <path d="${FLAME}" fill="${known ? "#FFFFFF" : "#5A5246"}"/>
+        ${v.usc === "yes" ? '<circle cx="9.4" cy="-9.4" r="3.9" fill="var(--cyan)" stroke="#0B2530" stroke-width="1.4"/>' : ""}
+      </svg>
+      <div class="ct">
+        <h3 class="cname">${v.name}</h3>
+        <p class="cmeta">${v.kind} // ${v.district}</p>
+      </div>
+      <span class="rank${known ? "" : " none"}">${known ? d : "N/A"}</span>
+    </div>
+    ${v.badge ? `<span class="pick-tag">${v.badge}</span>` : ""}
+    <dl class="rows">
+      <dt>Entry</dt><dd><b>${v.priceLabel}</b></dd>
+      <dt>USC</dt><dd class="${v.usc === "yes" ? "usc-y" : ""}">${v.uscLabel}</dd>
+      <dt>Heat</dt><dd>${v.sauna}</dd>
+      <dt>Water</dt><dd>${v.pool}</dd>
+      <dt>Open</dt><dd>${v.hours}</dd>
+      <dt>Best for</dt><dd>${v.bestFor}</dd>
+    </dl>
+    ${v.flag ? `<p class="alert"><b>Heads up</b>${v.flag}</p>` : ""}
+    <a class="go" href="${v.url}" target="_blank" rel="noopener noreferrer">Hours &amp; booking</a>`;
+  cards.appendChild(li); cardOf.set(v.id, li);
+  li.addEventListener("click", e => { if (!e.target.closest("a")) choose(v.id, false); });
+  li.addEventListener("keydown", e => { if (e.key === "Enter" && !e.target.closest("a")) choose(v.id, false); });
+  li.addEventListener("mouseenter", () => peek(v.id, true));
+  li.addEventListener("mouseleave", () => peek(v.id, false));
+});
+function peek(id, on){ if (sel != null) return; blips.get(id).classList.toggle("on", on); showName(on ? id : null); }
+function choose(id, fromMap){
+  sel = sel === id ? null : id;
+  blips.forEach((g, k) => g.classList.toggle("on", k === sel));
+  cardOf.forEach((c, k) => c.classList.toggle("on", k === sel));
+  showName(sel);
+  if (sel != null && fromMap) cardOf.get(sel).scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+/* ---------- filtering ---------- */
+const lTitle = document.getElementById("l-title"), lNote = document.getElementById("l-note"),
+      noneMsg = document.getElementById("none"), nCount = document.getElementById("n-count");
+function run(){
+  let n = 0;
+  V.forEach(v => {
+    const pass = ok(v); if (pass) n++;
+    cardOf.get(v.id).hidden = !pass;
+    blips.get(v.id).classList.toggle("gone", !pass);
+  });
+  if (sel != null && !ok(V.find(v => v.id === sel))) choose(sel, false);
+  const filtered = n !== V.length;
+  lTitle.textContent = filtered ? `${n} match${n === 1 ? "" : "es"}` : `All ${V.length} locations`;
+  lNote.textContent = filtered ? "Filtered" : "Pick order";
+  nCount.textContent = n;
+  noneMsg.hidden = n > 0;
+}
+document.getElementById("q").addEventListener("input", e => { F.q = e.target.value.trim().toLowerCase(); run(); });
+["g-access", "g-kind"].forEach(id => {
+  const g = document.getElementById(id), key = id === "g-access" ? "access" : "kind";
+  g.addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    F[key] = b.dataset.v;
+    g.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c === b)));
+    run();
+  });
+});
+const pmax = document.getElementById("pmax"), pout = document.getElementById("pout");
+pmax.addEventListener("input", e => {
+  F.pmax = +e.target.value;
+  pout.textContent = F.pmax >= 90 ? "Any" : "€" + F.pmax;
+  run();
+});
+document.getElementById("clear").addEventListener("click", () => {
+  F.q = ""; F.access = "all"; F.kind = "all"; F.pmax = 90;
+  document.getElementById("q").value = ""; pmax.value = 90; pout.textContent = "Any";
+  document.querySelectorAll(".grp").forEach(g => g.querySelectorAll(".chip").forEach((c, i) => c.setAttribute("aria-pressed", String(i === 0))));
+  if (sel != null) choose(sel, false);
+  run();
+});
+
+/* ---------- picks ---------- */
+const PICKS = [
+  ["Best overall sauna day", "Vabali"], ["Best proper local sauna", "KIEZ SAUNA Friedrichshain"],
+  ["Best USC hotel experience", "Hilton Berlin — LivingWell"], ["Best USC for sauna quality", "Steigenberger — Sky Spa"],
+  ["Best easy USC option", "Park Inn Alexanderplatz — Gezer Spa"], ["Best USC sauna + cold plunge", "ANTI SPA"],
+  ["Best cash-value hotel spa", "Hotel Palace — Palace Spa"], ["Best premium hotel option", "Grand Hyatt — Club Olympus"],
+  ["Most beautiful", "Hotel de Rome — De Rome Spa"], ["Best sauna you can't easily book", "sly Berlin"]
+];
+const pg = document.getElementById("picks");
+PICKS.forEach(([k, name]) => {
+  const v = V.find(x => x.name === name);
+  if (!v) return;
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "pk";
+  b.innerHTML = `<span class="k">${k}</span><span class="v">${v.name}</span><span class="p">${v.price != null ? "From €" + String(v.price).replace(".5", ".50") : "Access unclear"}</span>`;
+  b.addEventListener("click", () => { if (sel !== v.id) choose(v.id, false); cardOf.get(v.id).scrollIntoView({ behavior: "smooth", block: "center" }); });
+  pg.appendChild(b);
+});
+
+run();
+</script>
