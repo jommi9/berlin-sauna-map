@@ -65,6 +65,9 @@ V = [
  ["Stadtbad Neukölln",52.47919,13.43973,"Public bath / sauna","Neukölln",20,"About €20 / 3h · €23 day","yes","Included on Max",
   "Finnish sauna, herbal sauna, steam bath, caldarium","Public bath facilities","Sauna summer break through 31 Oct 2026","Excellent value once the sauna reopens",None,"Sauna closed for summer break through 31 October 2026.",
   "https://www.berlinerbaeder.de/baeder/detail/stadtbad-neukoelln/"],
+ ["Finnland Zentrum",52.48963,13.39737,"Private rental sauna","Kreuzberg",None,"3-hour private booking; prices on request","no","Not mentioned",
+  "Indoor sauna on the 2nd floor, adjacent shower and small changing room, fireplace room on the same floor; BYO drinks allowed, take the empties with you","No pool; cool off by the changing-room windows or in the rear courtyard","Booking by email or phone (+49 30 781 81 89); weekend availability varies","Private group sauna with BYO drinks",None,"Booked privately by phone or email, not walk-in - no published per-person price.",
+  "https://www.finnlandzentrum.de/sauna/"],
 ]
 keys = ["name","lat","lon","kind","district","price","priceLabel","usc","uscLabel","sauna","pool","hours","bestFor","badge","flag","url"]
 venues = []

@@ -1,6 +1,6 @@
 # Berlin Sauna Map
 
-Nineteen Berlin saunas and spas drawn as an open-world game atlas.
+Twenty Berlin saunas and spas drawn as an open-world game atlas.
 
 **Live: https://jommi9.github.io/berlin-sauna-map/**
 
