@@ -1,7 +1,19 @@
 # Berlin Sauna Map
 
-Nineteen Berlin saunas and spas drawn as an open-world game atlas. Published as a
-Claude Artifact: https://claude.ai/code/artifact/79203c00-258e-4438-b918-bd671cd3db9c
+Nineteen Berlin saunas and spas drawn as an open-world game atlas.
+
+**Live: https://jommi9.github.io/berlin-sauna-map/**
+
+Also published as a private Claude Artifact:
+https://claude.ai/code/artifact/79203c00-258e-4438-b918-bd671cd3db9c
+
+## Hosting
+
+GitHub Pages serves `index.html` from `main`. Note that a custom domain on the
+account's *user* site (`jommi9.github.io`) is applied to every project site too — a
+stale `CNAME` pointing at a non-resolving domain will take this page down along with
+everything else on the account, returning a redirect into nowhere rather than a clear
+error. If this URL ever 301s somewhere unexpected, check that repo's `CNAME` first.
 
 Source of truth for the venue data is the Notion page **Personal Home / Projects /
 Berlin Sauna Guide / Saunas & Spas**. The site is a single static, self-contained
