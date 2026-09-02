@@ -95,44 +95,51 @@ USC_TIERS = {
 }
 
 # --- Opening hours. weekly = Mon..Sun, each [open, close] in minutes past
-#     midnight (1440 = midnight) or None for closed. "winter" applies 1 Oct-31 Mar.
+#     midnight (1440 = midnight, >1440 = past midnight), or None for closed.
+#     seasons override weekly between two MM-DD dates and may wrap the year.
 #     src: "venue" = read off the operator's own page, "osm" = OpenStreetMap,
-#     "listed" = as published on the hotel page during the original research.
-#     Venues with no reliable schedule are simply absent - they report
-#     "check hours" instead of a weekday snapshot that looks random on any
-#     other day, which is what they used to do.
-D  = lambda a, b: [[a, b]] * 7
+#     "listed" = as published on the hotel page and not re-verified since.
+D = lambda a, b: [[a, b]] * 7
+WINTER = "10-01", "03-31"
 OPEN = {
- "Vabali":                       {"weekly": D(540, 1440), "winter": D(480, 1440), "src": "venue"},
- "KIEZ SAUNA Friedrichshain":    {"weekly": D(900, 1440), "winter": D(780, 1440), "src": "venue"},
- "Park Inn Alexanderplatz \u2014 Gezer Spa":
-                                 {"weekly": D(720, 1320), "winter": D(720, 1080), "src": "venue"},
- "Steigenberger \u2014 Sky Spa":  {"weekly": [[840,1320]]*5 + [[600,1320],[600,1080]], "src": "osm"},
- "L\u00fctzow Sauna":             {"weekly": [[1080,1380], None, [960,1380], None,
-                                             [960,1380], [960,1380], [960,1380]], "src": "osm"},
- "LIQUIDROM":                    {"weekly": [[600,1440]]*4 + [[600,1500],[600,1500],[600,1500]], "src": "osm"},
+ "Vabali": {"weekly": D(540, 1440), "src": "venue",
+            "seasons": [{"from": WINTER[0], "to": WINTER[1], "weekly": D(480, 1440)}]},
+ "KIEZ SAUNA Friedrichshain": {"weekly": D(900, 1440), "src": "venue",
+            "seasons": [{"from": WINTER[0], "to": WINTER[1], "weekly": D(780, 1440)}]},
+ "Park Inn Alexanderplatz \u2014 Gezer Spa": {"weekly": D(720, 1320), "src": "venue",
+            "seasons": [{"from": WINTER[0], "to": WINTER[1], "weekly": D(720, 1080)}]},
+ # Olivin runs SHORTER hours in summer, not longer - opens at 17:00 except Thursdays.
+ "Olivin": {"weekly": D(720, 1440), "src": "venue",
+            "seasons": [{"from": "06-01", "to": "09-30",
+                         "weekly": [[1020,1440]]*3 + [[720,1440]] + [[1020,1440]]*3}]},
+ "Hotel Palace \u2014 Palace Spa": {"weekly": [[390,1320]]*6 + [[480,1320]], "src": "venue"},
+ "Titanic Gendarmenmarkt \u2014 BeFine":
+                {"weekly": [[750,1260]]*4 + [[600,1260],[600,1260],[600,1110]], "src": "venue"},
+ "Steigenberger \u2014 Sky Spa": {"weekly": [[840,1320]]*5 + [[600,1320],[600,1080]], "src": "osm"},
+ "L\u00fctzow Sauna": {"weekly": [[1080,1380], None, [960,1380], None,
+                                 [960,1380], [960,1380], [960,1380]], "src": "osm"},
+ "LIQUIDROM": {"weekly": [[600,1440]]*4 + [[600,1500]]*3, "src": "osm"},
+ "InterContinental Berlin": {"weekly": D(420, 1260), "src": "venue"},
  "Grand Hyatt \u2014 Club Olympus": {"weekly": D(420, 1260), "src": "listed"},
  "Hilton Berlin \u2014 LivingWell": {"weekly": D(420, 1260), "src": "listed"},
- "Hotel Adlon Kempinski":        {"weekly": D(420, 1260), "src": "listed"},
- "InterContinental Berlin":      {"weekly": D(420, 1260), "src": "listed"},
- "Hotel de Rome \u2014 De Rome Spa": {"weekly": D(600, 1260), "src": "listed", "approx": True},
- "sly Berlin":                   {"weekly": D(360, 1380), "src": "listed", "approx": True},
- "Saunabad Prenzlauer Berg":     {"weekly": D(900, 1440), "src": "listed"},
- "Stadtbad Neuk\u00f6lln":        {"closedUntil": "2026-10-31", "src": "venue"},
+ "Hotel Adlon Kempinski": {"weekly": D(420, 1260), "src": "listed"},
+ "Hotel de Rome \u2014 De Rome Spa": {"weekly": D(600, 1260), "src": "listed"},
+ "sly Berlin": {"weekly": D(360, 1380), "src": "listed"},
+ "Saunabad Prenzlauer Berg": {"weekly": D(900, 1440), "src": "listed"},
+ "Stadtbad Neuk\u00f6lln": {"closedUntil": "2026-10-31", "src": "venue"},
 }
 
-# Hours text shown on the card, replacing single-weekday snapshots that read as
-# random on the other six days.
 HOURS_TEXT = {
+ "Vabali": "Daily 09:00\u201324:00 (08:00\u201324:00 from 1 Oct to 31 Mar)",
+ "KIEZ SAUNA Friedrichshain": "Daily 15:00\u201324:00 (13:00\u201324:00 from 1 Oct to 31 Mar)",
+ "Park Inn Alexanderplatz \u2014 Gezer Spa": "Daily 12:00\u201322:00 (12:00\u201318:00 from 1 Oct to 31 Mar)",
+ "Olivin": "Daily 12:00\u201324:00; in summer (1 Jun\u201330 Sep) 17:00\u201324:00, Thu 12:00\u201324:00",
+ "Hotel Palace \u2014 Palace Spa": "Mon\u2013Sat 06:30\u201322:00 \u00b7 Sun & holidays 08:00\u201322:00; mixed sauna from 16:30",
+ "Titanic Gendarmenmarkt \u2014 BeFine": "Mon\u2013Thu 12:30\u201321:00 \u00b7 Fri\u2013Sat 10:00\u201321:00 \u00b7 Sun 10:00\u201318:30",
  "Steigenberger \u2014 Sky Spa": "Mon\u2013Fri 14:00\u201322:00 \u00b7 Sat 10:00\u201322:00 \u00b7 Sun 10:00\u201318:00",
- "Hotel Palace \u2014 Palace Spa": "Hours vary by day \u2014 check with the hotel",
- "Titanic Gendarmenmarkt \u2014 BeFine": "Hours vary by day \u2014 check with the hotel",
- "Olivin": "Hours vary by day \u2014 check with the sauna",
  "L\u00fctzow Sauna": "Mon 18:00\u201323:00 \u00b7 Wed, Fri\u2013Sun 16:00\u201323:00 \u00b7 closed Tue & Thu",
  "LIQUIDROM": "Mon\u2013Thu 10:00\u201324:00 \u00b7 Fri\u2013Sun 10:00\u201301:00",
- "Vabali": "Daily 09:00\u201324:00 (08:00\u201324:00 from 1 Oct)",
- "KIEZ SAUNA Friedrichshain": "Daily 15:00\u201324:00 (13:00\u201324:00 from 1 Oct)",
- "Park Inn Alexanderplatz \u2014 Gezer Spa": "Daily 12:00\u201322:00 (12:00\u201318:00 from 1 Oct)",
+ "InterContinental Berlin": "Daily 07:00\u201321:00 (Spa Card); Time Card Mon\u2013Fri 07:00\u201315:00",
  "Finnland Zentrum": "By arrangement \u2014 book by phone or email (+49 30 781 81 89)",
  "ANTI SPA": "Session based \u2014 book a slot",
  "The Westin Grand \u2014 Gezer Spa": "Unconfirmed while the renovation notice stands \u2014 call ahead",

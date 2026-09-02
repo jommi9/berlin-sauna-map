@@ -443,8 +443,10 @@ function openState(v, now){
   if (!o) return "unknown";
   if (o.closedUntil && now.date <= o.closedUntil) return "shut";
   const md = now.date.slice(5);                       // "MM-DD"
-  const winter = md >= "10-01" || md <= "03-31";
-  const week = (winter && o.winter) ? o.winter : o.weekly;
+  const season = (o.seasons || []).find(s =>
+    s.from <= s.to ? (md >= s.from && md <= s.to)     // within one year
+                   : (md >= s.from || md <= s.to));   // wraps new year
+  const week = season ? season.weekly : o.weekly;
   if (!week) return "unknown";
   const today = week[now.day];
   if (!today) return "shut";
