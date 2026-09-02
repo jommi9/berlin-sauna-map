@@ -193,9 +193,17 @@ svg.map.dragging{cursor:grabbing}
 
 /* ---------------- dossier list ---------------- */
 .listcol{background:var(--panel); padding:0}
+/* On desktop the list is its own scrollport, so picking a blip moves the list
+   beside the map rather than teleporting the page away from the map. */
+@media (min-width:1001px){
+  .listcol{
+    position:sticky; top:73px; max-height:calc(100vh - 76px);
+    overflow-y:auto; overscroll-behavior:contain;
+  }
+}
 .lhead{
   display:flex; align-items:center; justify-content:space-between; gap:12px;
-  padding:14px 18px; border-bottom:1px solid var(--line); position:sticky; top:70px; background:var(--panel); z-index:20;
+  padding:14px 18px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--panel); z-index:20;
 }
 @media (max-width:1000px){ .lhead{position:static} }
 .lhead h2{font-family:var(--hud); font-weight:600; font-size:16px; letter-spacing:.12em; text-transform:uppercase; margin:0}
@@ -204,7 +212,7 @@ svg.map.dragging{cursor:grabbing}
 .card{
   border-bottom:1px solid var(--line); border-left:3px solid transparent;
   padding:16px 18px 18px; cursor:pointer; transition:background .12s,border-left-color .12s;
-  scroll-margin-top:150px;
+  scroll-margin-top:56px;
 }
 .card:hover{background:var(--panel-2)}
 .card.on{background:var(--panel-2); border-left-color:var(--gold)}
@@ -626,7 +634,7 @@ const pointers = new Map();
 let dragFrom = null, pinchFrom = null, moved = 0;
 map.addEventListener("pointerdown", e => {
   pointers.set(e.pointerId, e);
-  map.setPointerCapture(e.pointerId);
+  try { map.setPointerCapture(e.pointerId); } catch (_) {}
   moved = 0;
   if (pointers.size === 1){ dragFrom = { v: toView(e), view: view.slice() }; map.classList.add("dragging"); }
   else if (pointers.size === 2){
@@ -765,6 +773,17 @@ V.forEach(v => {
   li.addEventListener("mouseleave", () => peek(v.id, false));
 });
 function peek(id, on){ if (sel != null) return; blips.get(id).classList.toggle("on", on); showName(on ? id : null); }
+/* Browsers silently drop a smooth scroll over a very long distance - a 13,000px
+   trip simply never ran - so only ask for smooth when it can actually animate. */
+function revealCard(id){
+  const c = cardOf.get(id);
+  const port = c.closest(".listcol");
+  const scrolls = port && getComputedStyle(port).overflowY === "auto";
+  const viewH = scrolls ? port.clientHeight : innerHeight;
+  const ref = scrolls ? port.getBoundingClientRect().top : 0;
+  const far = Math.abs(c.getBoundingClientRect().top - ref) > viewH * 2;
+  c.scrollIntoView({ behavior: far ? "auto" : "smooth", block: "start" });
+}
 function choose(id, fromMap){
   sel = sel === id ? null : id;
   blips.forEach((g, k) => g.classList.toggle("on", k === sel));
@@ -772,7 +791,7 @@ function choose(id, fromMap){
   map.appendChild(nameTag);
   cardOf.forEach((c, k) => c.classList.toggle("on", k === sel));
   showName(sel);
-  if (sel != null && fromMap) cardOf.get(sel).scrollIntoView({ behavior: "smooth", block: "center" });
+  if (sel != null && fromMap) revealCard(sel);
 }
 
 /* ---------- filtering ---------- */
@@ -846,7 +865,7 @@ PICKS.forEach(([k, name]) => {
   const b = document.createElement("button");
   b.type = "button"; b.className = "pk";
   b.innerHTML = `<span class="k">${k}</span><span class="v">${v.name}</span><span class="p">${v.price != null ? "From €" + String(v.price).replace(".5", ".50") : "Access unclear"}</span>`;
-  b.addEventListener("click", () => { if (sel !== v.id) choose(v.id, false); cardOf.get(v.id).scrollIntoView({ behavior: "smooth", block: "center" }); });
+  b.addEventListener("click", () => { if (sel !== v.id) choose(v.id, false); revealCard(v.id); });
   pg.appendChild(b);
 });
 

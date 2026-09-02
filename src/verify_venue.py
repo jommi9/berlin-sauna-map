@@ -43,7 +43,11 @@ def check(name, url):
     if len(txt) < 400:
         ev["verdict"], ev["why"] = "SUSPECT", f"page has only {len(txt)} chars of text"; return ev
     low = txt.lower()
-    ev["prices"] = sorted(set(re.findall(r"\d{1,3}[,.]\d{2}\s*(?:€|EUR)", txt)))[:6]
+    # German sites write "40€" - number first, no decimals - which a pattern
+    # requiring "40,00 €" or "€40" misses entirely. Accept all three forms.
+    ev["prices"] = sorted(set(
+        m.group(0).strip() for m in re.finditer(
+            r"(?:€\s?\d{1,4}(?:[.,]\d{2})?|\d{1,4}(?:[.,]\d{2})?\s?(?:€|EUR\b))", txt)))[:8]
     ev["hours"]  = sorted(set(re.findall(r"\d{1,2}[:.]\d{2}\s*[-–]\s*\d{1,2}[:.]\d{2}", txt)))[:4]
     ev["sauna_mentions"] = len(re.findall(r"sauna", low))
     ev["dead_flags"]  = [p for p in DEAD  if re.search(p, low)]

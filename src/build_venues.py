@@ -41,8 +41,8 @@ V = [
  ["The Westin Grand — Gezer Spa",52.51587,13.38860,"Hotel spa","Mitte",15,"€15 / 2h · €20 / 4h · €25 day card (Stadtgäste)","yes","Classic 4×/mo · Premium & Max 8×/mo · max 2h",
   "Three saunas at roughly 60°C, 85°C and 95°C","Check current spa setup","Currently shown around 14:00–22:00; verify before going","Central USC alternative",None,"Sauna and gym were closed for renovation and the Urban Sports Club listing still shows that banner, though it expired on 31 May 2026 \u2014 call before going.",
   "https://urbansportsclub.com/en/venues/gezer-spa-fitness?view=new"],
- ["sly Berlin",52.50999,13.40558,"Hotel spa","Mitte",None,"No public day pass currently verified; hotel guest access confirmed","no","No current USC listing",
-  "KLAFS panoramic rooftop sauna, steam bath, roof terrace, tea, towels and bathrobes","No pool","About 06:00–23:00; hotel pages differ","Top-tier sauna, but access is the problem",None,"No verified public day pass — realistically hotel guests only.",
+ ["sly Berlin",52.50999,13.40558,"Hotel spa","Mitte",None,"Hotel guests only — no public access","no","No current USC listing",
+  "KLAFS panoramic rooftop sauna, steam bath, roof terrace, tea, towels and bathrobes","No pool","About 06:00–23:00; hotel pages differ","Top-tier sauna, but you cannot get in",None,"Confirmed by sly Berlin on 2 September 2026: because of the spa's size it is open to hotel guests only. There is no public day pass.",
   "https://www.sly-berlin.com/en/spa-and-gym"],
  ["KIEZ SAUNA Friedrichshain",52.51545,13.44865,"Standalone sauna","Friedrichshain",22,"€22 / 4h","no","Not on Urban Sports Club",
   "90°C Finnish, 60°C bio, steam room, hourly Aufguss, terrace","No pool focus","15:00–24:00","Best neighborhood / proper sauna","Best local sauna",None,
@@ -65,8 +65,8 @@ V = [
  ["Stadtbad Neukölln",52.47919,13.43973,"Public bath / sauna","Neukölln",20,"About €20 / 3h · €23 day","yes","Included on Max",
   "Finnish sauna, herbal sauna, steam bath, caldarium","Public bath facilities","Sauna summer break through 31 Oct 2026","Excellent value once the sauna reopens",None,"Sauna closed for summer break through 31 October 2026.",
   "https://www.berlinerbaeder.de/baeder/detail/stadtbad-neukoelln/"],
- ["Finnland Zentrum",52.48963,13.39737,"Private rental sauna","Kreuzberg",None,"3-hour private booking; prices on request","no","Not mentioned",
-  "Indoor sauna on the 2nd floor, adjacent shower and small changing room, fireplace room on the same floor; BYO drinks allowed, take the empties with you","No pool; cool off by the changing-room windows or in the rear courtyard","Booking by email or phone (+49 30 781 81 89); weekend availability varies","Private group sauna with BYO drinks",None,"Booked privately by phone or email, not walk-in - no published per-person price.",
+ ["Finnland Zentrum",52.48963,13.39737,"Private rental sauna","Kreuzberg",40,"€40 for up to 4 people (3h) · extra adults €10","no","Not mentioned",
+  "Indoor sauna on the 2nd floor, adjacent shower and small changing room, fireplace room on the same floor; BYO drinks allowed, take the empties with you","No pool; cool off by the changing-room windows or in the rear courtyard","Booking by email or phone (+49 30 781 81 89); weekend availability varies","Private group sauna with BYO drinks",None,"Booked by email or phone rather than walking in — the €40 covers the whole group for three hours.",
   "https://www.finnlandzentrum.de/sauna/"],
 ]
 
