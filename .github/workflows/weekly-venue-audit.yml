@@ -1,0 +1,64 @@
+name: Weekly venue audit
+
+# The guide goes stale silently: domains lapse, renovation banners outlive their
+# dates, saunas switch to winter hours. This re-checks every venue against its
+# OWN site once a week and opens an issue if anything needs a human.
+on:
+  schedule:
+    - cron: "0 6 * * 1"        # Mondays 06:00 UTC (08:00 Berlin in summer, 07:00 in winter)
+  workflow_dispatch:            # and on demand
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check every venue against its own site
+        id: audit
+        working-directory: src
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python3 verify_venue.py 2>&1 | tee ../audit.txt
+          echo "status=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Summarise
+        run: |
+          {
+            echo '## Venue audit'
+            echo '```'
+            cat audit.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or update an issue when something needs a human
+        if: steps.audit.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="Venue audit: some entries need checking"
+          BODY=$(printf '%s\n' \
+            "The weekly audit flagged one or more venues. Verdicts that need a human:" \
+            "" \
+            '`STALE NOTICE` a closure banner whose date has passed · `UNREACHABLE` / `LIKELY CLOSED` · `SUSPECT` the site never mentions a sauna · `PAUSED` a current closure.' \
+            "" \
+            '```' "$(cat audit.txt)" '```' \
+            "" \
+            "Fix in Notion first (Personal Home / Projects / Berlin Sauna Guide / Saunas & Spas), then mirror into \`src/build_venues.py\` and rebuild. See CLAUDE.md." \
+            "" \
+            "_Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}_")
+          EXISTING=$(gh issue list --state open --search "$TITLE in:title" --json number --jq '.[0].number' || true)
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "$BODY"
+          else
+            gh issue create --title "$TITLE" --body "$BODY" --label "" || gh issue create --title "$TITLE" --body "$BODY"
+          fi

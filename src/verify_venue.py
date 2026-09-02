@@ -91,3 +91,5 @@ if __name__ == "__main__":
             if e["verdict"] in ("LIKELY CLOSED", "UNREACHABLE", "SUSPECT", "PAUSED", "STALE NOTICE"): bad += 1
             time.sleep(0.7)
         print(f"\n{len(vs)} venues checked, {bad} need a human look")
+        # non-zero exit so CI can gate on it
+        sys.exit(1 if bad else 0)
