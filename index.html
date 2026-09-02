@@ -523,7 +523,7 @@ V.forEach(v => {
   g.appendChild(el("path", { d: FLAME, fill: v.price != null ? "#FFFFFF" : "#5A5246" }));
   if (v.usc === "yes") g.appendChild(el("circle", { cx: 9.4, cy: -9.4, r: 3.9, fill: "var(--cyan)", stroke: "#0B2530", "stroke-width": 1.4 }));
   map.appendChild(g); blips.set(v.id, g);
-  g.addEventListener("click", () => { if (moved > 6) return; choose(v.id, true); });
+  g.addEventListener("click", () => { if (dragPx > DRAG_PX) return; choose(v.id, true); });
   g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); choose(v.id, true); } });
   g.addEventListener("mouseenter", () => peek(v.id, true));
   g.addEventListener("mouseleave", () => peek(v.id, false));
@@ -651,13 +651,18 @@ map.addEventListener("wheel", e => {
 }, { passive: false });
 
 const pointers = new Map();
-let dragFrom = null, pinchFrom = null, moved = 0;
+let dragFrom = null, pinchFrom = null, dragPx = 0, capturing = false;
+const DRAG_PX = 4;   // a press moves this far in CSS px before it counts as a drag
+
+/* Capture must NOT be taken on pointerdown. Capturing retargets the subsequent
+   click to the <svg>, so a blip's own click listener never runs and picking a
+   sauna on the map did nothing. Capture only once a real drag has begun. */
 map.addEventListener("pointerdown", e => {
   pointers.set(e.pointerId, e);
-  try { map.setPointerCapture(e.pointerId); } catch (_) {}
-  moved = 0;
-  if (pointers.size === 1){ dragFrom = { v: toView(e), view: view.slice() }; map.classList.add("dragging"); }
-  else if (pointers.size === 2){
+  dragPx = 0;
+  if (pointers.size === 1){
+    dragFrom = { client: [e.clientX, e.clientY], v: toView(e) };
+  } else if (pointers.size === 2){
     const [a, b] = [...pointers.values()];
     pinchFrom = { dist: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY), w: view[2],
                   mid: toView({ clientX: (a.clientX + b.clientX) / 2, clientY: (a.clientY + b.clientY) / 2 }) };
@@ -676,22 +681,26 @@ map.addEventListener("pointermove", e => {
       const k = view[2] / w0;
       view[0] = pinchFrom.mid[0] - (pinchFrom.mid[0] - view[0]) * k;
       view[1] = pinchFrom.mid[1] - (pinchFrom.mid[1] - view[1]) * k;
-      clampView(); applyView(); moved += 10;
+      clampView(); applyView(); dragPx = 99;
     }
     return;
   }
   if (!dragFrom) return;
+  dragPx = Math.max(dragPx, Math.hypot(e.clientX - dragFrom.client[0], e.clientY - dragFrom.client[1]));
+  if (dragPx < DRAG_PX) return;                       // still short enough to be a click
+  if (!capturing){
+    try { map.setPointerCapture(e.pointerId); } catch (_) {}
+    capturing = true; map.classList.add("dragging");
+  }
   const r = map.getBoundingClientRect();
-  const dx = (e.clientX - r.left) / r.width * view[2], dy = (e.clientY - r.top) / r.height * view[3];
-  moved += Math.abs(dragFrom.v[0] - (view[0] + dx)) + Math.abs(dragFrom.v[1] - (view[1] + dy));
-  view[0] = dragFrom.view[0] + (dragFrom.v[0] - dragFrom.view[0]) - dx + (view[0] - view[0]);
-  view[0] = dragFrom.v[0] - dx; view[1] = dragFrom.v[1] - dy;
+  view[0] = dragFrom.v[0] - (e.clientX - r.left) / r.width * view[2];
+  view[1] = dragFrom.v[1] - (e.clientY - r.top) / r.height * view[3];
   clampView(); applyView();
 });
 function endPointer(e){
   pointers.delete(e.pointerId);
   if (pointers.size < 2) pinchFrom = null;
-  if (pointers.size === 0){ dragFrom = null; map.classList.remove("dragging"); }
+  if (pointers.size === 0){ dragFrom = null; capturing = false; map.classList.remove("dragging"); }
 }
 map.addEventListener("pointerup", endPointer);
 map.addEventListener("pointercancel", endPointer);
