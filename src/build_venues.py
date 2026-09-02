@@ -54,8 +54,8 @@ V = [
   "Sauna plus spa facilities and Onsen","Saltwater sound pool","09:00–24:00","Spa / pool atmosphere rather than pure sauna",None,"USC entry does not include the sauna — you pay the supplement.",
   "https://www.liquidrom-berlin.de/en/info.php"],
  ["Saunabad Prenzlauer Berg",52.53578,13.42035,"Standalone sauna","Prenzlauer Berg",18,"€18 / 2.5h · €20 / 4h","no","No verified USC access",
-  "Large 95°C sauna, hourly Aufguss, garden, quiet rooms","No pool focus","15:00–24:00","Best cheap traditional sauna","Best cheap sauna",None,
-  "https://www.saunabad-berlin.de/"],
+  "Large 95°C sauna, hourly Aufguss, garden, quiet rooms","No pool focus","15:00–24:00","Best cheap traditional sauna","Best cheap sauna","Their own site saunabad-berlin.de is down \u2014 the domain now serves a hosting parking page, so this links to their Facebook instead. Phone 030 44046397.",
+  "https://www.facebook.com/p/Saunabad-Berlin-Prenzlauer-Berg-100061924915931/"],
  ["Lützow Sauna",52.50154,13.36890,"Standalone sauna","Tiergarten",24,"€24 / 2h · €27 / 3h · €30 day","no","No verified USC access",
   "90°C sauna, sanarium, steam bath, hourly Aufguss","30°C pool and 14°C plunge","Closed Tuesdays; check other daily hours","Excellent classic hot–cold cycles",None,"Closed Tuesdays.",
   "https://www.luetzow-sauna.de/start"],
@@ -81,12 +81,47 @@ IMG = {
  "LIQUIDROM":"liquidrom", "Stadtbad Neuk\u00f6lln":"neukoelln",
 }
 
+
+# --- Which Urban Sports Club tiers actually get into the SAUNA (not just the gym).
+#     Liquidrom is deliberately empty: USC access exists but excludes the sauna.
+USC_TIERS = {
+ "Hilton Berlin \u2014 LivingWell": ["Premium", "Max"],
+ "Steigenberger \u2014 Sky Spa": ["Premium", "Max"],
+ "Park Inn Alexanderplatz \u2014 Gezer Spa": ["Classic", "Premium", "Max"],
+ "The Westin Grand \u2014 Gezer Spa": ["Classic", "Premium", "Max"],
+ "ANTI SPA": ["Classic", "Premium", "Max"],
+ "Stadtbad Neuk\u00f6lln": ["Max"],
+ "LIQUIDROM": [],
+}
+
+# --- Machine-readable hours for the "open now" filter, in minutes past midnight,
+#     Europe/Berlin. Only venues that actually publish consistent daily hours get a
+#     span; everything else stays None and reports "check hours" rather than
+#     inventing precision. 1440 means midnight.
+OPEN = {
+ "Vabali":                              {"span": [540, 1440]},
+ "Grand Hyatt \u2014 Club Olympus":      {"span": [420, 1260]},
+ "Hilton Berlin \u2014 LivingWell":      {"span": [420, 1260]},
+ "Hotel de Rome \u2014 De Rome Spa":     {"span": [600, 1260], "approx": True},
+ "Hotel Adlon Kempinski":               {"span": [420, 1260]},
+ "Park Inn Alexanderplatz \u2014 Gezer Spa": {"span": [720, 1320]},
+ "InterContinental Berlin":             {"span": [420, 1260]},
+ "sly Berlin":                          {"span": [360, 1380], "approx": True},
+ "KIEZ SAUNA Friedrichshain":           {"span": [900, 1440]},
+ "LIQUIDROM":                           {"span": [540, 1440]},
+ "Saunabad Prenzlauer Berg":            {"span": [900, 1440]},
+ "L\u00fctzow Sauna":                    {"closedDays": [1]},          # closed Tuesdays, rest varies
+ "Stadtbad Neuk\u00f6lln":               {"closedUntil": "2026-10-31"},
+}
+
 keys = ["name","lat","lon","kind","district","price","priceLabel","usc","uscLabel","sauna","pool","hours","bestFor","badge","flag","url"]
 venues = []
 for i, row in enumerate(V):
     d = dict(zip(keys, row))
     d["x"], d["y"] = proj(d["lon"], d["lat"])
     d["img"] = IMG.get(d["name"])
+    d["uscTiers"] = USC_TIERS.get(d["name"], [])
+    d["open"] = OPEN.get(d["name"])
     d["id"] = i
     venues.append(d)
 json.dump(venues, open('venues.json','w'), separators=(',',':'), ensure_ascii=False)

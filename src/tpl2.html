@@ -150,6 +150,37 @@ svg.map{display:block; width:100%; height:auto}
   fill:#1B1811; text-anchor:middle; paint-order:stroke; stroke:var(--land); stroke-width:4.5;
   pointer-events:none;
 }
+.zoom{position:absolute; right:12px; bottom:12px; display:flex; flex-direction:column; gap:3px}
+.zoom button{
+  width:34px; height:34px; font-family:var(--hud); font-weight:600; font-size:15px; line-height:1;
+  color:var(--ink); background:rgba(10,13,16,.82); border:1px solid var(--line-2); border-radius:2px;
+  cursor:pointer; padding:0;
+}
+.zoom button#z-fit{font-size:11px; letter-spacing:.1em}
+.zoom button:hover{background:var(--gold); color:#161005; border-color:var(--gold)}
+/* On the cropped mobile frame the bottom-right corner has a venue under it
+   (Stadtbad Neukoelln), and the scale bar is hidden, so move the controls to
+   the empty bottom-left and lay them out in a row. */
+@media (max-width:760px){
+  .zoom{left:10px; right:auto; bottom:10px; flex-direction:row}
+  .zoom button{width:30px; height:30px; font-size:14px}
+}
+svg.map{touch-action:none; cursor:grab}
+svg.map.dragging{cursor:grabbing}
+.status{
+  flex:none; font-family:var(--hud); font-weight:600; font-size:10px; letter-spacing:.13em;
+  text-transform:uppercase; padding:3px 7px; border-radius:2px; border:1px solid;
+  align-self:flex-start; margin-top:3px;
+}
+.status.open{color:#63D2A2; border-color:#2C6B52; background:rgba(99,210,162,.09)}
+.status.shut{color:#E8806F; border-color:#7A3327; background:rgba(232,128,111,.09)}
+.status.unk{color:var(--dim); border-color:var(--line)}
+.tiers{display:flex; gap:4px; flex-wrap:wrap; margin-top:5px}
+.tier{
+  font-family:var(--hud); font-weight:600; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  border:1px solid var(--cyan); color:var(--cyan); border-radius:2px; padding:2px 6px;
+}
+.tier.off{border-color:var(--line); color:var(--faint); text-decoration:line-through}
 .key{display:flex; flex-wrap:wrap; gap:9px 20px; align-items:center; padding:12px 2px 2px}
 .key .lbl{font-family:var(--hud); font-weight:600; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint)}
 .bands{display:flex; align-items:center; gap:4px}
@@ -260,16 +291,23 @@ svg.map{display:block; width:100%; height:auto}
     </label>
     <div class="grp" id="g-access" role="group" aria-label="Filter by access">
       <span class="lbl">Access</span>
-      <button class="chip" data-v="all" aria-pressed="true">Any</button>
       <button class="chip" data-v="cash" aria-pressed="false">Cash</button>
       <button class="chip" data-v="usc" aria-pressed="false">USC</button>
     </div>
+    <div class="grp" id="g-open" role="group" aria-label="Filter by opening hours">
+      <button class="chip" data-v="open" aria-pressed="false">Open now</button>
+    </div>
     <div class="grp" id="g-kind" role="group" aria-label="Filter by venue type">
       <span class="lbl">Type</span>
-      <button class="chip" data-v="all" aria-pressed="true">Any</button>
       <button class="chip" data-v="sauna" aria-pressed="false">Not a hotel</button>
       <button class="chip" data-v="hotel" aria-pressed="false">Hotel spa</button>
       <button class="chip" data-v="pool" aria-pressed="false">Pool / plunge</button>
+    </div>
+    <div class="grp" id="g-usc" role="group" aria-label="Filter by Urban Sports Club tier">
+      <span class="lbl">USC tier</span>
+      <button class="chip" data-v="Classic" aria-pressed="false">Classic</button>
+      <button class="chip" data-v="Premium" aria-pressed="false">Premium</button>
+      <button class="chip" data-v="Max" aria-pressed="false">Max</button>
     </div>
     <label class="slide">
       <span class="lbl">Max</span>
@@ -285,6 +323,11 @@ svg.map{display:block; width:100%; height:auto}
         <div class="mapbox">
           <svg class="map" id="map" role="img" aria-label="Map of central Berlin showing 19 sauna and spa locations"></svg>
           <i class="brk tl"></i><i class="brk tr"></i><i class="brk bl"></i><i class="brk br"></i>
+          <div class="zoom">
+            <button type="button" id="z-in"  aria-label="Zoom in">+</button>
+            <button type="button" id="z-out" aria-label="Zoom out">&minus;</button>
+            <button type="button" id="z-fit" aria-label="Reset the map view">Fit</button>
+          </div>
         </div>
         <div class="key">
           <span class="lbl">Price</span>
@@ -350,6 +393,28 @@ const band = p => p == null ? 0 : p <= 22 ? 1 : p <= 35 ? 2 : p <= 65 ? 3 : 4;
 const heat = p => `var(--b${band(p)})`;
 const dollars = p => p == null ? null : "$".repeat(band(p));
 
+function berlinNow(){
+  const f = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Berlin", weekday: "short",
+    hour: "2-digit", minute: "2-digit", hour12: false, year: "numeric", month: "2-digit", day: "2-digit" });
+  const p = Object.fromEntries(f.formatToParts(new Date()).map(x => [x.type, x.value]));
+  const dayIx = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].indexOf(p.weekday);
+  return { minutes: +p.hour * 60 + +p.minute, day: dayIx,
+           date: `${p.year}-${p.month}-${p.day}` };
+}
+/* "open" | "shut" | "unknown" - unknown is the honest answer for the nine venues
+   whose own pages say hours vary or are by arrangement. */
+function openState(v, now){
+  const o = v.open;
+  if (!o) return "unknown";
+  if (o.closedUntil && now.date <= o.closedUntil) return "shut";
+  if (o.closedDays && o.closedDays.includes(now.day)) return "shut";
+  if (!o.span) return "unknown";
+  const [a, b] = o.span;
+  return now.minutes >= a && now.minutes < b ? "open" : "shut";
+}
+const STATUS_TEXT = { open: "Open now", shut: "Closed now", unknown: "Check hours" };
+const STATUS_CLASS = { open: "open", shut: "shut", unknown: "unk" };
+
 /* ---------- map ---------- */
 const map = document.getElementById("map");
 map.setAttribute("viewBox", `0 0 ${GEO.w} ${GEO.h}`);
@@ -384,7 +449,7 @@ V.forEach(v => {
   g.appendChild(el("path", { d: FLAME, fill: v.price != null ? "#FFFFFF" : "#5A5246" }));
   if (v.usc === "yes") g.appendChild(el("circle", { cx: 9.4, cy: -9.4, r: 3.9, fill: "var(--cyan)", stroke: "#0B2530", "stroke-width": 1.4 }));
   map.appendChild(g); blips.set(v.id, g);
-  g.addEventListener("click", () => choose(v.id, true));
+  g.addEventListener("click", () => { if (moved > 6) return; choose(v.id, true); });
   g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); choose(v.id, true); } });
   g.addEventListener("mouseenter", () => peek(v.id, true));
   g.addEventListener("mouseleave", () => peek(v.id, false));
@@ -398,6 +463,7 @@ map.appendChild(nameTag);
    are a real touch target. */
 const EXTENT = [164, 57, 658, 569];               // venue bounding box + margin
 let VB = [0, 0, GEO.w, GEO.h];
+let base = null, view = null, zoomed = false;     // pan/zoom state, initialised by fitMap
 let POS = new Map(V.map(v => [v.id, { px: v.px, py: v.py }]));
 
 /* Blips are scaled up on small screens, so the build-time spacing no longer
@@ -429,6 +495,7 @@ function fitMap(){
   VB = small ? EXTENT : [0, 0, GEO.w, GEO.h];
   map.setAttribute("viewBox", VB.join(" "));
   map.classList.toggle("small", small);
+  base = VB.slice(); view = VB.slice(); zoomed = false;
   const perPx = VB[2] / w;                        // viewBox units per CSS pixel
   const target = small ? 17 : 15;                 // minimum blip size in CSS px
   const scale = Math.max(1, (target * perPx) / 22);
@@ -450,7 +517,115 @@ function fitMap(){
   });
 }
 fitMap();
-addEventListener("resize", fitMap);
+addEventListener("resize", () => { if (!zoomed) fitMap(); });
+
+/* ---------- pan and zoom ----------
+   The map is one SVG, so panning and zooming is just moving the viewBox. Blip
+   size is kept constant on screen by re-running fitMap's scaling at each zoom
+   level, otherwise zooming in turns the blips into billboards. */
+const MIN_W = 90, MAX_W = () => base[2];
+
+function applyView(){
+  map.setAttribute("viewBox", view.map(n => +n.toFixed(1)).join(" "));
+  const w = map.clientWidth || GEO.w;
+  const perPx = view[2] / w;
+  const scale = Math.max(0.55, (map.classList.contains("small") ? 17 : 15) * perPx / 22);
+  POS = scale > 1.02 ? spread(22 * scale * 1.14) : new Map(V.map(v => [v.id, { px: v.px, py: v.py }]));
+  blips.forEach((g, id) => {
+    const v = V.find(x => x.id === id), q = POS.get(id);
+    g.setAttribute("transform", `translate(${q.px.toFixed(1)} ${q.py.toFixed(1)}) scale(${scale.toFixed(3)})`);
+    const off = Math.hypot(v.x - q.px, v.y - q.py);
+    let tick = g.querySelector("line.tick");
+    if (off > 3){
+      if (!tick){ tick = el("line", { class: "tick", stroke: "#8A8067" }); g.insertBefore(tick, g.firstChild); }
+      tick.setAttribute("x1", ((v.x - q.px) / scale).toFixed(1));
+      tick.setAttribute("y1", ((v.y - q.py) / scale).toFixed(1));
+      tick.setAttribute("x2", 0); tick.setAttribute("y2", 0);
+      tick.setAttribute("stroke-width", (1 / scale).toFixed(2));
+      tick.style.display = "";
+    } else if (tick) tick.style.display = "none";
+  });
+  zoomed = Math.abs(view[2] - base[2]) > 1 || Math.abs(view[0] - base[0]) > 1 || Math.abs(view[1] - base[1]) > 1;
+  if (sel != null) showName(sel);
+}
+function clampView(){
+  view[2] = Math.min(Math.max(view[2], MIN_W), MAX_W());
+  view[3] = view[2] * base[3] / base[2];
+  const slackX = base[2] * 0.35, slackY = base[3] * 0.35;
+  view[0] = Math.min(Math.max(view[0], base[0] - slackX), base[0] + base[2] + slackX - view[2]);
+  view[1] = Math.min(Math.max(view[1], base[1] - slackY), base[1] + base[3] + slackY - view[3]);
+}
+function zoomAt(factor, cx, cy){          // cx,cy in viewBox units
+  const w0 = view[2];
+  view[2] = Math.min(Math.max(w0 * factor, MIN_W), MAX_W());
+  const k = view[2] / w0;
+  view[0] = cx - (cx - view[0]) * k;
+  view[1] = cy - (cy - view[1]) * k;
+  clampView(); applyView();
+}
+const toView = ev => {
+  const r = map.getBoundingClientRect();
+  return [view[0] + (ev.clientX - r.left) / r.width * view[2],
+          view[1] + (ev.clientY - r.top) / r.height * view[3]];
+};
+function resetView(){ base = VB.slice(); view = VB.slice(); applyView(); }
+
+map.addEventListener("wheel", e => {
+  e.preventDefault();
+  const [cx, cy] = toView(e);
+  zoomAt(Math.exp(e.deltaY * 0.0016), cx, cy);
+}, { passive: false });
+
+const pointers = new Map();
+let dragFrom = null, pinchFrom = null, moved = 0;
+map.addEventListener("pointerdown", e => {
+  pointers.set(e.pointerId, e);
+  map.setPointerCapture(e.pointerId);
+  moved = 0;
+  if (pointers.size === 1){ dragFrom = { v: toView(e), view: view.slice() }; map.classList.add("dragging"); }
+  else if (pointers.size === 2){
+    const [a, b] = [...pointers.values()];
+    pinchFrom = { dist: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY), w: view[2],
+                  mid: toView({ clientX: (a.clientX + b.clientX) / 2, clientY: (a.clientY + b.clientY) / 2 }) };
+    dragFrom = null;
+  }
+});
+map.addEventListener("pointermove", e => {
+  if (!pointers.has(e.pointerId)) return;
+  pointers.set(e.pointerId, e);
+  if (pinchFrom && pointers.size === 2){
+    const [a, b] = [...pointers.values()];
+    const d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+    if (d > 4){
+      const w0 = view[2];
+      view[2] = Math.min(Math.max(pinchFrom.w * pinchFrom.dist / d, MIN_W), MAX_W());
+      const k = view[2] / w0;
+      view[0] = pinchFrom.mid[0] - (pinchFrom.mid[0] - view[0]) * k;
+      view[1] = pinchFrom.mid[1] - (pinchFrom.mid[1] - view[1]) * k;
+      clampView(); applyView(); moved += 10;
+    }
+    return;
+  }
+  if (!dragFrom) return;
+  const r = map.getBoundingClientRect();
+  const dx = (e.clientX - r.left) / r.width * view[2], dy = (e.clientY - r.top) / r.height * view[3];
+  moved += Math.abs(dragFrom.v[0] - (view[0] + dx)) + Math.abs(dragFrom.v[1] - (view[1] + dy));
+  view[0] = dragFrom.view[0] + (dragFrom.v[0] - dragFrom.view[0]) - dx + (view[0] - view[0]);
+  view[0] = dragFrom.v[0] - dx; view[1] = dragFrom.v[1] - dy;
+  clampView(); applyView();
+});
+function endPointer(e){
+  pointers.delete(e.pointerId);
+  if (pointers.size < 2) pinchFrom = null;
+  if (pointers.size === 0){ dragFrom = null; map.classList.remove("dragging"); }
+}
+map.addEventListener("pointerup", endPointer);
+map.addEventListener("pointercancel", endPointer);
+map.addEventListener("pointerleave", endPointer);
+
+document.getElementById("z-in").addEventListener("click", () => zoomAt(1 / 1.5, view[0] + view[2] / 2, view[1] + view[3] / 2));
+document.getElementById("z-out").addEventListener("click", () => zoomAt(1.5, view[0] + view[2] / 2, view[1] + view[3] / 2));
+document.getElementById("z-fit").addEventListener("click", resetView);
 function showName(id){
   if (id == null) { nameTag.textContent = ""; return; }
   const v = V.find(x => x.id === id);
@@ -462,15 +637,25 @@ function showName(id){
 
 /* ---------- state ---------- */
 let sel = null;
-const F = { q: "", access: "all", kind: "all", pmax: 90 };
+/* Chips within a group are OR; the groups are ANDed together, so
+   "Cash + Open now" and "Not a hotel + Pool" both behave as you'd expect. */
+const F = { q: "", access: new Set(), kind: new Set(), usc: new Set(), openNow: false, pmax: 90 };
+const TEST = {
+  cash: v => v.price != null,
+  usc:  v => v.uscTiers.length > 0,
+  open: v => openState(v, berlinNow()) === "open",
+  sauna: v => !/^Hotel/.test(v.kind),
+  hotel: v => /^Hotel/.test(v.kind),
+  pool:  v => !/^(No |Check)/i.test(v.pool),
+};
 function ok(v){
-  if (F.access === "usc" && v.usc !== "yes") return false;
-  if (F.access === "cash" && v.price == null) return false;
-  if (F.kind === "sauna" && /^Hotel/.test(v.kind)) return false;
-  if (F.kind === "hotel" && !/^Hotel/.test(v.kind)) return false;
-  if (F.kind === "pool" && /^(No |Check)/i.test(v.pool)) return false;
+  if (F.openNow && openState(v, berlinNow()) !== "open") return false;
+  for (const g of ["access", "kind"])
+    if (F[g].size && ![...F[g]].some(k => TEST[k](v))) return false;
+  if (F.usc.size && ![...F.usc].some(t => v.uscTiers.includes(t))) return false;
   if (F.pmax < 90 && (v.price == null || v.price > F.pmax)) return false;
-  if (F.q && ![v.name, v.kind, v.district, v.sauna, v.pool, v.bestFor, v.priceLabel, v.uscLabel].join(" ").toLowerCase().includes(F.q)) return false;
+  if (F.q && ![v.name, v.kind, v.district, v.sauna, v.pool, v.bestFor, v.priceLabel, v.uscLabel]
+        .join(" ").toLowerCase().includes(F.q)) return false;
   return true;
 }
 
@@ -511,10 +696,13 @@ V.forEach(v => {
       </div>
       <span class="rank${known ? "" : " none"}">${known ? d : "N/A"}</span>
     </div>
+    <span class="status ${STATUS_CLASS[openState(v, berlinNow())]}" data-status>${STATUS_TEXT[openState(v, berlinNow())]}</span>
     ${v.badge ? `<span class="pick-tag">${v.badge}</span>` : ""}
     <dl class="rows">
       <dt>Entry</dt><dd><b>${v.priceLabel}</b></dd>
-      <dt>USC</dt><dd class="${v.usc === "yes" ? "usc-y" : ""}">${v.uscLabel}</dd>
+      <dt>USC</dt><dd class="${v.usc === "yes" ? "usc-y" : ""}">${v.uscLabel}
+        ${v.usc !== "no" ? `<span class="tiers">${["Classic","Premium","Max"]
+          .map(t => `<span class="tier${v.uscTiers.includes(t) ? "" : " off"}">${t}</span>`).join("")}</span>` : ""}</dd>
       <dt>Heat</dt><dd>${v.sauna}</dd>
       <dt>Water</dt><dd>${v.pool}</dd>
       <dt>Open</dt><dd>${v.hours}</dd>
@@ -557,12 +745,18 @@ function run(){
   noneMsg.hidden = n > 0;
 }
 document.getElementById("q").addEventListener("input", e => { F.q = e.target.value.trim().toLowerCase(); run(); });
-["g-access", "g-kind"].forEach(id => {
-  const g = document.getElementById(id), key = id === "g-access" ? "access" : "kind";
-  g.addEventListener("click", e => {
+document.getElementById("g-open").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  F.openNow = !F.openNow;
+  b.setAttribute("aria-pressed", String(F.openNow));
+  run();
+});
+[["g-access", "access"], ["g-kind", "kind"], ["g-usc", "usc"]].forEach(([id, key]) => {
+  document.getElementById(id).addEventListener("click", e => {
     const b = e.target.closest(".chip"); if (!b) return;
-    F[key] = b.dataset.v;
-    g.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c === b)));
+    const v = b.dataset.v, on = !F[key].has(v);
+    on ? F[key].add(v) : F[key].delete(v);
+    b.setAttribute("aria-pressed", String(on));
     run();
   });
 });
@@ -573,12 +767,21 @@ pmax.addEventListener("input", e => {
   run();
 });
 document.getElementById("clear").addEventListener("click", () => {
-  F.q = ""; F.access = "all"; F.kind = "all"; F.pmax = 90;
+  F.q = ""; F.access.clear(); F.kind.clear(); F.usc.clear(); F.openNow = false; F.pmax = 90;
   document.getElementById("q").value = ""; pmax.value = 90; pout.textContent = "Any";
-  document.querySelectorAll(".grp").forEach(g => g.querySelectorAll(".chip").forEach((c, i) => c.setAttribute("aria-pressed", String(i === 0))));
+  document.querySelectorAll(".grp .chip").forEach(c => c.setAttribute("aria-pressed", "false"));
   if (sel != null) choose(sel, false);
   run();
 });
+/* Statuses go stale on a page left open; refresh them on the minute. */
+setInterval(() => {
+  const now = berlinNow();
+  V.forEach(v => {
+    const el2 = cardOf.get(v.id).querySelector("[data-status]"), st = openState(v, now);
+    el2.textContent = STATUS_TEXT[st]; el2.className = "status " + STATUS_CLASS[st];
+  });
+  if (F.openNow) run();
+}, 60000);
 
 /* ---------- picks ---------- */
 const PICKS = [
