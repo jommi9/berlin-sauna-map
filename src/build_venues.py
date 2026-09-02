@@ -94,24 +94,48 @@ USC_TIERS = {
  "LIQUIDROM": [],
 }
 
-# --- Machine-readable hours for the "open now" filter, in minutes past midnight,
-#     Europe/Berlin. Only venues that actually publish consistent daily hours get a
-#     span; everything else stays None and reports "check hours" rather than
-#     inventing precision. 1440 means midnight.
+# --- Opening hours. weekly = Mon..Sun, each [open, close] in minutes past
+#     midnight (1440 = midnight) or None for closed. "winter" applies 1 Oct-31 Mar.
+#     src: "venue" = read off the operator's own page, "osm" = OpenStreetMap,
+#     "listed" = as published on the hotel page during the original research.
+#     Venues with no reliable schedule are simply absent - they report
+#     "check hours" instead of a weekday snapshot that looks random on any
+#     other day, which is what they used to do.
+D  = lambda a, b: [[a, b]] * 7
 OPEN = {
- "Vabali":                              {"span": [540, 1440]},
- "Grand Hyatt \u2014 Club Olympus":      {"span": [420, 1260]},
- "Hilton Berlin \u2014 LivingWell":      {"span": [420, 1260]},
- "Hotel de Rome \u2014 De Rome Spa":     {"span": [600, 1260], "approx": True},
- "Hotel Adlon Kempinski":               {"span": [420, 1260]},
- "Park Inn Alexanderplatz \u2014 Gezer Spa": {"span": [720, 1320]},
- "InterContinental Berlin":             {"span": [420, 1260]},
- "sly Berlin":                          {"span": [360, 1380], "approx": True},
- "KIEZ SAUNA Friedrichshain":           {"span": [900, 1440]},
- "LIQUIDROM":                           {"span": [540, 1440]},
- "Saunabad Prenzlauer Berg":            {"span": [900, 1440]},
- "L\u00fctzow Sauna":                    {"closedDays": [1]},          # closed Tuesdays, rest varies
- "Stadtbad Neuk\u00f6lln":               {"closedUntil": "2026-10-31"},
+ "Vabali":                       {"weekly": D(540, 1440), "winter": D(480, 1440), "src": "venue"},
+ "KIEZ SAUNA Friedrichshain":    {"weekly": D(900, 1440), "winter": D(780, 1440), "src": "venue"},
+ "Park Inn Alexanderplatz \u2014 Gezer Spa":
+                                 {"weekly": D(720, 1320), "winter": D(720, 1080), "src": "venue"},
+ "Steigenberger \u2014 Sky Spa":  {"weekly": [[840,1320]]*5 + [[600,1320],[600,1080]], "src": "osm"},
+ "L\u00fctzow Sauna":             {"weekly": [[1080,1380], None, [960,1380], None,
+                                             [960,1380], [960,1380], [960,1380]], "src": "osm"},
+ "LIQUIDROM":                    {"weekly": [[600,1440]]*4 + [[600,1500],[600,1500],[600,1500]], "src": "osm"},
+ "Grand Hyatt \u2014 Club Olympus": {"weekly": D(420, 1260), "src": "listed"},
+ "Hilton Berlin \u2014 LivingWell": {"weekly": D(420, 1260), "src": "listed"},
+ "Hotel Adlon Kempinski":        {"weekly": D(420, 1260), "src": "listed"},
+ "InterContinental Berlin":      {"weekly": D(420, 1260), "src": "listed"},
+ "Hotel de Rome \u2014 De Rome Spa": {"weekly": D(600, 1260), "src": "listed", "approx": True},
+ "sly Berlin":                   {"weekly": D(360, 1380), "src": "listed", "approx": True},
+ "Saunabad Prenzlauer Berg":     {"weekly": D(900, 1440), "src": "listed"},
+ "Stadtbad Neuk\u00f6lln":        {"closedUntil": "2026-10-31", "src": "venue"},
+}
+
+# Hours text shown on the card, replacing single-weekday snapshots that read as
+# random on the other six days.
+HOURS_TEXT = {
+ "Steigenberger \u2014 Sky Spa": "Mon\u2013Fri 14:00\u201322:00 \u00b7 Sat 10:00\u201322:00 \u00b7 Sun 10:00\u201318:00",
+ "Hotel Palace \u2014 Palace Spa": "Hours vary by day \u2014 check with the hotel",
+ "Titanic Gendarmenmarkt \u2014 BeFine": "Hours vary by day \u2014 check with the hotel",
+ "Olivin": "Hours vary by day \u2014 check with the sauna",
+ "L\u00fctzow Sauna": "Mon 18:00\u201323:00 \u00b7 Wed, Fri\u2013Sun 16:00\u201323:00 \u00b7 closed Tue & Thu",
+ "LIQUIDROM": "Mon\u2013Thu 10:00\u201324:00 \u00b7 Fri\u2013Sun 10:00\u201301:00",
+ "Vabali": "Daily 09:00\u201324:00 (08:00\u201324:00 from 1 Oct)",
+ "KIEZ SAUNA Friedrichshain": "Daily 15:00\u201324:00 (13:00\u201324:00 from 1 Oct)",
+ "Park Inn Alexanderplatz \u2014 Gezer Spa": "Daily 12:00\u201322:00 (12:00\u201318:00 from 1 Oct)",
+ "Finnland Zentrum": "By arrangement \u2014 book by phone or email (+49 30 781 81 89)",
+ "ANTI SPA": "Session based \u2014 book a slot",
+ "The Westin Grand \u2014 Gezer Spa": "Unconfirmed while the renovation notice stands \u2014 call ahead",
 }
 
 keys = ["name","lat","lon","kind","district","price","priceLabel","usc","uscLabel","sauna","pool","hours","bestFor","badge","flag","url"]
@@ -122,6 +146,7 @@ for i, row in enumerate(V):
     d["img"] = IMG.get(d["name"])
     d["uscTiers"] = USC_TIERS.get(d["name"], [])
     d["open"] = OPEN.get(d["name"])
+    d["hours"] = HOURS_TEXT.get(d["name"], d["hours"])
     d["id"] = i
     venues.append(d)
 json.dump(venues, open('venues.json','w'), separators=(',',':'), ensure_ascii=False)
