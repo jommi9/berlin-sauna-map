@@ -145,6 +145,12 @@ HOURS_TEXT = {
  "The Westin Grand \u2014 Gezer Spa": "Unconfirmed while the renovation notice stands \u2014 call ahead",
 }
 
+
+# --- Priced per booking rather than per head. A EUR 40 group hire is not
+#     comparable to a EUR 12.50 entry, so these are drawn as circles rather than
+#     squares and are excluded from the per-person "cheapest" figure.
+GROUP_PRICED = {"Finnland Zentrum"}
+
 keys = ["name","lat","lon","kind","district","price","priceLabel","usc","uscLabel","sauna","pool","hours","bestFor","badge","flag","url"]
 venues = []
 for i, row in enumerate(V):
@@ -153,6 +159,7 @@ for i, row in enumerate(V):
     d["img"] = IMG.get(d["name"])
     d["uscTiers"] = USC_TIERS.get(d["name"], [])
     d["open"] = OPEN.get(d["name"])
+    d["pricing"] = "group" if d["name"] in GROUP_PRICED else "person"
     d["hours"] = HOURS_TEXT.get(d["name"], d["hours"])
     d["id"] = i
     venues.append(d)
