@@ -248,6 +248,8 @@ svg.map.dragging{cursor:grabbing}
   border:1px solid var(--line); padding:6px 12px; border-radius:2px;
 }
 .go:hover{border-color:var(--gold); background:rgba(255,193,43,.09)}
+.go.alt{margin-left:6px; color:var(--ink-2)}
+.go.alt:hover{color:var(--gold)}
 .none-msg{padding:44px 18px; text-align:center; color:var(--dim); font-family:var(--hud); letter-spacing:.12em; text-transform:uppercase}
 
 /* ---------------- picks ---------------- */
@@ -272,6 +274,19 @@ svg.map.dragging{cursor:grabbing}
 .cgrid p{margin:0; font-size:14.4px; color:var(--ink-2); line-height:1.6; max-width:56ch}
 .cgrid strong{color:var(--ink); font-weight:600}
 .cgrid a{color:var(--gold)}
+.credits-imgs{margin-top:30px; padding-top:22px; border-top:1px solid var(--line)}
+.credits-imgs h3{
+  font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--gold); margin:0 0 8px;
+}
+.cnote{margin:0 0 12px; font-size:14.4px; color:var(--ink-2); max-width:70ch; line-height:1.6}
+#credit-list{
+  list-style:none; margin:0; padding:0; display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(268px,1fr)); gap:5px 26px;
+}
+#credit-list li{font-size:13px; color:var(--dim); line-height:1.5}
+#credit-list b{color:var(--ink-2); font-weight:600}
+#credit-list a{color:var(--gold); text-decoration-color:var(--line)}
 @media (prefers-reduced-motion:reduce){ *{transition:none !important; animation:none !important} }
 </style>
 
@@ -371,6 +386,14 @@ svg.map.dragging{cursor:grabbing}
   <section class="credits">
     <div class="cgrid">
       <div>
+        <h3>Disclaimer</h3>
+        <p>This is a personal, non-commercial guide with no affiliation to, sponsorship by,
+        or endorsement from any venue listed. Prices, opening hours and Urban Sports Club
+        terms are recorded as published by each venue and <strong>change without notice</strong> &mdash;
+        always check with the venue before travelling. Where a schedule could not be confirmed
+        the card says so rather than guessing. Corrections are welcome.</p>
+      </div>
+      <div>
         <h3>Before you go</h3>
         <p>For a normal sauna session rather than a luxury spa day, <strong>KIEZ SAUNA, Saunabad, Olivin and L&uuml;tzow</strong> are better benchmarks than most hotel spas. Hotel spas make sense when the pool, terrace, relaxation area, or USC access is part of what you want.</p>
       </div>
@@ -382,6 +405,13 @@ svg.map.dragging{cursor:grabbing}
         <h3>Data</h3>
         <p>Curated by hand and kept in Notion; prices, USC limits and opening hours change often, so recheck before making a special trip. Locations geocoded from OpenStreetMap; roads, rail, water, parks and district outlines &copy; OpenStreetMap contributors, <a href="https://www.openstreetmap.org/copyright">ODbL</a>.</p>
       </div>
+    </div>
+    <div class="credits-imgs">
+      <h3>Image credits</h3>
+      <p class="cnote">Photographs are used under their Creative Commons or Free Art licences, with the
+      photographer and licence named below. Venues without a freely licensed photograph show a
+      generated map tile instead, and link to their own pictures.</p>
+      <ul id="credit-list"></ul>
     </div>
   </section>
 </div>
@@ -724,7 +754,8 @@ V.forEach(v => {
       <dt>Best for</dt><dd>${v.bestFor}</dd>
     </dl>
     ${v.flag ? `<p class="alert"><b>Heads up</b>${v.flag}</p>` : ""}
-    <a class="go" href="${v.url}" target="_blank" rel="noopener noreferrer">Hours &amp; booking</a>`;
+    <a class="go" href="${v.url}" target="_blank" rel="noopener noreferrer">Hours &amp; booking</a>
+    ${im ? "" : `<a class="go alt" href="${v.url}" target="_blank" rel="noopener noreferrer">See their photos</a>`}`;
   cards.appendChild(li); cardOf.set(v.id, li);
   li.addEventListener("click", e => { if (!e.target.closest("a")) choose(v.id, false); });
   li.addEventListener("keydown", e => { if (e.key === "Enter" && !e.target.closest("a")) choose(v.id, false); });
@@ -815,6 +846,16 @@ PICKS.forEach(([k, name]) => {
   b.innerHTML = `<span class="k">${k}</span><span class="v">${v.name}</span><span class="p">${v.price != null ? "From \u20ac" + String(v.price).replace(".5", ".50") : "Access unclear"}</span>`;
   b.addEventListener("click", () => { if (sel !== v.id) choose(v.id, false); cardOf.get(v.id).scrollIntoView({ behavior: "smooth", block: "center" }); });
   pg.appendChild(b);
+});
+
+/* Image credits, generated so they can never drift from what is embedded. */
+const creditList = document.getElementById("credit-list");
+V.filter(v => v.img).forEach(v => {
+  const im = IMG[v.img];
+  const li = document.createElement("li");
+  li.innerHTML = `<b>${v.name}</b> &mdash; photo by ${im.by}, ` +
+    `<a href="${im.page}" target="_blank" rel="noopener noreferrer">${im.lic}</a>`;
+  creditList.appendChild(li);
 });
 
 run();

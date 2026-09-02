@@ -68,7 +68,12 @@ points at the single map definition in `<defs>`, so the road geometry exists onc
 DOM rather than nine times.
 
 Every photo is credited in place - photographer and licence, linking to the Commons file
-page - as CC BY-SA and FAL require.
+page - as CC BY-SA and FAL require, and again in the Image credits block at the foot of
+the page, which is generated from `img/credits.json` so it cannot drift from what is
+actually embedded.
+
+The eight venues without a freely licensed photo link straight to their own pictures
+("See their photos") rather than carrying a copy of them.
 
 | Script | Does |
 |---|---|
