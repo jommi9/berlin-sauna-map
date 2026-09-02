@@ -102,6 +102,26 @@ Two things matter and neither is obvious:
 
 Verified at 320, 375, 768 and 1440 px: no horizontal overflow at any width.
 
+## Mobile explorer
+
+Below 1000px the map/list split becomes a map-first explorer rather than a short map
+with twenty long cards stacked under it:
+
+- the map fills an 82dvh section, and `frameFor()` fits the venue extent to the
+  container's own aspect ratio, so a portrait phone gets a portrait frame with no
+  letterboxing;
+- selecting a venue raises a **peek card** over the map (thumbnail, name, type,
+  district, price) with a close button;
+- the list is a **bottom sheet** you can drag or tap open, labelled with the current
+  match count.
+
+Two traps worth remembering. `.mapcol .inner` is `position:sticky; top:70px` on desktop;
+the mobile rule must reset `top:auto` or the map is pushed 70px down and overflows the
+section. And the scrollport differs by breakpoint - `.listcol` on desktop, `.cards`
+inside the sheet on mobile - so `revealCard()` walks up to find the real scroller
+instead of assuming, otherwise it scrolls the window and drags the page out from under
+the map.
+
 ## Design notes
 
 - **Single committed theme.** A game HUD reads as one fixed world, so the page does

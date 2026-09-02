@@ -300,6 +300,76 @@ svg.map.dragging{cursor:grabbing}
 #credit-list li{font-size:13px; color:var(--dim); line-height:1.5}
 #credit-list b{color:var(--ink-2); font-weight:600}
 #credit-list a{color:var(--gold); text-decoration-color:var(--line)}
+/* ---------- mobile: map-first explorer ----------
+   The map, a peek card for whatever is selected, and the list as a bottom sheet
+   you can drag up - rather than a short map with 20 long cards stacked beneath. */
+.peek, .grab{display:none}
+@media (max-width:1000px){
+  .split{display:block; position:relative; height:82dvh; min-height:460px; overflow:hidden}
+  .mapcol{padding:0; height:100%}
+  .mapcol .inner{height:100%; position:relative; top:auto}   /* clear the desktop sticky offset */
+  .mapbox{position:absolute; inset:0}
+  svg.map{width:100%; height:100%}
+  .key{
+    position:absolute; left:0; right:0; bottom:0; margin:0; z-index:3;
+    padding:8px 10px calc(var(--sheet, 84px) + 10px); pointer-events:none;
+    display:none;
+  }
+  .zoom{bottom:calc(var(--sheet, 84px) + 12px); transition:bottom .18s ease}
+
+  .listcol{
+    position:absolute; left:0; right:0; bottom:0; z-index:6;
+    height:var(--sheet, 84px); max-height:none;
+    background:var(--panel); border-top:1px solid var(--line-2);
+    border-radius:14px 14px 0 0; box-shadow:0 -14px 34px rgba(0,0,0,.55);
+    display:flex; flex-direction:column; overflow:hidden;
+    transition:height .22s cubic-bezier(.22,.61,.36,1);
+  }
+  .cards{flex:1 1 auto; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch}
+  .grab{
+    display:flex; flex-direction:column; align-items:center; gap:7px; flex:none;
+    background:none; border:0; width:100%; padding:9px 0 7px; cursor:grab;
+    touch-action:none; color:inherit;
+  }
+  .grab-bar{width:38px; height:4px; border-radius:99px; background:var(--line-2)}
+  .grab-label{
+    font-family:var(--hud); font-weight:600; font-size:13px; letter-spacing:.13em;
+    text-transform:uppercase; color:var(--ink);
+  }
+  .lhead{display:none}
+  .listcol.open .lhead{display:flex; flex:none}
+
+  .peek{
+    display:flex; gap:11px; position:absolute; z-index:5;
+    left:9px; right:9px; bottom:calc(var(--sheet, 84px) + 10px);
+    background:var(--panel); border:1px solid var(--line-2); border-radius:11px;
+    padding:9px; box-shadow:0 10px 28px rgba(0,0,0,.5); cursor:pointer;
+    transition:bottom .22s cubic-bezier(.22,.61,.36,1);
+  }
+  .peek[hidden]{display:none}
+  .peek-thumb{
+    width:74px; height:60px; border-radius:7px; overflow:hidden; flex:none;
+    background:var(--land); display:grid; place-items:center;
+  }
+  .peek-thumb img, .peek-thumb svg{width:100%; height:100%; object-fit:cover; display:block}
+  .peek-body{min-width:0; flex:1 1 auto; padding-right:16px}
+  .peek-name{
+    font-family:var(--hud); font-weight:600; font-size:16px; line-height:1.15;
+    letter-spacing:.03em; text-transform:uppercase; margin:1px 0 0;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .peek-meta{
+    font-family:var(--hud); font-weight:500; font-size:11px; letter-spacing:.11em;
+    text-transform:uppercase; color:var(--dim); margin:3px 0 0;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .peek-price{font-size:13.5px; color:var(--gold); margin:4px 0 0; font-family:var(--hud); font-weight:600}
+  .peek-x{
+    position:absolute; top:5px; right:6px; width:26px; height:26px; line-height:1;
+    font-size:19px; background:none; border:0; color:var(--dim); cursor:pointer; padding:0;
+  }
+  .peek-x:hover{color:var(--ink)}
+}
 @media (prefers-reduced-motion:reduce){ *{transition:none !important; animation:none !important} }
 </style>
 
@@ -356,6 +426,15 @@ svg.map.dragging{cursor:grabbing}
         <div class="mapbox">
           <svg class="map" id="map" role="img" aria-label="Map of central Berlin showing 19 sauna and spa locations"></svg>
           <i class="brk tl"></i><i class="brk tr"></i><i class="brk bl"></i><i class="brk br"></i>
+          <div class="peek" id="peek" hidden>
+            <button class="peek-x" id="peek-x" aria-label="Clear selection">&times;</button>
+            <div class="peek-thumb" id="peek-thumb"></div>
+            <div class="peek-body">
+              <p class="peek-name" id="peek-name"></p>
+              <p class="peek-meta" id="peek-meta"></p>
+              <p class="peek-price" id="peek-price"></p>
+            </div>
+          </div>
           <div class="zoom">
             <button type="button" id="z-in"  aria-label="Zoom in">+</button>
             <button type="button" id="z-out" aria-label="Zoom out">&minus;</button>
@@ -386,6 +465,10 @@ svg.map.dragging{cursor:grabbing}
     </div>
 
     <div class="listcol">
+      <button class="grab" id="grab" aria-expanded="false" aria-controls="cards">
+        <span class="grab-bar"></span>
+        <span class="grab-label" id="grab-label">20 venues</span>
+      </button>
       <div class="lhead">
         <h2 id="l-title">All 20 locations</h2>
         <span class="c" id="l-note">Pick order</span>
@@ -444,6 +527,7 @@ const el = (n, a) => { const e = document.createElementNS(NS, n); for (const k i
 const band = p => p == null ? 0 : p <= 22 ? 1 : p <= 35 ? 2 : p <= 65 ? 3 : 4;
 const heat = p => `var(--b${band(p)})`;
 const dollars = p => p == null ? null : "$".repeat(band(p));
+const money = n => n.toFixed(2).replace(/\.00$/, "");   // 24.5 -> "24.50", 22 -> "22"
 
 function berlinNow(){
   const f = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Berlin", weekday: "short",
@@ -555,10 +639,17 @@ function spread(minDist){
   }
   return new Map(p.map(q => [q.id, q]));
 }
+function frameFor(w, h){                 // fit EXTENT to the container's aspect
+  const [ex, ey, ew, eh] = EXTENT;
+  const target = w / h;
+  let vw = ew, vh = eh;
+  if (ew / eh > target) vh = ew / target; else vw = eh * target;
+  return [ex - (vw - ew) / 2, ey - (vh - eh) / 2, vw, vh];
+}
 function fitMap(){
-  const w = map.clientWidth || GEO.w;
-  const small = w < 520;
-  VB = small ? EXTENT : [0, 0, GEO.w, GEO.h];
+  const w = map.clientWidth || GEO.w, h = map.clientHeight || GEO.h;
+  const small = w < 1001;
+  VB = small ? frameFor(w, Math.max(h, 1)) : [0, 0, GEO.w, GEO.h];
   map.setAttribute("viewBox", VB.join(" "));
   map.classList.toggle("small", small);
   base = VB.slice(); view = VB.slice(); zoomed = false;
@@ -800,16 +891,26 @@ V.forEach(v => {
   li.addEventListener("mouseleave", () => peek(v.id, false));
 });
 function peek(id, on){ if (sel != null) return; blips.get(id).classList.toggle("on", on); showName(on ? id : null); }
-/* Browsers silently drop a smooth scroll over a very long distance - a 13,000px
-   trip simply never ran - so only ask for smooth when it can actually animate. */
+/* Scroll only the container the cards actually live in. On desktop that is
+   .listcol; on mobile it is .cards inside the sheet. Falling back to the window
+   dragged the whole page out from under the map. Browsers also silently drop a
+   smooth scroll over a very long distance, so pick instant for long trips. */
+function scrollportOf(el){
+  for (let p = el.parentElement; p; p = p.parentElement){
+    const oy = getComputedStyle(p).overflowY;
+    if ((oy === "auto" || oy === "scroll") && p.scrollHeight > p.clientHeight + 4) return p;
+  }
+  return null;
+}
 function revealCard(id){
   const c = cardOf.get(id);
-  const port = c.closest(".listcol");
-  const scrolls = port && getComputedStyle(port).overflowY === "auto";
-  const viewH = scrolls ? port.clientHeight : innerHeight;
-  const ref = scrolls ? port.getBoundingClientRect().top : 0;
-  const far = Math.abs(c.getBoundingClientRect().top - ref) > viewH * 2;
-  c.scrollIntoView({ behavior: far ? "auto" : "smooth", block: "start" });
+  const port = scrollportOf(c);
+  if (!port){ c.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+  const head = port.querySelector(".lhead");
+  const off = head && head.offsetParent ? head.getBoundingClientRect().height : 0;
+  const delta = c.getBoundingClientRect().top - port.getBoundingClientRect().top - off;
+  const far = Math.abs(delta) > port.clientHeight * 2;
+  port.scrollTo({ top: port.scrollTop + delta, behavior: far ? "auto" : "smooth" });
 }
 function choose(id, fromMap){
   sel = sel === id ? null : id;
@@ -818,7 +919,8 @@ function choose(id, fromMap){
   map.appendChild(nameTag);
   cardOf.forEach((c, k) => c.classList.toggle("on", k === sel));
   showName(sel);
-  if (sel != null && fromMap) revealCard(sel);
+  showPeek(sel);
+  if (sel != null && fromMap && !isMobile()) revealCard(sel);
 }
 
 /* ---------- filtering ---------- */
@@ -837,6 +939,8 @@ function run(){
   lNote.textContent = filtered ? "Filtered" : "Pick order";
   nCount.textContent = n;
   noneMsg.hidden = n > 0;
+  if (typeof grabLabel !== "undefined" && grabLabel)
+    grabLabel.textContent = `${n} ${n === 1 ? "venue" : "venues"}`;
 }
 document.getElementById("q").addEventListener("input", e => { F.q = e.target.value.trim().toLowerCase(); run(); });
 document.getElementById("g-open").addEventListener("click", e => {
@@ -905,6 +1009,75 @@ V.filter(v => v.img).forEach(v => {
     `<a href="${im.page}" target="_blank" rel="noopener noreferrer">${im.lic}</a>`;
   creditList.appendChild(li);
 });
+
+/* ---------- mobile explorer: peek card and bottom sheet ---------- */
+const listcol = document.querySelector(".listcol");
+const peekEl = document.getElementById("peek"), grab = document.getElementById("grab");
+const grabLabel = document.getElementById("grab-label");
+const COLLAPSED = 84;
+const expandedH = () => Math.round(document.querySelector(".split").clientHeight * 0.72);
+const isMobile = () => matchMedia("(max-width:1000px)").matches;
+let sheetOpen = false;
+
+function setSheet(px){ document.documentElement.style.setProperty("--sheet", px + "px"); }
+function openSheet(on){
+  sheetOpen = on;
+  listcol.classList.toggle("open", on);
+  grab.setAttribute("aria-expanded", String(on));
+  setSheet(on ? expandedH() : COLLAPSED);
+}
+function showPeek(id){
+  if (!isMobile()) return;
+  if (id == null){ peekEl.hidden = true; return; }
+  const v = V.find(x => x.id === id), im = v.img ? IMG[v.img] : null;
+  document.getElementById("peek-name").textContent = v.name;
+  document.getElementById("peek-meta").textContent = `${v.kind} \u00b7 ${v.district}`;
+  document.getElementById("peek-price").textContent =
+    v.price == null ? v.priceLabel.split(/[\u2014\u00b7;]/)[0].trim()
+                    : (v.pricing === "group" ? `\u20ac${money(v.price)} per booking` : `from \u20ac${money(v.price)}`);
+  const thumb = document.getElementById("peek-thumb");
+  thumb.innerHTML = im
+    ? `<img src="${im.src}" alt="">`
+    : `<svg viewBox="-14 -14 28 28" aria-hidden="true">${v.pricing === "group"
+        ? `<circle cx="0" cy="0" r="11.5" fill="${heat(v.price)}" stroke="#201C15" stroke-width="1.8"/>`
+        : `<rect x="-11" y="-11" width="22" height="22" rx="6" fill="${heat(v.price)}" stroke="#201C15" stroke-width="1.8"/>`}
+       <path d="${FLAME}" fill="${v.price != null ? "#FFFFFF" : "#5A5246"}"/></svg>`;
+  peekEl.hidden = false;
+}
+peekEl.addEventListener("click", e => {
+  if (e.target.closest("#peek-x")) return;
+  openSheet(true);
+  setTimeout(() => revealCard(sel), 260);   // after the height transition
+});
+document.getElementById("peek-x").addEventListener("click", () => { if (sel != null) choose(sel, false); });
+
+/* drag the handle, or just tap it */
+let gy = null, gh = 0, gMoved = 0;
+grab.addEventListener("pointerdown", e => {
+  gy = e.clientY; gh = listcol.getBoundingClientRect().height; gMoved = 0;
+  listcol.style.transition = "none";
+  try { grab.setPointerCapture(e.pointerId); } catch (_) {}
+});
+grab.addEventListener("pointermove", e => {
+  if (gy == null) return;
+  const dy = gy - e.clientY;
+  gMoved = Math.max(gMoved, Math.abs(dy));
+  setSheet(Math.round(Math.min(Math.max(gh + dy, COLLAPSED), expandedH())));
+});
+function grabEnd(){
+  if (gy == null) return;
+  listcol.style.transition = "";
+  const h = listcol.getBoundingClientRect().height;
+  if (gMoved < 6) openSheet(!sheetOpen);                       // a tap toggles
+  else openSheet(h > (COLLAPSED + expandedH()) / 2);           // a drag snaps
+  gy = null;
+}
+grab.addEventListener("pointerup", grabEnd);
+grab.addEventListener("pointercancel", grabEnd);
+
+/* keep the sheet honest when the viewport or the filters change */
+addEventListener("resize", () => { if (isMobile()) setSheet(sheetOpen ? expandedH() : COLLAPSED); });
+if (isMobile()) setSheet(COLLAPSED);
 
 run();
 </script>
