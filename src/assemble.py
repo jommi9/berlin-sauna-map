@@ -19,5 +19,23 @@ ven = json.dumps(json.load(open('venues.json', encoding='utf-8')), separators=('
 img = json.dumps(json.load(open('img/embed.json', encoding='utf-8')), separators=(',', ':'), ensure_ascii=True)
 doc = doc.replace('/*__GEO__*/', geo).replace('/*__VENUES__*/', ven).replace('/*__IMAGES__*/', img)
 assert doc.isascii(), "non-ascii survived"
-open(OUT, 'w', encoding='ascii').write(doc)
+# Two outputs from one template.
+#   - the Artifact host supplies its own <head>, so it must get a bare fragment
+#     (no doctype/html/head/body - those are rejected)
+#   - a standalone static host supplies nothing, so index.html needs a real
+#     document. Without <meta name="viewport"> phones lay the page out at 980px
+#     and shrink-to-fit, which makes every bit of text unreadable.
+if OUT.endswith('artifact.html'):
+    open(OUT, 'w', encoding='ascii').write(doc)
+else:
+    head, sep, body = doc.partition('</style>')
+    assert sep, "template must contain a </style> to split on"
+    page = ('<!doctype html>\n<html lang="en">\n<head>\n'
+            '<meta charset="utf-8">\n'
+            '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+            '<meta name="theme-color" content="#0A0D0F">\n'
+            '<meta name="description" content="Twenty Berlin saunas and spas, priced and plotted as an open-world game atlas.">\n'
+            + head + sep + '\n</head>\n<body>\n' + body.lstrip() + '\n</body>\n</html>\n')
+    open(OUT, 'w', encoding='ascii').write(page)
+    doc = page
 print(f"{TPL} -> {OUT}: {len(doc)/1024:.0f} KB, pure ASCII")

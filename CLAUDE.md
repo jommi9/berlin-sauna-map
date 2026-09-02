@@ -48,12 +48,24 @@ Venue facts live in the Notion page *Personal Home / Projects / Berlin Sauna Gui
 Saunas & Spas*. `src/build_venues.py` is a transcription of that table — edit Notion
 first, then mirror it here. Do not invent prices.
 
+## Two build outputs — do not merge them
+
+`index.html` (full document, has the viewport meta) is for GitHub Pages.
+`artifact.html` (bare fragment) is for publishing as an Artifact, which rejects
+`<html>`/`<head>`/`<body>` and supplies its own head. Serving the fragment as a
+website makes phones lay it out at 980 px and shrink to fit — the bug that made the
+site unreadable on mobile while looking fine in scaled screenshots.
+
+When checking mobile, assert `innerWidth` is what you set. If it reports 980, the
+viewport meta is missing and everything measured after that is meaningless.
+
 ## Rebuild
 
 ```
 cd src
 python3 build_venues.py && python3 declutter.py && python3 embed_images.py \
-  && python3 assemble.py tpl2.html ../index.html
+  && python3 assemble.py tpl2.html ../index.html \
+  && python3 assemble.py tpl2.html ../artifact.html
 ```
 
 Then republish `index.html` to the existing artifact URL, and push (GitHub Pages

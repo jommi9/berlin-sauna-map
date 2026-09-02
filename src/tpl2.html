@@ -104,6 +104,12 @@ a{color:inherit}
   text-transform:uppercase; background:none; border:0; color:var(--dim); cursor:pointer; padding:6px 0;
 }
 .clear:hover{color:var(--gold)}
+/* On a phone the filter bar is ~217px tall; pinning that costs a quarter of
+   the viewport, so it scrolls away with the page instead. */
+@media (max-width:760px){ .bar{position:static} }
+/* Below ~520px the map is cropped to the venue extent and district labels
+   would render at about 4px, so they come out entirely. */
+svg.map.small .dlabel, svg.map.small .scalebar{display:none}
 
 /* ---------------- split ---------------- */
 .split{display:grid; grid-template-columns:minmax(0,1.24fr) minmax(0,1fr); gap:3px; margin-top:3px}
@@ -363,7 +369,7 @@ GEO.labels.forEach(l => { const t = el("text", { x: l.x, y: l.y, class: "dlabel"
 
 /* scale bar: 1 map unit = 12.88 m at this latitude, so 2 km = 155.3 units */
 const KM = 77.66, sx = 22, sy = GEO.h - 22;
-const sg = el("g");
+const sg = el("g", { class: "scalebar" });
 sg.appendChild(el("rect", { x: sx - 9, y: sy - 17, width: KM * 2 + 52, height: 26, rx: 3, fill: "var(--land)", opacity: .82 }));
 sg.appendChild(el("path", { d: `M${sx},${sy - 6} v6 h${KM * 2} v-6 M${sx + KM},${sy} v-4`, fill: "none", stroke: "#5F5847", "stroke-width": 1.6 }));
 const st = el("text", { x: sx + KM * 2 + 6, y: sy + 1, class: "scale" }); st.textContent = "2 KM";
@@ -373,7 +379,6 @@ const FLAME = "M0,-6.6 C3.1,-3.2 5.2,-1.1 5.2,1.6 C5.2,4.6 2.9,6.6 0,6.6 C-2.9,6
 const blips = new Map();
 V.forEach(v => {
   const g = el("g", { class: "blip", transform: `translate(${v.px} ${v.py})`, tabindex: "0", role: "button", "aria-label": v.name });
-  if (v.off > 2) g.appendChild(el("line", { x1: v.x - v.px, y1: v.y - v.py, x2: 0, y2: 0, stroke: "#8A8067", "stroke-width": 1 }));
   g.appendChild(el("rect", { class: "pulse", x: -15, y: -15, width: 30, height: 30, rx: 8 }));
   g.appendChild(el("rect", { class: "b", x: -11, y: -11, width: 22, height: 22, rx: 6, fill: heat(v.price) }));
   g.appendChild(el("path", { d: FLAME, fill: v.price != null ? "#FFFFFF" : "#5A5246" }));
@@ -386,12 +391,73 @@ V.forEach(v => {
 });
 const nameTag = el("text", { class: "bname" });
 map.appendChild(nameTag);
+
+/* The map is one fixed drawing shown at wildly different sizes. At 327 CSS px
+   (a phone) a 22-unit blip is 7px - too small to see, let alone tap. So crop
+   the frame to where the venues actually are and scale the blips up until they
+   are a real touch target. */
+const EXTENT = [164, 57, 658, 569];               // venue bounding box + margin
+let VB = [0, 0, GEO.w, GEO.h];
+let POS = new Map(V.map(v => [v.id, { px: v.px, py: v.py }]));
+
+/* Blips are scaled up on small screens, so the build-time spacing no longer
+   holds - ten of the twenty sit in Mitte and would overlap into a blob. Re-run
+   the same relaxation against whatever size is actually being drawn, pulling
+   each blip back toward its true spot every pass so nothing drifts far. */
+function spread(minDist){
+  const p = V.map(v => ({ id: v.id, tx: v.x, ty: v.y, px: v.x, py: v.y }));
+  for (let it = 0; it < 300; it++){
+    let moved = 0;
+    for (let i = 0; i < p.length; i++) for (let j = i + 1; j < p.length; j++){
+      const a = p[i], b = p[j];
+      let dx = b.px - a.px, dy = b.py - a.py, d = Math.hypot(dx, dy);
+      if (d < 1e-6){ dx = 0.6; dy = -0.4; d = 0.72; }
+      if (d < minDist){
+        const push = (minDist - d) / 2 * 0.55, ux = dx / d, uy = dy / d;
+        a.px -= ux * push; a.py -= uy * push;
+        b.px += ux * push; b.py += uy * push; moved += push;
+      }
+    }
+    for (const q of p){ q.px += (q.tx - q.px) * 0.06; q.py += (q.ty - q.py) * 0.06; }
+    if (moved < 0.01) break;
+  }
+  return new Map(p.map(q => [q.id, q]));
+}
+function fitMap(){
+  const w = map.clientWidth || GEO.w;
+  const small = w < 520;
+  VB = small ? EXTENT : [0, 0, GEO.w, GEO.h];
+  map.setAttribute("viewBox", VB.join(" "));
+  map.classList.toggle("small", small);
+  const perPx = VB[2] / w;                        // viewBox units per CSS pixel
+  const target = small ? 17 : 15;                 // minimum blip size in CSS px
+  const scale = Math.max(1, (target * perPx) / 22);
+  POS = scale > 1.02 ? spread(22 * scale * 1.14)
+                     : new Map(V.map(v => [v.id, { px: v.px, py: v.py }]));
+  blips.forEach((g, id) => {
+    const v = V.find(x => x.id === id), q = POS.get(id);
+    g.setAttribute("transform", `translate(${q.px.toFixed(1)} ${q.py.toFixed(1)}) scale(${scale.toFixed(3)})`);
+    const off = Math.hypot(v.x - q.px, v.y - q.py);
+    let tick = g.querySelector("line.tick");
+    if (off > 3){                                  // draw a hairline back to the true spot
+      if (!tick){ tick = el("line", { class: "tick", stroke: "#8A8067" }); g.insertBefore(tick, g.firstChild); }
+      tick.setAttribute("x1", ((v.x - q.px) / scale).toFixed(1));
+      tick.setAttribute("y1", ((v.y - q.py) / scale).toFixed(1));
+      tick.setAttribute("x2", 0); tick.setAttribute("y2", 0);
+      tick.setAttribute("stroke-width", (1 / scale).toFixed(2));
+      tick.style.display = "";
+    } else if (tick) tick.style.display = "none";
+  });
+}
+fitMap();
+addEventListener("resize", fitMap);
 function showName(id){
   if (id == null) { nameTag.textContent = ""; return; }
   const v = V.find(x => x.id === id);
   nameTag.textContent = v.name.toUpperCase();
-  nameTag.setAttribute("x", Math.min(Math.max(v.px, 110), GEO.w - 110));
-  nameTag.setAttribute("y", v.py > 46 ? v.py - 20 : v.py + 32);
+  const q = POS.get(id) || v, pad = VB[2] * 0.12;
+  nameTag.setAttribute("x", Math.min(Math.max(q.px, VB[0] + pad), VB[0] + VB[2] - pad));
+  nameTag.setAttribute("y", q.py > VB[1] + 46 ? q.py - 20 : q.py + 32);
 }
 
 /* ---------- state ---------- */
@@ -466,6 +532,8 @@ function peek(id, on){ if (sel != null) return; blips.get(id).classList.toggle("
 function choose(id, fromMap){
   sel = sel === id ? null : id;
   blips.forEach((g, k) => g.classList.toggle("on", k === sel));
+  if (sel != null) map.appendChild(blips.get(sel));   // raise it above overlapping neighbours
+  map.appendChild(nameTag);
   cardOf.forEach((c, k) => c.classList.toggle("on", k === sel));
   showName(sel);
   if (sel != null && fromMap) cardOf.get(sel).scrollIntoView({ behavior: "smooth", block: "center" });

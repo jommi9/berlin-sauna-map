@@ -40,7 +40,9 @@ HTML file — no runtime API calls, no keys, no build server.
 2. From `src/`:
 
    ```
-   python3 build_venues.py && python3 declutter.py && python3 embed_images.py && python3 assemble.py tpl2.html ../index.html
+   python3 build_venues.py && python3 declutter.py && python3 embed_images.py \
+  && python3 assemble.py tpl2.html ../index.html \
+  && python3 assemble.py tpl2.html ../artifact.html
    ```
 
 3. Republish `index.html` to the same artifact URL (pass the URL so the link stays stable).
@@ -76,6 +78,24 @@ page - as CC BY-SA and FAL require.
 Card images are committed as 640x400 WebP (409 KB total). They are inlined as data URIs
 rather than linked so the page stays a single self-contained file that also works as an
 Artifact, where the CSP blocks external images.
+
+## Mobile
+
+Two things matter and neither is obvious:
+
+- **The site build must be a full document.** The Artifact host supplies its own
+  `<head>`, so the template is authored as a fragment — but a fragment served by a
+  static host has no `<meta name="viewport">`, and phones then lay the page out at
+  980 px and shrink it to fit. `assemble.py` wraps the fragment for `index.html` and
+  leaves `artifact.html` bare. Do not "simplify" this back to one output.
+- **The map reframes itself.** Below 520 px of map width the viewBox crops to the
+  venue bounding box (`EXTENT`), district labels and the scale bar are hidden because
+  they would render at ~4 px, and blips scale up to a ~17 px touch target. Scaling
+  blips breaks the build-time spacing, so `spread()` re-runs the same relaxation at
+  runtime against the size actually drawn; displaced blips get a hairline back to
+  their true position (currently 4 blips, max ~200 m).
+
+Verified at 320, 375, 768 and 1440 px: no horizontal overflow at any width.
 
 ## Design notes
 
