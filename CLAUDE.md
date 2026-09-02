@@ -48,6 +48,15 @@ Venue facts live in the Notion page *Personal Home / Projects / Berlin Sauna Gui
 Saunas & Spas*. `src/build_venues.py` is a transcription of that table — edit Notion
 first, then mirror it here. Do not invent prices.
 
+**Sync findings back.** Verification turns up corrections the table does not have, and
+if they only ever live in `build_venues.py` then Notion silently stops being the source
+of truth and the next rebuild from it undoes the fixes. Push anything verified back into
+the table (`notion-update-page` with `update_content` does surgical find-and-replace),
+and say where it came from — "from Gezer Spa's own shop", "(OpenStreetMap)". Watch two
+things when writing: identical cell text repeats across rows, so match on a neighbouring
+cell for uniqueness, and Notion auto-links bare domains, which mangles surrounding bold
+markers — keep URLs out of emphasised runs.
+
 ## Two build outputs — do not merge them
 
 `index.html` (full document, has the viewport meta) is for GitHub Pages.

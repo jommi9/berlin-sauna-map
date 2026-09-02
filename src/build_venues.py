@@ -54,7 +54,7 @@ V = [
   "Sauna plus spa facilities and Onsen","Saltwater sound pool","09:00–24:00","Spa / pool atmosphere rather than pure sauna",None,"USC entry does not include the sauna — you pay the supplement.",
   "https://www.liquidrom-berlin.de/en/info.php"],
  ["Saunabad Prenzlauer Berg",52.53578,13.42035,"Standalone sauna","Prenzlauer Berg",18,"€18 / 2.5h · €20 / 4h","no","No verified USC access",
-  "Large 95°C sauna, hourly Aufguss, garden, quiet rooms","No pool focus","15:00–24:00","Best cheap traditional sauna","Best cheap sauna","Their own site saunabad-berlin.de is down \u2014 the domain now serves a hosting parking page, so this links to their Facebook instead. Phone 030 44046397.",
+  "Large 95°C sauna, hourly Aufguss, garden, quiet rooms","No pool focus","15:00–24:00","Best cheap traditional sauna","Best cheap sauna","Their own site saunabad-berlin.de is dead \u2014 the domain now serves a hosting parking page and https fails, so this links to their Facebook instead. Rykestr. 10, tel. 030 44046397.",
   "https://www.facebook.com/p/Saunabad-Berlin-Prenzlauer-Berg-100061924915931/"],
  ["Lützow Sauna",52.50154,13.36890,"Standalone sauna","Tiergarten",24,"€24 / 2h · €27 / 3h · €30 day","no","No verified USC access",
   "90°C sauna, sanarium, steam bath, hourly Aufguss","30°C pool and 14°C plunge","Closed Tuesdays; check other daily hours","Excellent classic hot–cold cycles",None,"Closed Tuesdays.",
