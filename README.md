@@ -114,6 +114,11 @@ Verified at 320, 375, 768 and 1440 px: no horizontal overflow at any width.
   **Oswald** for HUD labels and map type (an Alternate Gothic revival, the usual
   Chalet Comprime substitute), **Archivo** for body copy. The wordmark's six-step
   offset `text-shadow` is what gives it the extruded game-logo slab.
+- **Group hire is a different unit.** A EUR 40 booking for up to four people is not
+  comparable to a EUR 12.50 entry, so venues priced per booking are drawn as **circles**
+  rather than squares, carry a "priced per booking" tag, have their own filter chip, and
+  are excluded from the cheapest-per-person figure. Shape was the free channel: fill
+  already carries the price band and the corner dot already carries USC.
 - **Blips** are rounded squares filled by price band (€18 → €90, gold to deep ember)
   with a white flame glyph; a cyan corner dot means the venue is on Urban Sports Club;
   a pale blip with a dark flame means the price is unpublished or the sauna is closed.
