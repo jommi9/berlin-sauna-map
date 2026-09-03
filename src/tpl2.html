@@ -989,13 +989,7 @@ setInterval(() => {
 }, 60000);
 
 /* ---------- picks ---------- */
-const PICKS = [
-  ["Best overall sauna day", "Vabali"], ["Best proper local sauna", "KIEZ SAUNA Friedrichshain"],
-  ["Best USC hotel experience", "Hilton Berlin — LivingWell"], ["Best USC for sauna quality", "Steigenberger — Sky Spa"],
-  ["Best easy USC option", "Park Inn Alexanderplatz — Gezer Spa"], ["Best USC sauna + cold plunge", "ANTI SPA"],
-  ["Best cash-value hotel spa", "Hotel Palace — Palace Spa"], ["Best premium hotel option", "Grand Hyatt — Club Olympus"],
-  ["Most beautiful", "Hotel de Rome — De Rome Spa"], ["Best sauna you can't easily book", "sly Berlin"]
-];
+const PICKS = /*__PICKS__*/;
 const pg = document.getElementById("picks");
 PICKS.forEach(([k, name]) => {
   const v = V.find(x => x.name === name);

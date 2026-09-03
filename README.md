@@ -15,9 +15,11 @@ stale `CNAME` pointing at a non-resolving domain will take this page down along 
 everything else on the account, returning a redirect into nowhere rather than a clear
 error. If this URL ever 301s somewhere unexpected, check that repo's `CNAME` first.
 
-Source of truth for the venue data is the Notion page **Personal Home / Projects /
-Berlin Sauna Guide / Saunas & Spas**. The site is a single static, self-contained
-HTML file — no runtime API calls, no keys, no build server.
+Source of truth for the venue data is `src/build_venues.py`. The Notion page
+**Personal Home / Projects / Berlin Sauna Guide / Saunas & Spas** is a *generated
+view* of it — don't hand-edit that table, `push_to_notion.py` overwrites it. The
+site is a single static, self-contained HTML file — no runtime API calls, no keys,
+no build server.
 
 ## Files
 
@@ -30,6 +32,7 @@ HTML file — no runtime API calls, no keys, no build server.
 | `src/declutter.py` | Nudges overlapping blips apart (currently ≤ 90 m displacement; a hairline tick shows the true spot when moved). |
 | `src/build_geo2.py` | Projects and simplifies districts, water, parks, roads and rail into `geo.json`, collapsing each layer to one path so the SVG stays ~8 nodes instead of 9,400. |
 | `src/assemble.py` | Inlines the JSON and writes the final ASCII-only HTML. Takes `<template> <output>`. |
+| `src/push_to_notion.py` | Renders the Notion page from the repo into `notion_page.md`, ready to apply with `replace_content`. |
 | `src/fetch.sh` | Overpass fetcher with mirror fallback and retries. Only needed to refresh the cached geodata. |
 | `src/geo.json`, `src/venues.json` | Derived map + venue data, committed so venue rebuilds need no network. |
 | `src/roads.json` etc. | Raw Overpass dumps, gitignored (16 MB). Only needed if the map bbox changes; `fetch.sh` re-pulls them. |

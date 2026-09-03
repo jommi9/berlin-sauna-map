@@ -42,42 +42,36 @@ own sites. Verdicts:
 Re-run it before any refresh of the guide. It found the Westin's renovation banner,
 which had expired three months earlier and was still posted.
 
-## Notion is the source of truth
+## The repo is the source of truth; Notion is generated
 
-Venue facts live in the Notion page *Personal Home / Projects / Berlin Sauna Guide /
-Saunas & Spas*. `src/build_venues.py` is a transcription of that table — edit Notion
-first, then mirror it here. Do not invent prices.
+Direction of travel was flipped on 3 September 2026. Venue facts live in
+`src/build_venues.py`. The Notion page *Personal Home / Projects / Berlin Sauna
+Guide / Saunas & Spas* is a **generated view** of it — do not hand-edit that
+table, the next push overwrites it. The callout at the top of the page says so.
 
-**Sync findings back.** Verification turns up corrections the table does not have, and
-if they only ever live in `build_venues.py` then Notion silently stops being the source
-of truth and the next rebuild from it undoes the fixes. Push anything verified back into
-the table (`notion-update-page` with `update_content` does surgical find-and-replace),
-and say where it came from — "from Gezer Spa's own shop", "(OpenStreetMap)". Watch two
-things when writing: identical cell text repeats across rows, so match on a neighbouring
-cell for uniqueness, and Notion auto-links bare domains, which mangles surrounding bold
-markers — keep URLs out of emphasised runs.
+Why: `build_venues.py` used to be a hand transcription of Notion, and the two
+drifted three times in two days (the InterContinental hotel-guest rates, Olivin's
+price ladder, Liquidrom's tiered admission) — each time after a sync that looked
+complete. One direction of travel makes that class of bug impossible, so the
+old `check_notion_sync.py` drift checker is gone with it.
 
-## Checking Notion and the site actually agree
+To publish the table after a data change:
 
-`build_venues.py` is a hand transcription, so nothing stops it drifting from the
-Notion table. Three drifts were found this way, each after a sync I believed was
-complete: the InterContinental hotel-guest rates, Olivin's full price ladder and
-Liquidrom's tiered admission all sat in Notion while the site showed older text.
+    cd src && python3 push_to_notion.py      # writes notion_page.md
 
-    cd src
-    # refresh notion_snapshot.tsv from the Notion page (name / cash / hours per row)
-    python3 check_notion_sync.py
+then apply it with `notion-update-page`, command `replace_content`, passing the
+file's contents. Two Notion quirks are handled in the generator and should not be
+"simplified" away: bare domains get auto-linked and wreck surrounding bold markers,
+so they are wrapped in backticks; and a table cell containing a newline breaks the
+row, so every cell is whitespace-collapsed.
 
-It compares euro amounts and clock times rather than prose, since the site words
-things deliberately differently, and exits non-zero on drift. Run it after every
-Notion edit. Two parsing traps are already handled and should not be "simplified"
-away: a decimal price like `24.50` matches a clock-time pattern, and a session
-length like `Urban Flow 120 €24.50` reads as 120 euros unless the euro sign is
-required not to be followed by a digit.
+`PICKS`, `PRACTICAL` and `LAST_CHECKED` are defined once in `build_venues.py` and
+injected into both the site template and the Notion page, so the fast-picks list
+cannot say two different things.
 
-Never use a bare `str.replace()` to edit venue data. Assert the old string exists
-and is unique first — a silent no-op replace is what let the InterContinental rates
-reach Notion but not the site.
+Never edit venue data with a bare `str.replace()`. Assert the old string exists
+and is unique first — a silent no-op replace is what let the InterContinental
+rates reach Notion but not the site.
 
 ## Two build outputs — do not merge them
 

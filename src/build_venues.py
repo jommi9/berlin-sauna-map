@@ -39,7 +39,7 @@ V = [
   "Large sauna area, whirlpool, terrace","Pool","07:00–21:00","Large conventional hotel spa",None,None,
   "https://www.berlin.intercontinental.com/wellness/"],
  ["The Westin Grand — Gezer Spa",52.51587,13.38860,"Hotel spa","Mitte",15,"€15 / 2h · €20 / 4h · €25 day card (Stadtgäste)","yes","Classic 4×/mo · Premium & Max 8×/mo · max 2h",
-  "Only the Sanarium is open, 60–65°C — two saunas still under repair","Check current spa setup","Currently shown around 14:00–22:00; verify before going","Central USC alternative",None,"Gezer Spa confirmed by email on 3 September 2026 that the spa has reopened, but two of the three saunas are still under repair with no completion date. Only the Sanarium (60–65°C) is running. The Urban Sports Club listing still shows the old closure banner.",
+  "Only the Sanarium is open, 60–65°C — two saunas still under repair","Check current spa setup","Currently shown around 14:00–22:00; verify before going","Central USC alternative",None,"Confirmed by Gezer Spa on 3 September 2026. No completion date for the two saunas under repair. The Urban Sports Club listing still shows the old closure banner — ignore it.",
   "https://urbansportsclub.com/en/venues/gezer-spa-fitness?view=new"],
  ["sly Berlin",52.50999,13.40558,"Hotel spa","Mitte",None,"Hotel guests only — no public access","no","No current USC listing",
   "KLAFS panoramic rooftop sauna, steam bath, roof terrace, tea, towels and bathrobes","No pool","About 06:00–23:00; hotel pages differ","Top-tier sauna, but you cannot get in",None,"Confirmed by sly Berlin on 2 September 2026: because of the spa's size it is open to hotel guests only. There is no public day pass.",
@@ -57,13 +57,13 @@ V = [
   "Large 95°C sauna, hourly Aufguss, garden, quiet rooms","No pool focus","15:00–24:00","Best cheap traditional sauna","Best cheap sauna","Their own site saunabad-berlin.de is dead \u2014 the domain now serves a hosting parking page and https fails, so this links to their Facebook instead. Rykestr. 10, tel. 030 44046397.",
   "https://www.facebook.com/p/Saunabad-Berlin-Prenzlauer-Berg-100061924915931/"],
  ["Lützow Sauna",52.50154,13.36890,"Standalone sauna","Tiergarten",24,"€24 / 2h · €27 / 3h · €30 day","no","No verified USC access",
-  "90°C sauna, sanarium, steam bath, hourly Aufguss","30°C pool and 14°C plunge","Closed Tuesdays; check other daily hours","Excellent classic hot–cold cycles",None,"Closed Tuesdays.",
+  "90°C sauna, sanarium, steam bath, hourly Aufguss","30°C pool and 14°C plunge","Closed Tuesdays; check other daily hours","Excellent classic hot–cold cycles",None,None,
   "https://www.luetzow-sauna.de/start"],
  ["ANTI SPA",52.53125,13.40084,"Sauna & cold plunge studio","Mitte",29,"Regular sessions around €29; promos vary","yes","Classic 4×/mo · Premium & Max 8×/mo",
   "Cedar sauna, lounge; swimwear mandatory","Proper cold plunge","Session based","Best USC sauna plus serious cold plunge","Best cold plunge",None,
   "https://www.antispaces.com/spa/welcome-pass"],
  ["Stadtbad Neukölln",52.47919,13.43973,"Public bath / sauna","Neukölln",20,"About €20 / 3h · €23 day","yes","Included on Max",
-  "Finnish sauna, herbal sauna, steam bath, caldarium","Public bath facilities","Sauna summer break through 31 Oct 2026","Excellent value once the sauna reopens",None,"Sauna closed for summer break through 31 October 2026.",
+  "Finnish sauna, herbal sauna, steam bath, caldarium","Public bath facilities","Sauna summer break through 31 Oct 2026","Excellent value once the sauna reopens",None,None,
   "https://www.berlinerbaeder.de/baeder/detail/stadtbad-neukoelln/"],
  ["Finnland Zentrum",52.48963,13.39737,"Private rental sauna","Kreuzberg",40,"€40 for up to 4 people (3h) · extra adults €10","no","Not mentioned",
   "Indoor sauna on the 2nd floor, adjacent shower and small changing room, fireplace room on the same floor; BYO drinks allowed, take the empties with you","No pool; cool off by the changing-room windows or in the rear courtyard","Booking by email or phone (+49 30 781 81 89); weekend availability varies","Private group sauna with BYO drinks",None,"Booked by email or phone rather than walking in — the €40 covers the whole group for three hours.",
@@ -186,6 +186,29 @@ HEAT = {
  "L\u00fctzow Sauna": (None, "scheduled", "Hourly"),
 }
 
+
+# --- The "fast picks" list, defined ONCE here so the site and the generated
+#     Notion page cannot disagree about it.
+PICKS = [
+ ("Best overall sauna day", "Vabali"),
+ ("Best proper local sauna", "KIEZ SAUNA Friedrichshain"),
+ ("Best USC hotel experience", "Hilton Berlin \u2014 LivingWell"),
+ ("Best USC for sauna quality", "Steigenberger \u2014 Sky Spa"),
+ ("Best easy USC option", "Park Inn Alexanderplatz \u2014 Gezer Spa"),
+ ("Best USC sauna + cold plunge", "ANTI SPA"),
+ ("Best cash-value hotel spa", "Hotel Palace \u2014 Palace Spa"),
+ ("Best premium hotel option", "Grand Hyatt \u2014 Club Olympus"),
+ ("Most beautiful", "Hotel de Rome \u2014 De Rome Spa"),
+ ("Best sauna you can't easily book", "sly Berlin"),
+]
+
+PRACTICAL = ("For a normal sauna session rather than a luxury spa day, **KIEZ SAUNA, Saunabad, "
+             "Olivin and L\u00fctzow** are better benchmarks than most hotel spas. Hotel spas make "
+             "more sense when the pool, terrace, relaxation area, or USC access is part of what "
+             "you want.")
+
+LAST_CHECKED = "3 September 2026"
+
 keys = ["name","lat","lon","kind","district","price","priceLabel","usc","uscLabel","sauna","pool","hours","bestFor","badge","flag","url"]
 venues = []
 for i, row in enumerate(V):
@@ -198,10 +221,13 @@ for i, row in enumerate(V):
     t, a, note = HEAT.get(d["name"], (None, "unknown", None))
     if t: d["sauna"] = t
     d["aufguss"], d["aufgussNote"] = a, note
+    d["heatSrc"] = "confirmed by the venue, email 3 Sep 2026" if t else None
     d["hours"] = HOURS_TEXT.get(d["name"], d["hours"])
     d["id"] = i
     venues.append(d)
 json.dump(venues, open('venues.json','w'), separators=(',',':'), ensure_ascii=False)
+json.dump({"picks": [list(p) for p in PICKS], "practical": PRACTICAL, "lastChecked": LAST_CHECKED},
+          open('meta.json','w'), separators=(',',':'), ensure_ascii=False)
 print(len(venues), "venues")
 xs=[v['x'] for v in venues]; ys=[v['y'] for v in venues]
 print("x range", min(xs), max(xs), "| y range", min(ys), max(ys), "| canvas", g['w'], g['h'])
