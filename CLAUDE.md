@@ -57,6 +57,28 @@ things when writing: identical cell text repeats across rows, so match on a neig
 cell for uniqueness, and Notion auto-links bare domains, which mangles surrounding bold
 markers — keep URLs out of emphasised runs.
 
+## Checking Notion and the site actually agree
+
+`build_venues.py` is a hand transcription, so nothing stops it drifting from the
+Notion table. Three drifts were found this way, each after a sync I believed was
+complete: the InterContinental hotel-guest rates, Olivin's full price ladder and
+Liquidrom's tiered admission all sat in Notion while the site showed older text.
+
+    cd src
+    # refresh notion_snapshot.tsv from the Notion page (name / cash / hours per row)
+    python3 check_notion_sync.py
+
+It compares euro amounts and clock times rather than prose, since the site words
+things deliberately differently, and exits non-zero on drift. Run it after every
+Notion edit. Two parsing traps are already handled and should not be "simplified"
+away: a decimal price like `24.50` matches a clock-time pattern, and a session
+length like `Urban Flow 120 €24.50` reads as 120 euros unless the euro sign is
+required not to be followed by a digit.
+
+Never use a bare `str.replace()` to edit venue data. Assert the old string exists
+and is unique first — a silent no-op replace is what let the InterContinental rates
+reach Notion but not the site.
+
 ## Two build outputs — do not merge them
 
 `index.html` (full document, has the viewport meta) is for GitHub Pages.
