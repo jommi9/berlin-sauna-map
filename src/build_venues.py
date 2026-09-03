@@ -39,7 +39,7 @@ V = [
   "Large sauna area, whirlpool, terrace","Pool","07:00–21:00","Large conventional hotel spa",None,None,
   "https://www.berlin.intercontinental.com/wellness/"],
  ["The Westin Grand — Gezer Spa",52.51587,13.38860,"Hotel spa","Mitte",15,"€15 / 2h · €20 / 4h · €25 day card (Stadtgäste)","yes","Classic 4×/mo · Premium & Max 8×/mo · max 2h",
-  "Three saunas at roughly 60°C, 85°C and 95°C","Check current spa setup","Currently shown around 14:00–22:00; verify before going","Central USC alternative",None,"Sauna and gym were closed for renovation and the Urban Sports Club listing still shows that banner, though it expired on 31 May 2026 \u2014 call before going.",
+  "Only the Sanarium is open, 60–65°C — two saunas still under repair","Check current spa setup","Currently shown around 14:00–22:00; verify before going","Central USC alternative",None,"Gezer Spa confirmed by email on 3 September 2026 that the spa has reopened, but two of the three saunas are still under repair with no completion date. Only the Sanarium (60–65°C) is running. The Urban Sports Club listing still shows the old closure banner.",
   "https://urbansportsclub.com/en/venues/gezer-spa-fitness?view=new"],
  ["sly Berlin",52.50999,13.40558,"Hotel spa","Mitte",None,"Hotel guests only — no public access","no","No current USC listing",
   "KLAFS panoramic rooftop sauna, steam bath, roof terrace, tea, towels and bathrobes","No pool","About 06:00–23:00; hotel pages differ","Top-tier sauna, but you cannot get in",None,"Confirmed by sly Berlin on 2 September 2026: because of the spa's size it is open to hotel guests only. There is no public day pass.",
@@ -126,6 +126,7 @@ OPEN = {
  "Hotel de Rome \u2014 De Rome Spa": {"weekly": D(600, 1260), "src": "listed"},
  "sly Berlin": {"weekly": D(360, 1380), "src": "listed"},
  "Saunabad Prenzlauer Berg": {"weekly": D(900, 1440), "src": "listed"},
+ "The Westin Grand \u2014 Gezer Spa": {"weekly": D(840, 1320), "src": "venue"},
  "Stadtbad Neuk\u00f6lln": {"closedUntil": "2026-10-31", "src": "venue"},
 }
 
@@ -142,7 +143,7 @@ HOURS_TEXT = {
  "InterContinental Berlin": "Daily 07:00\u201321:00 (Spa Card); Time Card Mon\u2013Fri 07:00\u201315:00",
  "Finnland Zentrum": "By arrangement \u2014 book by phone or email (+49 30 781 81 89)",
  "ANTI SPA": "Session based \u2014 book a slot",
- "The Westin Grand \u2014 Gezer Spa": "Unconfirmed while the renovation notice stands \u2014 call ahead",
+ "The Westin Grand \u2014 Gezer Spa": "Daily 14:00\u201322:00 \u2014 only the Sanarium is running while two saunas are repaired",
 }
 
 
@@ -150,6 +151,40 @@ HOURS_TEXT = {
 #     comparable to a EUR 12.50 entry, so these are drawn as circles rather than
 #     squares and are excluded from the per-person "cheapest" figure.
 GROUP_PRICED = {"Finnland Zentrum"}
+
+
+# --- Cabin temperatures and Aufguss practice, answered by the venues themselves
+#     in September 2026 (email). "aufguss" drives the filter chip:
+#     scheduled = run to a plan, self = buckets provided, request = ask staff,
+#     auto = automatic aroma dosing, unknown = they did not reply.
+HEAT = {
+ "Vabali": ("13 saunas: bio 55\u00b0C coolest, Gratensauna 90\u00b0C hottest, steam 45\u00b0C",
+   "scheduled", "Plan rewritten daily and posted in-house \u2014 birch ceremonies, Asian scent journey, mint, orange peeling"),
+ "Steigenberger \u2014 Sky Spa": ("2 Finnish saunas 90\u00b0C, bio 60\u00b0C, steam 45\u00b0C at high humidity",
+   "self", "No staff plan; guests pour their own, preparations provided"),
+ "Hotel Adlon Kempinski": ("Finnish 80\u2013100\u00b0C, bio/soft 50\u201360\u00b0C, steam 40\u201345\u00b0C at 98% humidity",
+   "auto", "No plan; the cabins release aroma automatically every 20 minutes"),
+ "Hotel Palace \u2014 Palace Spa": ("Finnish 90\u00b0C, tepidarium 55\u00b0C with colour therapy, ladies' sauna 90\u00b0C from 16:30, ice grotto 4\u00b0C",
+   "self", "Self-serve buckets: rose, herbal, lemongrass"),
+ "Titanic Gendarmenmarkt \u2014 BeFine": ("Finnish 90\u00b0C, steam 40\u201350\u00b0C, Turkish hammam 40\u00b0C",
+   "request", "No fixed plan; ask the team on the day"),
+ "Park Inn Alexanderplatz \u2014 Gezer Spa": ("Two Finnish saunas, 70\u201380\u00b0C and 90\u2013100\u00b0C",
+   "self", "No plan; pour your own freely"),
+ "InterContinental Berlin": ("Large Finnish 90\u00b0C, ladies' sauna 90\u00b0C, steam and herbal bath both 45\u00b0C; textile optional",
+   "self", "A bucket stands ready in both Finnish saunas; guests pour their own"),
+ "The Westin Grand \u2014 Gezer Spa": ("Only the Sanarium is open, 60\u201365\u00b0C \u2014 two saunas still under repair",
+   "unknown", None),
+ "sly Berlin": ("One electric Finnish sauna, fixed at 80\u00b0C", "unknown", None),
+ "Olivin": ("A single Finnish sauna at 90\u00b0C \u2014 there are no other cabins",
+   "scheduled", "On the hour, every hour"),
+ "LIQUIDROM": ("Hot Room 90\u00b0C, Kelo herbal room 80\u00b0C, Salt Room 65\u00b0C, steam 45\u00b0C; 36\u00b0C saltwater dome",
+   "scheduled", "Hourly heat sessions, roughly 10:00\u201323:00 (to 00:00 Fri\u2013Sat)"),
+ "Finnland Zentrum": ("One sauna, yours alone for the booking",
+   "self", "You are your own saunameister, as in Finland"),
+ "KIEZ SAUNA Friedrichshain": (None, "scheduled", "Hourly"),
+ "Saunabad Prenzlauer Berg": (None, "scheduled", "Hourly"),
+ "L\u00fctzow Sauna": (None, "scheduled", "Hourly"),
+}
 
 keys = ["name","lat","lon","kind","district","price","priceLabel","usc","uscLabel","sauna","pool","hours","bestFor","badge","flag","url"]
 venues = []
@@ -160,6 +195,9 @@ for i, row in enumerate(V):
     d["uscTiers"] = USC_TIERS.get(d["name"], [])
     d["open"] = OPEN.get(d["name"])
     d["pricing"] = "group" if d["name"] in GROUP_PRICED else "person"
+    t, a, note = HEAT.get(d["name"], (None, "unknown", None))
+    if t: d["sauna"] = t
+    d["aufguss"], d["aufgussNote"] = a, note
     d["hours"] = HOURS_TEXT.get(d["name"], d["hours"])
     d["id"] = i
     venues.append(d)

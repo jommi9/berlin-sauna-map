@@ -185,6 +185,7 @@ svg.map.dragging{cursor:grabbing}
   font-family:var(--hud); font-weight:500; font-size:10px; letter-spacing:.1em;
   text-transform:uppercase; color:var(--faint); white-space:nowrap;
 }
+.src2{color:var(--dim)}
 .key{display:flex; flex-wrap:wrap; gap:9px 20px; align-items:center; padding:12px 2px 2px}
 .key .lbl{font-family:var(--hud); font-weight:600; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint)}
 .bands{display:flex; align-items:center; gap:4px}
@@ -405,6 +406,7 @@ svg.map.dragging{cursor:grabbing}
       <button class="chip" data-v="hotel" aria-pressed="false">Hotel spa</button>
       <button class="chip" data-v="pool" aria-pressed="false">Pool / plunge</button>
       <button class="chip" data-v="group" aria-pressed="false">Group hire</button>
+      <button class="chip" data-v="aufguss" aria-pressed="false">Aufguss</button>
     </div>
     <div class="grp" id="g-usc" role="group" aria-label="Filter by Urban Sports Club tier">
       <span class="lbl">USC tier</span>
@@ -560,6 +562,8 @@ function openState(v, now){
   return now.minutes >= a && now.minutes < b ? "open" : "shut";
 }
 const SRC_NOTE = { venue: "from the venue", osm: "from OpenStreetMap", listed: "as published" };
+const AUFGUSS = { scheduled: "Run to a schedule", self: "Pour your own", request: "On request",
+                  auto: "Automatic aroma", unknown: "Not known" };
 const STATUS_TEXT = { open: "Open now", shut: "Closed now", unknown: "Check hours" };
 const STATUS_CLASS = { open: "open", shut: "shut", unknown: "unk" };
 
@@ -814,6 +818,7 @@ const TEST = {
   hotel: v => /^Hotel/.test(v.kind),
   pool:  v => !/^(No |Check)/i.test(v.pool),
   group: v => v.pricing === "group",
+  aufguss: v => v.aufguss === "scheduled",
 };
 function ok(v){
   if (F.openNow && openState(v, berlinNow()) !== "open") return false;
@@ -876,6 +881,8 @@ V.forEach(v => {
         ${v.usc !== "no" ? `<span class="tiers">${["Classic","Premium","Max"]
           .map(t => `<span class="tier${v.uscTiers.includes(t) ? "" : " off"}">${t}</span>`).join("")}</span>` : ""}</dd>
       <dt>Heat</dt><dd>${v.sauna}</dd>
+      ${v.aufguss !== "unknown" ? `<dt>Aufguss</dt><dd>${AUFGUSS[v.aufguss]}${
+        v.aufgussNote ? ` \u00b7 <span class="src2">${v.aufgussNote}</span>` : ""}</dd>` : ""}
       <dt>Water</dt><dd>${v.pool}</dd>
       <dt>Open</dt><dd>${v.hours}${v.open && SRC_NOTE[v.open.src]
         ? ` <span class="src">${SRC_NOTE[v.open.src]}</span>` : ""}</dd>
