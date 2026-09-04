@@ -44,7 +44,7 @@ if "reviewer-application" in labels:
         print(f"{handle} is already a reviewer; nothing to do"); sys.exit(0)
     reviewers[handle] = {"name": name, "bio": bio,
                          "joined": datetime.date.today().isoformat()}
-    json.dump(dict(sorted(reviewers.items())), open("reviewers.json", "w"),
+    json.dump(dict(sorted(reviewers.items())), open("reviewers.json", "w", encoding="utf-8"),
               indent=2, ensure_ascii=False)
     print(f"added reviewer {handle} ({name})")
 
@@ -77,7 +77,7 @@ elif "review" in labels:
                     "submitted": datetime.date.today().isoformat(),
                     "issue": issue["number"]})
     reviews.sort(key=lambda r: (r["venue"], r["submitted"]))
-    json.dump(reviews, open("reviews.json", "w"), indent=2, ensure_ascii=False)
+    json.dump(reviews, open("reviews.json", "w", encoding="utf-8"), indent=2, ensure_ascii=False)
     print(f"added review of {venue} by {handle} ({rating}/5)")
 else:
     fail("issue carries neither the reviewer-application nor the review label")

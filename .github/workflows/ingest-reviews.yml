@@ -24,14 +24,14 @@ jobs:
       - name: Write the issue payload to a file
         env:
           ISSUE: ${{ toJSON(github.event.issue) }}
-        run: printf '%s' "$ISSUE" > issue.json
+        run: printf '%s' "$ISSUE" > "$RUNNER_TEMP/issue.json"
 
       - name: Validate and ingest
         id: ingest
         working-directory: src
         run: |
           set -o pipefail
-          python3 ingest_issue.py ../issue.json 2>&1 | tee ../result.txt
+          python3 ingest_issue.py "$RUNNER_TEMP/issue.json" 2>&1 | tee "$RUNNER_TEMP/result.txt"
 
       - name: Rebuild the site
         if: success()
@@ -45,9 +45,9 @@ jobs:
           python3 push_to_notion.py
 
       - name: Commit and push
+        id: push
         if: success()
         run: |
-          rm -f issue.json result.txt
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if git diff --quiet; then echo "nothing changed"; exit 0; fi
@@ -62,11 +62,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ "${{ steps.ingest.outcome }}" = "success" ]; then
+          if [ "${{ steps.ingest.outcome }}${{ steps.push.outcome }}" = "successsuccess" ]; then
             gh issue comment ${{ github.event.issue.number }} \
-              --body "$(printf 'Published. It is live within a minute or two.\n\n```\n%s\n```' "$(cat result.txt 2>/dev/null)")"
+              --body "$(printf 'Published. It is live within a minute or two.\n\n```\n%s\n```' "$(cat "$RUNNER_TEMP/result.txt" 2>/dev/null)")"
             gh issue close ${{ github.event.issue.number }} || true
           else
             gh issue comment ${{ github.event.issue.number }} \
-              --body "$(printf 'Not published yet:\n\n```\n%s\n```\n\nEdit the issue above to fix it, then remove and re-add the `approved` label.' "$(cat result.txt 2>/dev/null)")"
+              --body "$(printf 'Not published yet:\n\n```\n%s\n```\n\nEdit the issue above to fix it, then remove and re-add the `approved` label.' "$(cat "$RUNNER_TEMP/result.txt" 2>/dev/null)")"
           fi
