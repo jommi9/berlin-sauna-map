@@ -86,6 +86,16 @@ site unreadable on mobile while looking fine in scaled screenshots.
 When checking mobile, assert `innerWidth` is what you set. If it reports 980, the
 viewport meta is missing and everything measured after that is meaningless.
 
+## After pushing, confirm the site actually changed
+
+A `git push` succeeding is not the same as the site updating. On 4 September 2026
+the Pages deploy failed on an OIDC token timeout while the push reported success,
+and the site quietly served stale content. `src/check_deployment.py` hashes the
+live page against `index.html` and also warns when a seasonal hours switch has just
+passed; it runs in the weekly audit. If it reports a mismatch, re-run the latest
+"pages build and deployment" workflow run — the build almost always succeeded and
+only the deploy step failed.
+
 ## Rebuild
 
 ```

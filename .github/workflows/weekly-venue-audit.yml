@@ -31,6 +31,12 @@ jobs:
           python3 verify_venue.py 2>&1 | tee ../audit.txt
           echo "status=$?" >> "$GITHUB_OUTPUT"
 
+      - name: Check the live site matches the repo, and seasonal switches
+        id: deploy
+        working-directory: src
+        continue-on-error: true
+        run: python3 check_deployment.py 2>&1 | tee -a ../audit.txt
+
       - name: Summarise
         run: |
           {
@@ -41,7 +47,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Open or update an issue when something needs a human
-        if: steps.audit.outcome == 'failure'
+        if: steps.audit.outcome == 'failure' || steps.deploy.outcome == 'failure'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
