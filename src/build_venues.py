@@ -216,6 +216,24 @@ PRACTICAL = ("For a normal sauna session rather than a luxury spa day, **KIEZ SA
 
 LAST_CHECKED = "3 September 2026"
 
+
+# --- Reviews. reviewers.json and reviews.json are written by the issue-ingest
+#     workflow, never by hand: a reviewer is approved by labelling their
+#     application issue, and a review is accepted only from an approved handle
+#     for a venue that exists. Both are plain JSON so a bad ingest is a
+#     reviewable diff rather than a silent database write.
+REVIEWERS = json.load(open('reviewers.json', encoding='utf-8'))
+REVIEWS = json.load(open('reviews.json', encoding='utf-8'))
+
+def reviews_for(name):
+    rs = [r for r in REVIEWS if r.get("venue") == name and r.get("reviewer") in REVIEWERS]
+    rs.sort(key=lambda r: r.get("submitted", ""), reverse=True)
+    for r in rs:
+        who = REVIEWERS[r["reviewer"]]
+        r["by"] = who.get("name") or r["reviewer"]
+        r["handle"] = r["reviewer"]
+    return rs
+
 keys = ["name","lat","lon","kind","district","price","priceLabel","usc","uscLabel","sauna","pool","hours","bestFor","badge","flag","url"]
 venues = []
 for i, row in enumerate(V):
@@ -229,11 +247,15 @@ for i, row in enumerate(V):
     if t: d["sauna"] = t
     d["aufguss"], d["aufgussNote"] = a, note
     d["heatSrc"] = "confirmed by the venue, email 3 Sep 2026" if t else None
+    d["reviews"] = reviews_for(d["name"])
+    rated = [r["rating"] for r in d["reviews"] if isinstance(r.get("rating"), (int, float))]
+    d["rating"] = round(sum(rated) / len(rated), 1) if rated else None
     d["hours"] = HOURS_TEXT.get(d["name"], d["hours"])
     d["id"] = i
     venues.append(d)
 json.dump(venues, open('venues.json','w'), separators=(',',':'), ensure_ascii=False)
-json.dump({"picks": [list(p) for p in PICKS], "practical": PRACTICAL, "lastChecked": LAST_CHECKED},
+json.dump({"picks": [list(p) for p in PICKS], "practical": PRACTICAL, "lastChecked": LAST_CHECKED,
+           "reviewers": REVIEWERS},
           open('meta.json','w'), separators=(',',':'), ensure_ascii=False)
 print(len(venues), "venues")
 xs=[v['x'] for v in venues]; ys=[v['y'] for v in venues]

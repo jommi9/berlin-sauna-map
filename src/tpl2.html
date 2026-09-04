@@ -256,6 +256,21 @@ svg.map.dragging{cursor:grabbing}
   border-left:3px solid var(--red); font-size:13.8px; color:var(--ink-2);
 }
 .alert b{font-family:var(--hud); font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--red); font-size:11.5px; display:block; margin-bottom:2px}
+.score{
+  flex:none; font-family:var(--hud); font-weight:700; font-size:15px; letter-spacing:.02em;
+  color:#63D2A2; background:var(--void); border:1px solid #2C6B52; border-radius:2px;
+  padding:4px 8px 3px; margin-left:5px;
+}
+.score em{font-style:normal; font-size:10px; color:var(--dim); letter-spacing:.06em}
+.revs{margin:13px 0 0; display:flex; flex-direction:column; gap:9px}
+.rev{
+  margin:0; padding:10px 12px; background:var(--panel-3); border-left:2.5px solid #2C6B52;
+  border-radius:0 5px 5px 0;
+}
+.rev-t{margin:0; font-size:14.3px; color:var(--ink-2); line-height:1.55}
+.rev footer{display:flex; flex-wrap:wrap; gap:4px 9px; align-items:baseline; margin-top:7px}
+.rev-w{font-family:var(--hud); font-weight:600; font-size:12px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink)}
+.rev-m{font-family:var(--hud); font-weight:500; font-size:11px; letter-spacing:.09em; color:var(--dim)}
 .go{
   display:inline-block; margin-top:14px; font-family:var(--hud); font-weight:600; font-size:12px;
   letter-spacing:.16em; text-transform:uppercase; color:var(--gold); text-decoration:none;
@@ -270,6 +285,9 @@ svg.map.dragging{cursor:grabbing}
 .picks{margin-top:3px; background:var(--panel); padding:clamp(22px,3vw,34px) clamp(14px,2.4vw,26px)}
 .picks h2{font-family:var(--disp); font-size:clamp(26px,3.2vw,40px); letter-spacing:.01em; text-transform:uppercase; margin:0 0 6px}
 .picks .sub{color:var(--dim); margin:0 0 22px; font-size:15px; max-width:62ch}
+.panel-rev{margin-top:3px}
+.joinline{display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 0}
+.pk .who{font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--dim)}
 .pgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:3px}
 .pk{
   background:var(--panel-2); border:0; padding:16px 16px 18px; text-align:left; cursor:pointer;
@@ -486,6 +504,16 @@ svg.map.dragging{cursor:grabbing}
     <div class="pgrid" id="picks"></div>
   </section>
 
+  <section class="picks panel-rev">
+    <h2>The panel</h2>
+    <p class="sub">Reviews come from a small panel rather than the open internet, so a review means
+    something. Anyone who actually uses Berlin's saunas can ask to join.</p>
+    <div class="pgrid" id="panel"></div>
+    <p class="joinline">
+      <a class="go" href="https://github.com/jommi9/berlin-sauna-map/issues/new?template=reviewer-application.yml" target="_blank" rel="noopener noreferrer">Apply to review</a>
+      <a class="go alt" href="https://github.com/jommi9/berlin-sauna-map/issues/new?template=review.yml" target="_blank" rel="noopener noreferrer">Post a review</a>
+    </p>
+  </section>
   <section class="credits">
     <div class="cgrid">
       <div>
@@ -871,7 +899,8 @@ V.forEach(v => {
         <p class="cmeta">${v.kind} // ${v.district}${v.pricing === "group"
           ? ' <span class="grouptag">priced per booking</span>' : ""}</p>
       </div>
-      <span class="rank${known ? "" : " none"}">${known ? (v.pricing === "group" ? "\u20ac" + v.price + " group" : d) : "N/A"}</span>
+      <span class="rank${known ? "" : " none"}">${known ? (v.pricing === "group" ? "\u20ac" + money(v.price) + " group" : d) : "N/A"}</span>
+      ${v.rating ? `<span class="score" title="${v.reviews.length} review${v.reviews.length === 1 ? "" : "s"}">${v.rating}<em>/5</em></span>` : ""}
     </div>
     <span class="status ${STATUS_CLASS[openState(v, berlinNow())]}" data-status>${STATUS_TEXT[openState(v, berlinNow())]}</span>
     ${v.badge ? `<span class="pick-tag">${v.badge}</span>` : ""}
@@ -889,6 +918,11 @@ V.forEach(v => {
       <dt>Best for</dt><dd>${v.bestFor}</dd>
     </dl>
     ${v.flag ? `<p class="alert"><b>Heads up</b>${v.flag}</p>` : ""}
+    ${v.reviews.length ? `<div class="revs">${v.reviews.map(r => `
+      <blockquote class="rev">
+        <p class="rev-t">${r.text}</p>
+        <footer><span class="rev-w">${r.by}</span> <span class="rev-m">${"\u2605".repeat(r.rating)}${"\u2606".repeat(5 - r.rating)} \u00b7 visited ${r.visited}</span></footer>
+      </blockquote>`).join("")}</div>` : ""}
     <a class="go" href="${v.url}" target="_blank" rel="noopener noreferrer">Hours &amp; booking</a>
     ${im ? "" : `<a class="go alt" href="${v.url}" target="_blank" rel="noopener noreferrer">See their photos</a>`}`;
   cards.appendChild(li); cardOf.set(v.id, li);
@@ -990,6 +1024,7 @@ setInterval(() => {
 
 /* ---------- picks ---------- */
 const PICKS = /*__PICKS__*/;
+const REVIEWERS = /*__REVIEWERS__*/;
 const pg = document.getElementById("picks");
 PICKS.forEach(([k, name]) => {
   const v = V.find(x => x.name === name);
@@ -1079,6 +1114,19 @@ grab.addEventListener("pointercancel", grabEnd);
 /* keep the sheet honest when the viewport or the filters change */
 addEventListener("resize", () => { if (isMobile()) setSheet(sheetOpen ? expandedH() : COLLAPSED); });
 if (isMobile()) setSheet(COLLAPSED);
+
+/* The panel */
+const panel = document.getElementById("panel");
+Object.entries(REVIEWERS).forEach(([handle, r]) => {
+  const n = V.reduce((a, v) => a + v.reviews.filter(x => x.handle === handle).length, 0);
+  const el2 = document.createElement("div");
+  el2.className = "pk";
+  el2.innerHTML = `<span class="k">${r.founder ? "Founder" : "Reviewer"} \u00b7 joined ${r.joined}</span>` +
+    `<span class="v">${r.name}</span><span class="who">@${handle}</span>` +
+    `<span class="p">${r.bio}</span>` +
+    `<span class="p">${n} review${n === 1 ? "" : "s"}</span>`;
+  panel.appendChild(el2);
+});
 
 run();
 </script>

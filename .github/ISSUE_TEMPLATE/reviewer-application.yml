@@ -1,0 +1,30 @@
+name: Apply to become a reviewer
+description: Ask to join the panel so your sauna reviews appear on the map.
+title: "Reviewer application: "
+labels: ["reviewer-application"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Reviews are written by a small panel rather than the open internet, so that
+        a review means something. Tell us a little about you and Joakim will take a look.
+        Your GitHub username becomes your byline.
+  - type: input
+    id: display_name
+    attributes:
+      label: Name to show on your reviews
+      placeholder: Joakim Isoaho
+    validations: { required: true }
+  - type: textarea
+    id: bio
+    attributes:
+      label: One or two lines about you
+      description: Shown next to your reviews. Sauna habits, not a CV.
+      placeholder: Finn in Berlin, weekly Aufguss habit, will always pick heat over a pool.
+    validations: { required: true }
+  - type: textarea
+    id: saunas
+    attributes:
+      label: Which Berlin saunas do you actually go to?
+      description: Helps us see you know the city. No wrong answers.
+    validations: { required: true }

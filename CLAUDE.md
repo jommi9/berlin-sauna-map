@@ -107,3 +107,22 @@ python3 build_venues.py && python3 declutter.py && python3 embed_images.py \
 
 Then republish `index.html` to the existing artifact URL, and push (GitHub Pages
 serves it at https://jommi9.github.io/berlin-sauna-map/).
+
+## Reviews come in through GitHub issues, never by hand
+
+Two files hold the whole model: `src/reviewers.json` (approved handles) and
+`src/reviews.json` (a flat list, each keyed to a venue `name` and a `reviewer`
+handle). `build_venues.py` joins them onto venues as `reviews` and a rounded
+`rating`; a review whose `reviewer` is not in `reviewers.json` is silently
+dropped, so revoking someone is a one-line delete.
+
+The path in is `.github/ISSUE_TEMPLATE/reviewer-application.yml` and `review.yml`.
+Applying the `approved` label fires `.github/workflows/ingest-reviews.yml`, which
+runs `src/ingest_issue.py` (validates venue name, handle, rating, date, length;
+strips markup and HTML-escapes, because review text lands in `innerHTML`),
+rebuilds both outputs, commits, then comments on the issue and closes it. A
+rejection exits non-zero, comments the reason and leaves the issue open.
+
+Never write review text yourself, not even to test rendering. Build with a
+`PLACEHOLDER`-marked body, check the layout, then reset `reviews.json` to `[]`
+and rebuild before committing.

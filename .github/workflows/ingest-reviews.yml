@@ -1,0 +1,72 @@
+name: Ingest approved reviewer or review
+
+# A maintainer approves by adding the `approved` label to an application or a
+# review issue. Everything is validated in ingest_issue.py before anything is
+# written, and a rejection comments on the issue instead of committing.
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  ingest:
+    if: github.event.label.name == 'approved'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Write the issue payload to a file
+        env:
+          ISSUE: ${{ toJSON(github.event.issue) }}
+        run: printf '%s' "$ISSUE" > issue.json
+
+      - name: Validate and ingest
+        id: ingest
+        working-directory: src
+        run: |
+          set -o pipefail
+          python3 ingest_issue.py ../issue.json 2>&1 | tee ../result.txt
+
+      - name: Rebuild the site
+        if: success()
+        working-directory: src
+        run: |
+          python3 build_venues.py
+          python3 declutter.py
+          python3 embed_images.py
+          python3 assemble.py tpl2.html ../index.html
+          python3 assemble.py tpl2.html ../artifact.html
+          python3 push_to_notion.py
+
+      - name: Commit and push
+        if: success()
+        run: |
+          rm -f issue.json result.txt
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then echo "nothing changed"; exit 0; fi
+          git add -A
+          git commit -m "Ingest #${{ github.event.issue.number }} from @${{ github.event.issue.user.login }}
+
+          Approved by @${{ github.event.sender.login }} via the '${{ github.event.label.name }}' label."
+          git push
+
+      - name: Say what happened on the issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ steps.ingest.outcome }}" = "success" ]; then
+            gh issue comment ${{ github.event.issue.number }} \
+              --body "$(printf 'Published. It is live within a minute or two.\n\n```\n%s\n```' "$(cat result.txt 2>/dev/null)")"
+            gh issue close ${{ github.event.issue.number }} || true
+          else
+            gh issue comment ${{ github.event.issue.number }} \
+              --body "$(printf 'Not published yet:\n\n```\n%s\n```\n\nEdit the issue above to fix it, then remove and re-add the `approved` label.' "$(cat result.txt 2>/dev/null)")"
+          fi

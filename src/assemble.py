@@ -20,7 +20,8 @@ img = json.dumps(json.load(open('img/embed.json', encoding='utf-8')), separators
 meta = json.load(open('meta.json', encoding='utf-8'))
 picks = json.dumps(meta['picks'], separators=(',', ':'), ensure_ascii=True)
 doc = (doc.replace('/*__GEO__*/', geo).replace('/*__VENUES__*/', ven)
-          .replace('/*__IMAGES__*/', img).replace('/*__PICKS__*/', picks))
+          .replace('/*__IMAGES__*/', img).replace('/*__PICKS__*/', picks)
+          .replace('/*__REVIEWERS__*/', json.dumps(meta['reviewers'], separators=(',', ':'), ensure_ascii=True)))
 assert doc.isascii(), "non-ascii survived"
 # Two outputs from one template.
 #   - the Artifact host supplies its own <head>, so it must get a bare fragment
