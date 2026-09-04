@@ -27,9 +27,9 @@
 <td>Hotel day spa</td>
 <td>Weekday €40 / 2h · €80 day; weekend €50 / 2h · €95 day</td>
 <td>Not on Urban Sports Club</td>
-<td>90°C Finnish sauna, steam bath, whirlpool, rooftop terrace</td>
+<td>Finnish sauna 90°C, steam bath 45°C Aroma: Automatic infusion in the Finnish sauna, four scents to choose from *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>Indoor rooftop pool + cold plunge</td>
-<td>07:00–21:00 (hours as published, not re-verified)</td>
+<td>07:00–21:00</td>
 <td>**Best premium hotel sauna**</td>
 </tr>
 <tr>
@@ -37,7 +37,7 @@
 <td>Hotel spa</td>
 <td>€33 / 2.5h · €39 day</td>
 <td>Premium 4×/mo · Max 8×/mo · 2h per visit</td>
-<td>Finnish saunas, steam rooms, experience showers, relaxation area; towels included with USC</td>
+<td>Mixed sauna area: Finnish 90°C, bio 65°C, steam 48°C Aroma: Press the button for an automatic infusion every 30 min — pouring your own is not allowed *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>14 m heated pool</td>
 <td>07:00–21:00 (hours as published, not re-verified)</td>
 <td>**Best overall USC hotel option**</td>
@@ -187,9 +187,9 @@
 <td>Sauna & cold plunge studio</td>
 <td>Regular sessions around €29; promos vary</td>
 <td>Classic 4×/mo · Premium & Max 8×/mo</td>
-<td>Cedar sauna, lounge; swimwear mandatory</td>
+<td>One sauna at 60°C plus the cold plunge — no Finnish, bio or steam cabin; swimwear mandatory *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>Proper cold plunge</td>
-<td>Session based — book a slot</td>
+<td>Open Spa daily 07:00–16:00 for self-guided sauna and cold plunge; guided sessions at other times — timetable on their site and Instagram</td>
 <td>**Best USC sauna plus serious cold plunge**</td>
 </tr>
 <tr>

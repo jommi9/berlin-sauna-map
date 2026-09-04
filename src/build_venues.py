@@ -120,13 +120,14 @@ OPEN = {
                                  [960,1380], [960,1380], [960,1380]], "src": "osm"},
  "LIQUIDROM": {"weekly": [[600,1440]]*4 + [[600,1500]]*3, "src": "osm"},
  "InterContinental Berlin": {"weekly": D(420, 1260), "src": "venue"},
- "Grand Hyatt \u2014 Club Olympus": {"weekly": D(420, 1260), "src": "listed"},
+ "Grand Hyatt \u2014 Club Olympus": {"weekly": D(420, 1260), "src": "venue"},
  "Hilton Berlin \u2014 LivingWell": {"weekly": D(420, 1260), "src": "listed"},
  "Hotel Adlon Kempinski": {"weekly": D(420, 1260), "src": "listed"},
  "Hotel de Rome \u2014 De Rome Spa": {"weekly": D(600, 1260), "src": "listed"},
  "sly Berlin": {"weekly": D(360, 1380), "src": "listed"},
  "Saunabad Prenzlauer Berg": {"weekly": D(900, 1440), "src": "listed"},
  "The Westin Grand \u2014 Gezer Spa": {"weekly": D(840, 1320), "src": "venue"},
+ "ANTI SPA": {"weekly": D(420, 960), "src": "venue"},
  "Stadtbad Neuk\u00f6lln": {"closedUntil": "2026-10-31", "src": "venue"},
 }
 
@@ -142,7 +143,7 @@ HOURS_TEXT = {
  "LIQUIDROM": "Mon\u2013Thu 10:00\u201324:00 \u00b7 Fri\u2013Sun 10:00\u201301:00",
  "InterContinental Berlin": "Daily 07:00\u201321:00 (Spa Card); Time Card Mon\u2013Fri 07:00\u201315:00",
  "Finnland Zentrum": "By arrangement \u2014 book by phone or email (+49 30 781 81 89)",
- "ANTI SPA": "Session based \u2014 book a slot",
+ "ANTI SPA": "Open Spa daily 07:00\u201316:00 for self-guided sauna and cold plunge; guided sessions at other times \u2014 timetable on their site and Instagram",
  "The Westin Grand \u2014 Gezer Spa": "Daily 14:00\u201322:00 \u2014 only the Sanarium is running while two saunas are repaired",
 }
 
@@ -181,6 +182,12 @@ HEAT = {
    "scheduled", "Hourly heat sessions, roughly 10:00\u201323:00 (to 00:00 Fri\u2013Sat)"),
  "Finnland Zentrum": ("One sauna, yours alone for the booking",
    "self", "You are your own saunameister, as in Finland"),
+ "Grand Hyatt \u2014 Club Olympus": ("Finnish sauna 90\u00b0C, steam bath 45\u00b0C",
+   "auto", "Automatic infusion in the Finnish sauna, four scents to choose from"),
+ "Hilton Berlin \u2014 LivingWell": ("Mixed sauna area: Finnish 90\u00b0C, bio 65\u00b0C, steam 48\u00b0C",
+   "auto", "Press the button for an automatic infusion every 30 min \u2014 pouring your own is not allowed"),
+ "ANTI SPA": ("One sauna at 60\u00b0C plus the cold plunge \u2014 no Finnish, bio or steam cabin; swimwear mandatory",
+   "unknown", None),
  "KIEZ SAUNA Friedrichshain": (None, "scheduled", "Hourly"),
  "Saunabad Prenzlauer Berg": (None, "scheduled", "Hourly"),
  "L\u00fctzow Sauna": (None, "scheduled", "Hourly"),
