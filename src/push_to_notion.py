@@ -62,7 +62,11 @@ def status(v):
     elif src == "listed":
         bits.append("(hours as published, not re-verified)")
     if v.get("flag"):
-        bits.append(f"**{v['flag']}**" if not v["flag"].startswith("**") else v["flag"])
+        # Label the note in bold rather than bolding the whole sentence. A code
+        # span inside a bold run collides into "****" in Notion, which is how
+        # the Saunabad cell came back mangled; keeping the body unbolded means
+        # backticked domains and bold markers never meet.
+        bits.append(f"**Heads up:** {v['flag']}")
     return " ".join(bits)
 
 def best(v):

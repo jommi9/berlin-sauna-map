@@ -119,7 +119,7 @@
 <td>Classic 4×/mo · Premium & Max 8×/mo · max 2h</td>
 <td>Only the Sanarium is open, 60–65°C — two saunas still under repair *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>Check current spa setup</td>
-<td>Daily 14:00–22:00 — only the Sanarium is running while two saunas are repaired **Confirmed by Gezer Spa on 3 September 2026. No completion date for the two saunas under repair. The Urban Sports Club listing still shows the old closure banner — ignore it.**</td>
+<td>Daily 14:00–22:00 — only the Sanarium is running while two saunas are repaired **Heads up:** Confirmed by Gezer Spa on 3 September 2026. No completion date for the two saunas under repair. The Urban Sports Club listing still shows the old closure banner — ignore it.</td>
 <td>Central USC alternative</td>
 </tr>
 <tr>
@@ -129,7 +129,7 @@
 <td>No current USC listing</td>
 <td>One electric Finnish sauna, fixed at 80°C *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>No pool</td>
-<td>About 06:00–23:00; hotel pages differ (hours as published, not re-verified) **Confirmed by sly Berlin on 2 September 2026: because of the spa's size it is open to hotel guests only. There is no public day pass.**</td>
+<td>About 06:00–23:00; hotel pages differ (hours as published, not re-verified) **Heads up:** Confirmed by sly Berlin on 2 September 2026: because of the spa's size it is open to hotel guests only. There is no public day pass.</td>
 <td>Top-tier sauna, but you cannot get in</td>
 </tr>
 <tr>
@@ -159,7 +159,7 @@
 <td>Premium / Max access exists, but USC entry excludes the sauna</td>
 <td>Hot Room 90°C, Kelo herbal room 80°C, Salt Room 65°C, steam 45°C; 36°C saltwater dome Aufguss: Hourly heat sessions, roughly 10:00–23:00 (to 00:00 Fri–Sat) *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>Saltwater sound pool</td>
-<td>Mon–Thu 10:00–24:00 · Fri–Sun 10:00–01:00 (hours from OpenStreetMap) **USC entry does not include the sauna — you pay the supplement.**</td>
+<td>Mon–Thu 10:00–24:00 · Fri–Sun 10:00–01:00 (hours from OpenStreetMap) **Heads up:** USC entry does not include the sauna — you pay the supplement.</td>
 <td>Spa / pool atmosphere rather than pure sauna</td>
 </tr>
 <tr>
@@ -169,7 +169,7 @@
 <td>No verified USC access</td>
 <td>Large 95°C sauna, hourly Aufguss, garden, quiet rooms</td>
 <td>No pool focus</td>
-<td>15:00–24:00 (hours as published, not re-verified) **Their own site `saunabad-berlin.de` is dead — the domain now serves a hosting parking page and https fails, so this links to their Facebook instead. Rykestr. 10, tel. 030 44046397.**</td>
+<td>15:00–24:00 (hours as published, not re-verified) **Heads up:** Their own site `saunabad-berlin.de` is dead — the domain now serves a hosting parking page and https fails, so this links to their Facebook instead. Rykestr. 10, tel. 030 44046397.</td>
 <td>**Best cheap traditional sauna**</td>
 </tr>
 <tr>
@@ -209,7 +209,7 @@
 <td>Not mentioned</td>
 <td>One sauna, yours alone for the booking Aufguss (self-serve): You are your own saunameister, as in Finland *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>No pool; cool off by the changing-room windows or in the rear courtyard</td>
-<td>By arrangement — book by phone or email (+49 30 781 81 89) **Booked by email or phone rather than walking in — the €40 covers the whole group for three hours.**</td>
+<td>By arrangement — book by phone or email (+49 30 781 81 89) **Heads up:** Booked by email or phone rather than walking in — the €40 covers the whole group for three hours.</td>
 <td>Private group sauna with BYO drinks</td>
 </tr>
 </table>

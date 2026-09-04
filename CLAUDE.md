@@ -62,8 +62,10 @@ To publish the table after a data change:
 then apply it with `notion-update-page`, command `replace_content`, passing the
 file's contents. Two Notion quirks are handled in the generator and should not be
 "simplified" away: bare domains get auto-linked and wreck surrounding bold markers,
-so they are wrapped in backticks; and a table cell containing a newline breaks the
-row, so every cell is whitespace-collapsed.
+so they are wrapped in backticks; a table cell containing a newline breaks the row,
+so every cell is whitespace-collapsed; and a code span inside a bold run collides
+into `****`, so notes are written as a bold **Heads up:** label followed by
+unbolded text rather than bolding the whole sentence.
 
 `PICKS`, `PRACTICAL` and `LAST_CHECKED` are defined once in `build_venues.py` and
 injected into both the site template and the Notion page, so the fast-picks list
