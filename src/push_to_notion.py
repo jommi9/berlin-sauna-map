@@ -101,6 +101,16 @@ for label, name in M["picks"]:
 out.append("## Practical note")
 out.append(M["practical"])
 
+# Reviews live on the site, not here: they arrive through GitHub issues and are
+# joined onto venues at build time, so a Notion column would be a fourth copy.
+out.append("## Reviews")
+n = sum(len(v.get("reviews", [])) for v in V)
+who = ", ".join(r["name"] for r in M["reviewers"].values())
+out.append(f"{n} review{'' if n == 1 else 's'} from a panel of "
+           f"{len(M['reviewers'])} ({who}). They are shown on the site, "
+           f"under each venue. To join the panel or post a review, open an issue: "
+           f"`github.com/jommi9/berlin-sauna-map/issues/new/choose`")
+
 doc = "\n".join(out) + "\n"
 open("notion_page.md", "w", encoding="utf-8").write(doc)
 

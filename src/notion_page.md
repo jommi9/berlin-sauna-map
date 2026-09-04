@@ -226,3 +226,5 @@
 - **Best sauna you can't easily book:** sly Berlin
 ## Practical note
 For a normal sauna session rather than a luxury spa day, **KIEZ SAUNA, Saunabad, Olivin and Lützow** are better benchmarks than most hotel spas. Hotel spas make more sense when the pool, terrace, relaxation area, or USC access is part of what you want.
+## Reviews
+0 reviews from a panel of 1 (Joakim Isoaho). They are shown on the site, under each venue. To join the panel or post a review, open an issue: `github.com/jommi9/berlin-sauna-map/issues/new/choose`
