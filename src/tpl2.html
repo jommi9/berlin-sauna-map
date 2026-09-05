@@ -590,6 +590,20 @@ function openState(v, now){
   return now.minutes >= a && now.minutes < b ? "open" : "shut";
 }
 const SRC_NOTE = { venue: "from the venue", osm: "from OpenStreetMap", listed: "as published" };
+const MONTH = ["January","February","March","April","May","June","July","August","September",
+               "October","November","December"];
+/* A dated closure is written once, as a date. The sentence is composed here so
+   that the day it expires the card stops claiming the sauna is shut, without
+   waiting for someone to rebuild the page. */
+function hoursText(v, now){
+  const o = v.open;
+  if (!o || !o.closedUntil) return v.hours;
+  const [y, m, d] = o.closedUntil.split("-").map(Number);
+  const pretty = `${d} ${MONTH[m - 1]} ${y}`;
+  return now.date <= o.closedUntil
+    ? `Sauna closed until ${pretty}`
+    : `Sauna break ended ${pretty} \u2014 hours not re-verified since`;
+}
 const AUFGUSS = { scheduled: "Run to a schedule", self: "Pour your own", request: "On request",
                   auto: "Automatic aroma", unknown: "Not known" };
 const STATUS_TEXT = { open: "Open now", shut: "Closed now", unknown: "Check hours" };
@@ -913,7 +927,7 @@ V.forEach(v => {
       ${v.aufguss !== "unknown" ? `<dt>Aufguss</dt><dd>${AUFGUSS[v.aufguss]}${
         v.aufgussNote ? ` \u00b7 <span class="src2">${v.aufgussNote}</span>` : ""}</dd>` : ""}
       <dt>Water</dt><dd>${v.pool}</dd>
-      <dt>Open</dt><dd>${v.hours}${v.open && SRC_NOTE[v.open.src]
+      <dt>Open</dt><dd>${hoursText(v, berlinNow())}${v.open && SRC_NOTE[v.open.src]
         ? ` <span class="src">${SRC_NOTE[v.open.src]}</span>` : ""}</dd>
       <dt>Best for</dt><dd>${v.bestFor}</dd>
     </dl>

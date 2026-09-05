@@ -126,3 +126,40 @@ rejection exits non-zero, comments the reason and leaves the issue open.
 Never write review text yourself, not even to test rendering. Build with a
 `PLACEHOLDER`-marked body, check the layout, then reset `reviews.json` to `[]`
 and rebuild before committing.
+
+## The map updates itself where it can prove the change
+
+`src/selfupdate.py` re-reads each venue's own page weekly and rewrites
+`build_venues.py` where a claim is provable, then the workflow rebuilds, pushes
+and regenerates Notion. Nothing else in the repo is allowed to write venue data.
+
+Proof means an anchor in `src/sources.py` matching one value on the operator's
+own page. Repetition is fine — a price in a summary box and again in a table is
+the same claim twice — but two *different* values under one label is not proof
+and is left alone.
+
+Three refusals, and none of them should be relaxed:
+
+| | |
+|---|---|
+| a figure moving below half or above double | a misparse fails loudly instead of writing €6 over €22 |
+| more than four changes in one run | five venues do not all reprice on the same Monday; a broken parser looks exactly like that |
+| an edit target that is not unique | the same rule CLAUDE.md already imposes by hand |
+
+Only five venues are anchored, and the others were **measured and rejected**,
+not forgotten: KIEZ SAUNA, Lützow, Palace, Titanic and ANTI SPA either render
+prices with JavaScript or print bare amounts with no label beside them
+(`€14.50 €14.50 €29 €29`), so no anchor can tell one tariff from another. No
+venue publishes JSON-LD opening hours — that was checked across all 20 — so
+hours are never written automatically.
+
+Dated facts carry one date and no prose. `closedUntil` generates its own
+sentence at build time *and again in the browser*, so the day a closure expires
+the card stops claiming the sauna is shut without waiting for a rebuild; it
+then says the hours are unverified, and `check_deployment.py` chases it.
+Stadtbad shortened its 2026 summer break from 31 Oct to 30 Sep without telling
+anyone — that drift is what this is for.
+
+To add a venue to the self-updater: read its page, find a label that sits
+immediately beside the figure, add the anchor to `sources.py`, and check it
+matches exactly once with `python3 selfupdate.py --dry-run`.

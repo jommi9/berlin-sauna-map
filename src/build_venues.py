@@ -1,4 +1,4 @@
-import json, math
+import datetime, json, math
 g = json.load(open('geo.json'))
 LON0, LAT0, LON1, LAT1 = g['bbox']; SX = g['sx']; DM1 = g['dm1']
 def proj(lon, lat):
@@ -63,7 +63,7 @@ V = [
   "Cedar sauna, lounge; swimwear mandatory","Proper cold plunge","Session based","Best USC sauna plus serious cold plunge","Best cold plunge",None,
   "https://www.antispaces.com/spa/welcome-pass"],
  ["Stadtbad Neukölln",52.47919,13.43973,"Public bath / sauna","Neukölln",20,"About €20 / 3h · €23 day","yes","Included on Max",
-  "Finnish sauna, herbal sauna, steam bath, caldarium","Public bath facilities","Sauna summer break through 31 Oct 2026","Excellent value once the sauna reopens",None,None,
+  "Finnish sauna, herbal sauna, steam bath, caldarium","Public bath facilities",None,"Excellent value once the sauna reopens",None,None,
   "https://www.berlinerbaeder.de/baeder/detail/stadtbad-neukoelln/"],
  ["Finnland Zentrum",52.48963,13.39737,"Private rental sauna","Kreuzberg",40,"€40 for up to 4 people (3h) · extra adults €10","no","Not mentioned",
   "Indoor sauna on the 2nd floor, adjacent shower and small changing room, fireplace room on the same floor; BYO drinks allowed, take the empties with you","No pool; cool off by the changing-room windows or in the rear courtyard","Booking by email or phone (+49 30 781 81 89); weekend availability varies","Private group sauna with BYO drinks",None,"Booked by email or phone rather than walking in — the €40 covers the whole group for three hours.",
@@ -128,7 +128,7 @@ OPEN = {
  "Saunabad Prenzlauer Berg": {"weekly": D(900, 1440), "src": "listed"},
  "The Westin Grand \u2014 Gezer Spa": {"weekly": D(840, 1320), "src": "venue"},
  "ANTI SPA": {"weekly": D(420, 960), "src": "venue"},
- "Stadtbad Neuk\u00f6lln": {"closedUntil": "2026-10-31", "src": "venue"},
+ "Stadtbad Neuk\u00f6lln": {"closedUntil": "2026-09-30", "src": "venue"},
 }
 
 HOURS_TEXT = {
@@ -214,7 +214,7 @@ PRACTICAL = ("For a normal sauna session rather than a luxury spa day, **KIEZ SA
              "more sense when the pool, terrace, relaxation area, or USC access is part of what "
              "you want.")
 
-LAST_CHECKED = "3 September 2026"
+LAST_CHECKED = "4 September 2026"
 
 
 # --- Reviews. reviewers.json and reviews.json are written by the issue-ingest
@@ -251,6 +251,14 @@ for i, row in enumerate(V):
     rated = [r["rating"] for r in d["reviews"] if isinstance(r.get("rating"), (int, float))]
     d["rating"] = round(sum(rated) / len(rated), 1) if rated else None
     d["hours"] = HOURS_TEXT.get(d["name"], d["hours"])
+    # A closure has exactly one date, in OPEN. Writing the same date again as
+    # prose is how "summer break through 31 Oct" outlived the venue shortening
+    # its break to 30 Sep, so the sentence is generated from the date instead -
+    # and the page regenerates it again at render time, so it goes stale for
+    # hours rather than until the next build.
+    if d["open"] and d["open"].get("closedUntil"):
+        until = datetime.date.fromisoformat(d["open"]["closedUntil"])
+        d["hours"] = f"Sauna closed until {until.day} {until:%B %Y}"
     d["id"] = i
     venues.append(d)
 json.dump(venues, open('venues.json','w'), separators=(',',':'), ensure_ascii=False)

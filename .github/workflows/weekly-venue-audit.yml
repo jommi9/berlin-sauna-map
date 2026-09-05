@@ -1,15 +1,22 @@
 name: Weekly venue audit
 
 # The guide goes stale silently: domains lapse, renovation banners outlive their
-# dates, saunas switch to winter hours. This re-checks every venue against its
-# OWN site once a week and opens an issue if anything needs a human.
+# dates, saunas switch to winter hours, a summer break gets shortened by a month.
+#
+# This runs once a week and does two different jobs, in this order:
+#   1. self-update  - re-read what the venues publish and FIX what can be proven
+#                     from their own pages, then rebuild, push and republish;
+#   2. audit        - report what could not be fixed automatically, as an issue.
+#
+# The split matters: anything provable should never reach a human, and anything
+# unprovable should never be written by a script.
 on:
   schedule:
     - cron: "0 6 * * 1"        # Mondays 06:00 UTC (08:00 Berlin in summer, 07:00 in winter)
   workflow_dispatch:            # and on demand
 
 permissions:
-  contents: read
+  contents: write
   issues: write
 
 jobs:
@@ -22,55 +29,99 @@ jobs:
         with:
           python-version: "3.12"
 
+      # --- 1. fix what the venues' own pages prove ------------------------
+      - name: Re-read the venues and apply what is provable
+        id: update
+        working-directory: src
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python3 selfupdate.py 2>&1 | tee "$RUNNER_TEMP/update.txt"
+
+      - name: Rebuild and publish if anything changed
+        id: publish
+        run: |
+          if git diff --quiet -- src/build_venues.py; then
+            echo "changed=no" >> "$GITHUB_OUTPUT"
+            echo "nothing changed at source"
+            exit 0
+          fi
+          echo "changed=yes" >> "$GITHUB_OUTPUT"
+          cd src
+          python3 build_venues.py
+          python3 declutter.py
+          python3 embed_images.py
+          python3 assemble.py tpl2.html ../index.html
+          python3 assemble.py tpl2.html ../artifact.html
+          python3 push_to_notion.py
+          cd ..
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit \
+            -m "Update venue data from the venues' own pages" \
+            -m "Applied by src/selfupdate.py, which only writes a change it can pin to a single labelled figure on the operator's own site. Evidence for each line is in the run log." \
+            -m "Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+          git push
+          printf 'Applied and pushed:\n\n```\n%s\n```\n' "$(cat "$RUNNER_TEMP/update.txt")" >> "$GITHUB_STEP_SUMMARY"
+
+      # --- 2. report what a human still has to look at --------------------
       - name: Check every venue against its own site
         id: audit
         working-directory: src
         continue-on-error: true
         run: |
           set -o pipefail
-          python3 verify_venue.py 2>&1 | tee ../audit.txt
-          echo "status=$?" >> "$GITHUB_OUTPUT"
-
-      - name: Check the live site matches the repo, and seasonal switches
-        id: deploy
-        working-directory: src
-        continue-on-error: true
-        run: python3 check_deployment.py 2>&1 | tee -a ../audit.txt
+          python3 verify_venue.py 2>&1 | tee "$RUNNER_TEMP/audit.txt"
 
       - name: Watch for price changes at source
         id: prices
         working-directory: src
         continue-on-error: true
-        run: python3 watch_changes.py 2>&1 | tee -a ../audit.txt
+        run: python3 watch_changes.py 2>&1 | tee -a "$RUNNER_TEMP/audit.txt"
+
+      - name: Check the live site matches the repo, and dates that have lapsed
+        id: deploy
+        working-directory: src
+        continue-on-error: true
+        run: python3 check_deployment.py --wait 6 2>&1 | tee -a "$RUNNER_TEMP/audit.txt"
 
       - name: Summarise
         run: |
           {
+            echo '## Self-update'
+            echo '```'
+            cat "$RUNNER_TEMP/update.txt"
+            echo '```'
             echo '## Venue audit'
             echo '```'
-            cat audit.txt
+            cat "$RUNNER_TEMP/audit.txt"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Open or update an issue when something needs a human
-        if: steps.audit.outcome == 'failure' || steps.deploy.outcome == 'failure' || steps.prices.outcome == 'failure'
+        if: steps.audit.outcome == 'failure' || steps.deploy.outcome == 'failure' || steps.prices.outcome == 'failure' || steps.update.outcome == 'failure'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           TITLE="Venue audit: some entries need checking"
           BODY=$(printf '%s\n' \
-            "The weekly audit flagged one or more venues. Verdicts that need a human:" \
+            "The weekly run fixed what it could prove and left the rest. Below is what it could not settle." \
             "" \
-            '`STALE NOTICE` a closure banner whose date has passed · `UNREACHABLE` / `LIKELY CLOSED` · `SUSPECT` the site never mentions a sauna · `PAUSED` a current closure.' \
+            '`STALE NOTICE` a closure banner whose date has passed · `UNREACHABLE` / `LIKELY CLOSED` · `SUSPECT` the site never mentions a sauna · `PAUSED` a current closure · an anchor that matched the wrong number of times means `src/sources.py` needs re-pinning.' \
             "" \
-            '```' "$(cat audit.txt)" '```' \
+            "### What the self-updater did" \
+            '```' "$(cat "$RUNNER_TEMP/update.txt")" '```' \
             "" \
-            "Fix in Notion first (Personal Home / Projects / Berlin Sauna Guide / Saunas & Spas), then mirror into \`src/build_venues.py\` and rebuild. See CLAUDE.md." \
+            "### Audit" \
+            '```' "$(cat "$RUNNER_TEMP/audit.txt")" '```' \
+            "" \
+            "Edit \`src/build_venues.py\` - it is the source of truth, and the Notion page is generated from it. Read prices and hours off the venue's own page, never off an aggregator. See CLAUDE.md." \
             "" \
             "_Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}_")
           EXISTING=$(gh issue list --state open --search "$TITLE in:title" --json number --jq '.[0].number' || true)
           if [ -n "$EXISTING" ]; then
             gh issue comment "$EXISTING" --body "$BODY"
           else
-            gh issue create --title "$TITLE" --body "$BODY" --label "" || gh issue create --title "$TITLE" --body "$BODY"
+            gh issue create --title "$TITLE" --body "$BODY"
           fi
