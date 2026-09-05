@@ -1,5 +1,5 @@
 <callout icon="♨️" color="blue_bg">
-	Berlin sauna shortlist combining hotel day spas, Urban Sports Club options, and regular standalone saunas. **Last checked: 3 September 2026.** Cabin temperatures and Aufguss practice were confirmed by the venues themselves by email. Prices, USC limits and opening hours change often, so recheck before making a special trip. **This page is generated from the berlin-sauna-map repository — edits made here are overwritten by the next build.**
+	Berlin sauna shortlist combining hotel day spas, Urban Sports Club options, and regular standalone saunas. **Last checked: 4 September 2026.** Cabin temperatures and Aufguss practice were confirmed by the venues themselves by email. Prices, USC limits and opening hours change often, so recheck before making a special trip. **This page is generated from the berlin-sauna-map repository — edits made here are overwritten by the next build.**
 </callout>
 <table fit-page-width="true" header-row="true">
 <tr>
@@ -17,7 +17,7 @@
 <td>Standalone spa</td>
 <td>€27.50 / 2h · €36.50 / 4h · €51.50 day</td>
 <td>Not on Urban Sports Club</td>
-<td>13 saunas: bio 55°C coolest, Gratensauna 90°C hottest, steam 45°C Aufguss: Plan rewritten daily and posted in-house — birch ceremonies, Asian scent journey, mint, orange peeling *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>**Someone throws for you — Aufguss.** 13 saunas: bio 55°C coolest, Gratensauna 90°C hottest, steam 45°C Aufguss rated 10/10. Aufguss: Plan rewritten daily and posted in-house — birch ceremonies, Asian scent journey, mint, orange peeling *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>4 pools</td>
 <td>Daily 09:00–24:00 (08:00–24:00 from 1 Oct to 31 Mar)</td>
 <td>**Best full sauna day**</td>
@@ -27,7 +27,7 @@
 <td>Hotel day spa</td>
 <td>Weekday €40 / 2h · €80 day; weekend €50 / 2h · €95 day</td>
 <td>Not on Urban Sports Club</td>
-<td>Finnish sauna 90°C, steam bath 45°C Aroma: Automatic infusion in the Finnish sauna, four scents to choose from *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>**Automatic dosing — nobody throws.** Finnish sauna 90°C, steam bath 45°C Aroma: Automatic infusion in the Finnish sauna, four scents to choose from *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>Indoor rooftop pool + cold plunge</td>
 <td>07:00–21:00</td>
 <td>**Best premium hotel sauna**</td>
@@ -37,7 +37,7 @@
 <td>Hotel spa</td>
 <td>€33 / 2.5h · €39 day</td>
 <td>Premium 4×/mo · Max 8×/mo · 2h per visit</td>
-<td>Mixed sauna area: Finnish 90°C, bio 65°C, steam 48°C Aroma: Press the button for an automatic infusion every 30 min — pouring your own is not allowed *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>**Automatic dosing — nobody throws.** Mixed sauna area: Finnish 90°C, bio 65°C, steam 48°C Aroma: Press the button for an automatic infusion every 30 min — pouring your own is not allowed *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>14 m heated pool</td>
 <td>07:00–21:00 (hours as published, not re-verified)</td>
 <td>**Best overall USC hotel option**</td>
@@ -47,7 +47,7 @@
 <td>Hotel spa</td>
 <td>€25 / 2h · €40 day</td>
 <td>Premium & Max 4×/mo · reserved 2h slot</td>
-<td>2 Finnish saunas 90°C, bio 60°C, steam 45°C at high humidity Aufguss (self-serve): No staff plan; guests pour their own, preparations provided *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>**You throw your own löyly.** 2 Finnish saunas 90°C, bio 60°C, steam 45°C at high humidity Aufguss (self-serve): No staff plan; guests pour their own, preparations provided *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>No major pool focus</td>
 <td>Mon–Fri 14:00–22:00 · Sat 10:00–22:00 · Sun 10:00–18:00 (hours from OpenStreetMap)</td>
 <td>**Best USC option if sauna matters most**</td>
@@ -57,7 +57,7 @@
 <td>Hotel day spa</td>
 <td>From about €90 day</td>
 <td>Not on Urban Sports Club</td>
-<td>Finnish sauna, steam room, ice fountain, Kneipp circuit</td>
+<td>**Not known.** Finnish sauna, steam room, ice fountain, Kneipp circuit</td>
 <td>20 m pool in a former bank vault</td>
 <td>Sauna roughly 10:00–21:00 (hours as published, not re-verified)</td>
 <td>**Most atmospheric / beautiful**</td>
@@ -67,7 +67,7 @@
 <td>Hotel day spa</td>
 <td>€65 weekday · €85 weekend day pass</td>
 <td>Not on Urban Sports Club</td>
-<td>Finnish 80–100°C, bio/soft 50–60°C, steam 40–45°C at 98% humidity Aroma: No plan; the cabins release aroma automatically every 20 minutes *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>**Automatic dosing — nobody throws.** Finnish 80–100°C, bio/soft 50–60°C, steam 40–45°C at 98% humidity Aroma: No plan; the cabins release aroma automatically every 20 minutes *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>Pool</td>
 <td>07:00–21:00 (hours as published, not re-verified)</td>
 <td>Luxury hotel experience</td>
@@ -77,7 +77,7 @@
 <td>Hotel day spa</td>
 <td>About €34–35 / 3h · €39 day</td>
 <td>Not on Urban Sports Club</td>
-<td>Finnish 90°C, tepidarium 55°C with colour therapy, ladies' sauna 90°C from 16:30, ice grotto 4°C Aufguss (self-serve): Self-serve buckets: rose, herbal, lemongrass *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>**You throw your own löyly.** Finnish 90°C, tepidarium 55°C with colour therapy, ladies' sauna 90°C from 16:30, ice grotto 4°C Aufguss (self-serve): Self-serve buckets: rose, herbal, lemongrass *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>Pool</td>
 <td>Mon–Sat 06:30–22:00 · Sun & holidays 08:00–22:00; mixed sauna from 16:30</td>
 <td>**Best-value cash hotel spa**</td>
@@ -87,7 +87,7 @@
 <td>Hotel day spa</td>
 <td>About €35 day</td>
 <td>Not on Urban Sports Club</td>
-<td>Finnish 90°C, steam 40–50°C, Turkish hammam 40°C Aufguss on request: No fixed plan; ask the team on the day *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>**Someone throws for you — Aufguss.** Finnish 90°C, steam 40–50°C, Turkish hammam 40°C Aufguss on request: No fixed plan; ask the team on the day *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>No major pool focus</td>
 <td>Mon–Thu 12:30–21:00 · Fri–Sat 10:00–21:00 · Sun 10:00–18:30</td>
 <td>Hammam plus sauna</td>
@@ -97,7 +97,7 @@
 <td>Hotel spa</td>
 <td>€12.50 / 2h · €17.50 / 4h · €22.50 day card (Stadtgäste)</td>
 <td>Classic 4×/mo · Premium & Max 8×/mo · max 2h</td>
-<td>Two Finnish saunas, 70–80°C and 90–100°C Aufguss (self-serve): No plan; pour your own freely *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>**You throw your own löyly.** Two Finnish saunas, 70–80°C and 90–100°C Aufguss (self-serve): No plan; pour your own freely *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>No pool</td>
 <td>Daily 12:00–22:00 (12:00–18:00 from 1 Oct to 31 Mar)</td>
 <td>**Best easy / low-friction USC sauna**</td>
@@ -107,7 +107,7 @@
 <td>Hotel day spa</td>
 <td>€60 / 2h · €100 day (day visitors) · hotel guests €10 pool, €20 pool + sauna per day</td>
 <td>Not on Urban Sports Club</td>
-<td>Large Finnish 90°C, ladies' sauna 90°C, steam and herbal bath both 45°C; textile optional Aufguss (self-serve): A bucket stands ready in both Finnish saunas; guests pour their own *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>**You throw your own löyly.** Large Finnish 90°C, ladies' sauna 90°C, steam and herbal bath both 45°C; textile optional Aufguss (self-serve): A bucket stands ready in both Finnish saunas; guests pour their own *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>Pool</td>
 <td>Daily 07:00–21:00 (Spa Card); Time Card Mon–Fri 07:00–15:00</td>
 <td>Large conventional hotel spa</td>
@@ -117,7 +117,7 @@
 <td>Hotel spa</td>
 <td>€15 / 2h · €20 / 4h · €25 day card (Stadtgäste)</td>
 <td>Classic 4×/mo · Premium & Max 8×/mo · max 2h</td>
-<td>Only the Sanarium is open, 60–65°C — two saunas still under repair *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>**Not known.** Only the Sanarium is open, 60–65°C — two saunas still under repair *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>Check current spa setup</td>
 <td>Daily 14:00–22:00 — only the Sanarium is running while two saunas are repaired **Heads up:** Confirmed by Gezer Spa on 3 September 2026. No completion date for the two saunas under repair. The Urban Sports Club listing still shows the old closure banner — ignore it.</td>
 <td>Central USC alternative</td>
@@ -127,7 +127,7 @@
 <td>Hotel spa</td>
 <td>Hotel guests only — no public access</td>
 <td>No current USC listing</td>
-<td>One electric Finnish sauna, fixed at 80°C *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>**Not known.** One electric Finnish sauna, fixed at 80°C *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>No pool</td>
 <td>About 06:00–23:00; hotel pages differ (hours as published, not re-verified) **Heads up:** Confirmed by sly Berlin on 2 September 2026: because of the spa's size it is open to hotel guests only. There is no public day pass.</td>
 <td>Top-tier sauna, but you cannot get in</td>
@@ -137,7 +137,7 @@
 <td>Standalone sauna</td>
 <td>€22 / 4h</td>
 <td>Not on Urban Sports Club</td>
-<td>90°C Finnish, 60°C bio, steam room, hourly Aufguss, terrace</td>
+<td>**Someone throws for you — Aufguss.** 90°C Finnish, 60°C bio, steam room, hourly Aufguss, terrace</td>
 <td>No pool focus</td>
 <td>Daily 15:00–24:00 (13:00–24:00 from 1 Oct to 31 Mar)</td>
 <td>**Best neighborhood / proper sauna**</td>
@@ -147,7 +147,7 @@
 <td>Standalone sauna</td>
 <td>€22 / 4h · reduced €21 · extra hour +€6 · late tariff from 21:30 €20 · happy hour Mon–Fri €20</td>
 <td>Not on Urban Sports Club</td>
-<td>A single Finnish sauna at 90°C — there are no other cabins Aufguss: On the hour, every hour *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>**Someone throws for you — Aufguss.** A single Finnish sauna at 90°C — there are no other cabins Aufguss: On the hour, every hour *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>No pool focus</td>
 <td>Daily 12:00–24:00; in summer (1 Jun–30 Sep) 17:00–24:00, Thu 12:00–24:00</td>
 <td>Quiet, smaller, design-y option</td>
@@ -157,7 +157,7 @@
 <td>Standalone spa</td>
 <td>Short Escape 90 min €22 · Urban Flow 2h €24.50 · Deep Dive 3h €29.50 · +€5 per extra 30 min · sauna add-on +€2.50</td>
 <td>Premium / Max access exists, but USC entry excludes the sauna</td>
-<td>Hot Room 90°C, Kelo herbal room 80°C, Salt Room 65°C, steam 45°C; 36°C saltwater dome Aufguss: Hourly heat sessions, roughly 10:00–23:00 (to 00:00 Fri–Sat) *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>**Someone throws for you — Aufguss.** Hot Room 90°C, Kelo herbal room 80°C, Salt Room 65°C, steam 45°C; 36°C saltwater dome Aufguss: Hourly heat sessions, roughly 10:00–23:00 (to 00:00 Fri–Sat) *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>Saltwater sound pool</td>
 <td>Mon–Thu 10:00–24:00 · Fri–Sun 10:00–01:00 (hours from OpenStreetMap) **Heads up:** USC entry does not include the sauna — you pay the supplement.</td>
 <td>Spa / pool atmosphere rather than pure sauna</td>
@@ -167,7 +167,7 @@
 <td>Standalone sauna</td>
 <td>€18 / 2.5h · €20 / 4h</td>
 <td>No verified USC access</td>
-<td>Large 95°C sauna, hourly Aufguss, garden, quiet rooms</td>
+<td>**Someone throws for you — Aufguss.** Large 95°C sauna, hourly Aufguss, garden, quiet rooms</td>
 <td>No pool focus</td>
 <td>15:00–24:00 (hours as published, not re-verified) **Heads up:** Their own site `saunabad-berlin.de` is dead — the domain now serves a hosting parking page and https fails, so this links to their Facebook instead. Rykestr. 10, tel. 030 44046397.</td>
 <td>**Best cheap traditional sauna**</td>
@@ -177,7 +177,7 @@
 <td>Standalone sauna</td>
 <td>€24 / 2h · €27 / 3h · €30 day</td>
 <td>No verified USC access</td>
-<td>90°C sauna, sanarium, steam bath, hourly Aufguss</td>
+<td>**Someone throws for you — Aufguss.** 90°C sauna, sanarium, steam bath, hourly Aufguss</td>
 <td>30°C pool and 14°C plunge</td>
 <td>Mon 18:00–23:00 · Wed, Fri–Sun 16:00–23:00 · closed Tue & Thu (hours from OpenStreetMap)</td>
 <td>Excellent classic hot–cold cycles</td>
@@ -187,7 +187,7 @@
 <td>Sauna & cold plunge studio</td>
 <td>Regular sessions around €29; promos vary</td>
 <td>Classic 4×/mo · Premium & Max 8×/mo</td>
-<td>One sauna at 60°C plus the cold plunge — no Finnish, bio or steam cabin; swimwear mandatory *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>**Not known.** One sauna at 60°C plus the cold plunge — no Finnish, bio or steam cabin; swimwear mandatory *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>Proper cold plunge</td>
 <td>Open Spa daily 07:00–16:00 for self-guided sauna and cold plunge; guided sessions at other times — timetable on their site and Instagram</td>
 <td>**Best USC sauna plus serious cold plunge**</td>
@@ -197,9 +197,9 @@
 <td>Public bath / sauna</td>
 <td>About €20 / 3h · €23 day</td>
 <td>Included on Max</td>
-<td>Finnish sauna, herbal sauna, steam bath, caldarium</td>
+<td>**Not known.** Finnish sauna, herbal sauna, steam bath, caldarium</td>
 <td>Public bath facilities</td>
-<td>Sauna summer break through 31 Oct 2026</td>
+<td>Sauna closed until 30 September 2026</td>
 <td>Excellent value once the sauna reopens</td>
 </tr>
 <tr>
@@ -207,7 +207,7 @@
 <td>Private rental sauna</td>
 <td>€40 for up to 4 people (3h) · extra adults €10</td>
 <td>Not mentioned</td>
-<td>One sauna, yours alone for the booking Aufguss (self-serve): You are your own saunameister, as in Finland *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>**You throw your own löyly.** One sauna, yours alone for the booking Aufguss (self-serve): You are your own saunameister, as in Finland *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>No pool; cool off by the changing-room windows or in the rear courtyard</td>
 <td>By arrangement — book by phone or email (+49 30 781 81 89) **Heads up:** Booked by email or phone rather than walking in — the €40 covers the whole group for three hours.</td>
 <td>Private group sauna with BYO drinks</td>
@@ -226,5 +226,9 @@
 - **Best sauna you can't easily book:** sly Berlin
 ## Practical note
 For a normal sauna session rather than a luxury spa day, **KIEZ SAUNA, Saunabad, Olivin and Lützow** are better benchmarks than most hotel spas. Hotel spas make more sense when the pool, terrace, relaxation area, or USC access is part of what you want.
+## Scores
+**Finnish score** rates each place as a sauna out of 10 — heat, löyly, and whether you are allowed to throw water — judged by a Finn, not by the spa around it. Nothing scored yet.
+**Aufguss rating** applies only where someone throws for you; it is meaningless where you pour your own. Vabali 10/10.
+Of the 20 venues, 7 run a staff Aufguss, 5 let you throw your own, 3 only dose aroma automatically, and the rest have not said.
 ## Reviews
 0 reviews from a panel of 1 (Joakim Isoaho). They are shown on the site, under each venue. To join the panel or post a review, open an issue: `github.com/jommi9/berlin-sauna-map/issues/new/choose`

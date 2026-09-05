@@ -256,6 +256,34 @@ svg.map.dragging{cursor:grabbing}
   border-left:3px solid var(--red); font-size:13.8px; color:var(--ink-2);
 }
 .alert b{font-family:var(--hud); font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--red); font-size:11.5px; display:block; margin-bottom:2px}
+.fin{
+  flex:none; display:flex; align-items:baseline; gap:3px;
+  font-family:var(--disp); font-size:17px; letter-spacing:.02em; color:#0B2530;
+  background:var(--cyan); border:1px solid #1FA8CC; border-radius:2px;
+  padding:3px 7px 2px; margin-left:5px;
+}
+.fin em{font-family:var(--hud); font-weight:700; font-style:normal; font-size:9px; letter-spacing:.12em}
+.fin i{font-style:normal; font-size:10px; opacity:.7}
+.fin.none{background:var(--void); border-color:var(--line); color:var(--faint)}
+.ly{
+  font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.1em;
+  text-transform:uppercase; border:1px solid; border-radius:2px; padding:2px 6px;
+  display:inline-block;
+}
+.ly-staff{color:var(--gold); border-color:var(--gold-deep); background:rgba(255,193,43,.08)}
+.ly-self{color:var(--cyan); border-color:#1FA8CC; background:rgba(63,208,245,.08)}
+.ly-machine{color:var(--dim); border-color:var(--line-2)}
+.ly-unknown{color:var(--faint); border-color:var(--line)}
+.augrade{
+  font-family:var(--hud); font-weight:700; font-size:11px; letter-spacing:.09em;
+  color:var(--gold); text-transform:uppercase; margin-left:4px;
+}
+.augrade i{font-style:normal; font-size:9px; color:var(--dim)}
+.revs-h{
+  margin:0 0 2px; display:flex; align-items:center; gap:7px;
+  font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.15em;
+  text-transform:uppercase; color:var(--faint);
+}
 .score{
   flex:none; font-family:var(--hud); font-weight:700; font-size:15px; letter-spacing:.02em;
   color:#63D2A2; background:var(--void); border:1px solid #2C6B52; border-radius:2px;
@@ -425,6 +453,7 @@ svg.map.dragging{cursor:grabbing}
       <button class="chip" data-v="pool" aria-pressed="false">Pool / plunge</button>
       <button class="chip" data-v="group" aria-pressed="false">Group hire</button>
       <button class="chip" data-v="aufguss" aria-pressed="false">Aufguss</button>
+      <button class="chip" data-v="ownloyly" aria-pressed="false">Throw your own</button>
     </div>
     <div class="grp" id="g-usc" role="group" aria-label="Filter by Urban Sports Club tier">
       <span class="lbl">USC tier</span>
@@ -860,7 +889,8 @@ const TEST = {
   hotel: v => /^Hotel/.test(v.kind),
   pool:  v => !/^(No |Check)/i.test(v.pool),
   group: v => v.pricing === "group",
-  aufguss: v => v.aufguss === "scheduled",
+  aufguss:  v => v.loyly === "staff",
+  ownloyly: v => v.loyly === "self",
 };
 function ok(v){
   if (F.openNow && openState(v, berlinNow()) !== "open") return false;
@@ -914,7 +944,8 @@ V.forEach(v => {
           ? ' <span class="grouptag">priced per booking</span>' : ""}</p>
       </div>
       <span class="rank${known ? "" : " none"}">${known ? (v.pricing === "group" ? "\u20ac" + money(v.price) + " group" : d) : "N/A"}</span>
-      ${v.rating ? `<span class="score" title="${v.reviews.length} review${v.reviews.length === 1 ? "" : "s"}">${v.rating}<em>/5</em></span>` : ""}
+      <span class="fin${v.finnish == null ? " none" : ""}" title="Finnish score \u2014 how good it is as a sauna, judged by a Finn">
+        <em>FIN</em>${v.finnish == null ? "\u2013" : `${v.finnish}<i>/10</i>`}</span>
     </div>
     <span class="status ${STATUS_CLASS[openState(v, berlinNow())]}" data-status>${STATUS_TEXT[openState(v, berlinNow())]}</span>
     ${v.badge ? `<span class="pick-tag">${v.badge}</span>` : ""}
@@ -924,15 +955,16 @@ V.forEach(v => {
         ${v.usc !== "no" ? `<span class="tiers">${["Classic","Premium","Max"]
           .map(t => `<span class="tier${v.uscTiers.includes(t) ? "" : " off"}">${t}</span>`).join("")}</span>` : ""}</dd>
       <dt>Heat</dt><dd>${v.sauna}</dd>
-      ${v.aufguss !== "unknown" ? `<dt>Aufguss</dt><dd>${AUFGUSS[v.aufguss]}${
-        v.aufgussNote ? ` \u00b7 <span class="src2">${v.aufgussNote}</span>` : ""}</dd>` : ""}
+      <dt>L\u00f6yly</dt><dd><span class="ly ly-${v.loyly}">${v.loylyText}</span>${
+        v.aufgussScore != null ? ` <span class="augrade">Aufguss ${v.aufgussScore}<i>/10</i></span>` : ""}${
+        v.aufgussNote ? `<br><span class="src2">${v.aufgussNote}</span>` : ""}</dd>
       <dt>Water</dt><dd>${v.pool}</dd>
       <dt>Open</dt><dd>${hoursText(v, berlinNow())}${v.open && SRC_NOTE[v.open.src]
         ? ` <span class="src">${SRC_NOTE[v.open.src]}</span>` : ""}</dd>
       <dt>Best for</dt><dd>${v.bestFor}</dd>
     </dl>
     ${v.flag ? `<p class="alert"><b>Heads up</b>${v.flag}</p>` : ""}
-    ${v.reviews.length ? `<div class="revs">${v.reviews.map(r => `
+    ${v.reviews.length ? `<div class="revs"><p class="revs-h">Reviews <span class="score">${v.rating}<em>/5</em></span></p>${v.reviews.map(r => `
       <blockquote class="rev">
         <p class="rev-t">${r.text}</p>
         <footer><span class="rev-w">${r.by}</span> <span class="rev-m">${"\u2605".repeat(r.rating)}${"\u2606".repeat(5 - r.rating)} \u00b7 visited ${r.visited}</span></footer>

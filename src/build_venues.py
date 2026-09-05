@@ -194,6 +194,42 @@ HEAT = {
 }
 
 
+# --- Who actually throws the water. This is the distinction that decides
+#     whether a place is a sauna or a warm room on a timetable, so it is derived
+#     from the aufguss kind the venues themselves confirmed rather than typed
+#     out a second time and left to drift.
+#       staff   someone else throws and you sit and take it (Aufguss)
+#       self    you throw your own loyly
+#       machine a dispenser doses aroma; nobody throws anything
+LOYLY_OF = {"scheduled": "staff", "request": "staff", "self": "self",
+            "auto": "machine", "unknown": "unknown"}
+
+LOYLY_TEXT = {
+ "staff":   "Someone throws for you \u2014 Aufguss",
+ "self":    "You throw your own l\u00f6yly",
+ "machine": "Automatic dosing \u2014 nobody throws",
+ "unknown": "Not known",
+}
+
+
+# --- The Finnish score: how good it is AS A SAUNA, out of 10, judged by a Finn
+#     (jommi9). Not comfort, not the spa around it - heat, loyly, and whether
+#     you are allowed to throw water at all.
+#
+#     None means NOT SCORED YET, and the site says so rather than showing a
+#     zero. These are one person's opinion and nobody else's, so they are only
+#     ever filled in by hand, never by selfupdate.py.
+FINNISH = {
+ "Vabali": None,
+}
+
+# --- For staff-run Aufguss only: how good the Aufguss itself is, out of 10.
+#     Meaningless where you throw your own, so it is only shown for "staff".
+AUFGUSS_SCORE = {
+ "Vabali": 10,
+}
+
+
 # --- The "fast picks" list, defined ONCE here so the site and the generated
 #     Notion page cannot disagree about it.
 PICKS = [
@@ -246,6 +282,12 @@ for i, row in enumerate(V):
     t, a, note = HEAT.get(d["name"], (None, "unknown", None))
     if t: d["sauna"] = t
     d["aufguss"], d["aufgussNote"] = a, note
+    d["loyly"] = LOYLY_OF[a]
+    d["loylyText"] = LOYLY_TEXT[d["loyly"]]
+    d["finnish"] = FINNISH.get(d["name"])
+    # An Aufguss score on a sauna where you throw your own would be rating
+    # something that does not happen there.
+    d["aufgussScore"] = AUFGUSS_SCORE.get(d["name"]) if d["loyly"] == "staff" else None
     d["heatSrc"] = "confirmed by the venue, email 3 Sep 2026" if t else None
     d["reviews"] = reviews_for(d["name"])
     rated = [r["rating"] for r in d["reviews"] if isinstance(r.get("rating"), (int, float))]
@@ -263,7 +305,7 @@ for i, row in enumerate(V):
     venues.append(d)
 json.dump(venues, open('venues.json','w'), separators=(',',':'), ensure_ascii=False)
 json.dump({"picks": [list(p) for p in PICKS], "practical": PRACTICAL, "lastChecked": LAST_CHECKED,
-           "reviewers": REVIEWERS},
+           "reviewers": REVIEWERS, "loylyText": LOYLY_TEXT},
           open('meta.json','w'), separators=(',',':'), ensure_ascii=False)
 print(len(venues), "venues")
 xs=[v['x'] for v in venues]; ys=[v['y'] for v in venues]

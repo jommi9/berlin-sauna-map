@@ -163,3 +163,26 @@ anyone — that drift is what this is for.
 To add a venue to the self-updater: read its page, find a label that sits
 immediately beside the figure, add the anchor to `sources.py`, and check it
 matches exactly once with `python3 selfupdate.py --dry-run`.
+
+## Löyly, the Finnish score, and the Aufguss rating
+
+Three related things, deliberately kept apart.
+
+**Who throws the water** is derived, never typed twice: `LOYLY_OF` maps the
+`aufguss` kind the venues confirmed by email onto `staff` (someone throws for
+you), `self` (you throw your own) or `machine` (a dispenser doses aroma and
+nobody throws anything). Hilton is the clearest `machine` — they wrote that
+pouring your own is *not allowed*. Change the kind in `HEAT` and the löyly
+follows; there is no second dict to keep in step.
+
+**`FINNISH`** is one Finn's score out of 10 of the place *as a sauna* — heat,
+löyly, and whether you may throw water — not of the spa around it. `None` means
+not scored yet and the card shows `FIN –`, never a zero. These are opinions, so
+they are only ever written by hand: `selfupdate.py` must never touch them.
+
+**`AUFGUSS_SCORE`** only renders where `loyly == "staff"`. Rating the Aufguss
+at a self-serve sauna would be scoring something that does not happen there,
+so `build_venues.py` drops it rather than trusting the caller.
+
+The filter chip that used to say "Aufguss" is now two chips, because the two
+are opposites and a Finn is usually looking for one or the other.

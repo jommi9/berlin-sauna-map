@@ -42,7 +42,11 @@ def place(v):
     return f"[{v['name']}]({v['url']})" if v.get("url") else v["name"]
 
 def facilities(v):
-    bits = [v["sauna"]]
+    # Who throws the water leads, because it is the distinction that decides
+    # whether a Finn would call the place a sauna at all.
+    bits = [f"**{v['loylyText']}.**", v["sauna"]]
+    if v.get("aufgussScore") is not None:
+        bits.append(f"Aufguss rated {v['aufgussScore']}/10.")
     already = re.search(r"aufguss|aroma", v["sauna"], re.I)
     if v.get("aufgussNote") and not already:
         kind = {"scheduled": "Aufguss", "self": "Aufguss (self-serve)",
@@ -103,6 +107,22 @@ out.append(M["practical"])
 
 # Reviews live on the site, not here: they arrive through GitHub issues and are
 # joined onto venues at build time, so a Notion column would be a fourth copy.
+out.append("## Scores")
+scored = [v for v in V if v.get("finnish") is not None]
+au = [v for v in V if v.get("aufgussScore") is not None]
+out.append("**Finnish score** rates each place as a sauna out of 10 \u2014 heat, l\u00f6yly, and "
+           "whether you are allowed to throw water \u2014 judged by a Finn, not by the spa around it. "
+           + (", ".join(f"{v['name']} {v['finnish']}/10" for v in scored) + "."
+              if scored else "Nothing scored yet."))
+out.append("**Aufguss rating** applies only where someone throws for you; it is meaningless "
+           "where you pour your own. "
+           + (", ".join(f"{v['name']} {v['aufgussScore']}/10" for v in au) + "."
+              if au else "Nothing rated yet."))
+n_staff = sum(1 for v in V if v["loyly"] == "staff")
+n_self = sum(1 for v in V if v["loyly"] == "self")
+n_mach = sum(1 for v in V if v["loyly"] == "machine")
+out.append(f"Of the {len(V)} venues, {n_staff} run a staff Aufguss, {n_self} let you throw your "
+           f"own, {n_mach} only dose aroma automatically, and the rest have not said.")
 out.append("## Reviews")
 n = sum(len(v.get("reviews", [])) for v in V)
 who = ", ".join(r["name"] for r in M["reviewers"].values())
