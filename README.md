@@ -25,21 +25,32 @@ no build server.
 
 | File | What it is |
 |---|---|
-| `index.html` | The built page (~858 KB, images inlined). This is what gets published, and what a static host serves at the site root. |
+| `index.html` | The built page (~900 KB, images inlined). This is what gets published, and what a static host serves at the site root. |
 | `src/tpl2.html` | **Current design.** Template with `/*__GEO__*/` and `/*__VENUES__*/` placeholders. Edit look and feel here. |
 | `src/tpl.html` | The previous, quieter atlas design, kept as a fallback. |
-| `src/build_venues.py` | The venue table transcribed from Notion, plus map projection. **Edit content here.** |
+| `src/build_venues.py` | **The source of truth.** Every venue fact, the löyly/score tables, the fast picks, plus map projection. Edit content here; everything else is generated from it. |
 | `src/declutter.py` | Nudges overlapping blips apart (currently ≤ 90 m displacement; a hairline tick shows the true spot when moved). |
 | `src/build_geo2.py` | Projects and simplifies districts, water, parks, roads and rail into `geo.json`, collapsing each layer to one path so the SVG stays ~8 nodes instead of 9,400. |
 | `src/assemble.py` | Inlines the JSON and writes the final ASCII-only HTML. Takes `<template> <output>`. |
 | `src/push_to_notion.py` | Renders the Notion page from the repo into `notion_page.md`, ready to apply with `replace_content`. |
 | `src/fetch.sh` | Overpass fetcher with mirror fallback and retries. Only needed to refresh the cached geodata. |
-| `src/geo.json`, `src/venues.json` | Derived map + venue data, committed so venue rebuilds need no network. |
+| `src/sources.py` | Anchors for `selfupdate.py`: the regexes that pin one figure on a venue's own page to one figure in our data. |
+| `src/selfupdate.py` | Re-reads each venue's page and rewrites `build_venues.py` where a claim is provable. The only script allowed to write venue data. |
+| `src/verify_venue.py` | Checks every venue against its own site: `OK` / `THIN` / `PAUSED` / `STALE NOTICE` / `BLOCKED` / `SUSPECT` / `LIKELY CLOSED` / `UNREACHABLE`. |
+| `src/watch_changes.py` | Flags a venue whose own page no longer shows any price we list. Conservative by design — it reports, never edits. |
+| `src/check_deployment.py` | Hashes the live page against `index.html`, warns on seasonal switches, and chases closures whose date has lapsed. `--wait <min>` to allow for a Pages deploy. |
+| `src/ingest_issue.py` | Validates an approved reviewer application or review issue and folds it into the JSON. |
+| `src/reviewers.json`, `src/reviews.json` | The review model. Written by the ingest workflow, never by hand. |
+| `src/geo.json`, `src/venues.json`, `src/meta.json` | Derived map + venue data, committed so venue rebuilds need no network. |
+| `src/bezirke.geojson` | District outlines, input to `build_geo2.py`. |
 | `src/roads.json` etc. | Raw Overpass dumps, gitignored (16 MB). Only needed if the map bbox changes; `fetch.sh` re-pulls them. |
 
-## Rebuilding after a Notion edit
+## Rebuilding after a data edit
 
-1. Update the `V` list in `src/build_venues.py` to match the Notion table.
+1. Edit `src/build_venues.py` — it is the source, and Notion is generated from it.
+   Never edit venue data with a bare `str.replace()`: assert the old string exists
+   and is unique first, because a silent no-op replace is what once let a price
+   reach Notion but not the site.
 2. From `src/`:
 
    ```
@@ -48,10 +59,62 @@ no build server.
   && python3 assemble.py tpl2.html ../artifact.html
    ```
 
-3. Republish `index.html` to the same artifact URL (pass the URL so the link stays stable).
+3. `python3 push_to_notion.py`, then apply `notion_page.md` with `notion-update-page`
+   / `replace_content`.
+4. Commit and push — GitHub Pages serves `index.html`. A push succeeding is **not**
+   the same as the site updating; confirm with `python3 check_deployment.py`.
+5. Republish `artifact.html` to the same artifact URL (pass the URL so the link stays
+   stable). Nothing in CI can do this step — the artifact is the one output that
+   always needs a human.
 
 `build_geo2.py` only needs re-running if you change the map's bounding box — it reads
 the cached OSM files. To refresh those from Overpass, see the queries in `fetch.sh`.
+
+## Keeping itself current
+
+`.github/workflows/weekly-venue-audit.yml` runs Mondays 06:00 UTC, and does two
+different jobs in order.
+
+**It fixes what it can prove.** `selfupdate.py` re-reads each venue's own page and
+rewrites `build_venues.py` where an anchor in `sources.py` matches exactly one value,
+then rebuilds, regenerates Notion, commits and pushes. It caught Stadtbad Neukölln
+shortening its 2026 summer break from 31 October to 30 September without telling
+anyone.
+
+It refuses to write when a figure would move below half or above double, when more
+than four things change in one run, or when an edit target is not unique. Fourteen
+anchors cover five venues; the other fifteen were **measured and rejected**, not
+forgotten — they render prices in JavaScript or print bare amounts with no label
+(`€14.50 €14.50 €29 €29`). No venue publishes JSON-LD opening hours (checked across
+all twenty), so **hours are never written automatically**.
+
+**It reports what it cannot.** `verify_venue.py`, `watch_changes.py` and
+`check_deployment.py` then run, and anything needing a human becomes one issue.
+
+Dated facts carry one date and no prose. `closedUntil` generates its own sentence at
+build time *and again in the browser*, so a closure stops being claimed the day it
+expires rather than at the next build.
+
+## Reviews and scores
+
+Reviews arrive as GitHub issues, never as edits. The forms are in
+`.github/ISSUE_TEMPLATE/`; applying the `approved` label fires
+`.github/workflows/ingest-reviews.yml`, which validates (venue must exist as the map
+spells it, handle must already be approved, rating 1–5, real date, 40 characters
+minimum), strips markup and HTML-escapes the body, rebuilds, commits and closes the
+issue. The reviewer handle comes from the issue author, so nobody can post as someone
+else. A rejection comments the reason and leaves the issue open.
+
+Three separate judgements, deliberately kept apart:
+
+- **Löyly** — who throws the water: someone else (`staff`, an Aufguss), you (`self`),
+  or a machine that doses aroma and nobody throws (`machine`). Derived from the
+  `aufguss` kind the venues confirmed by email, so there is no second table to drift.
+- **Finnish score** — one Finn's rating of the place *as a sauna* out of 10: heat,
+  löyly, whether you may throw water. Not the spa around it. `None` shows as `FIN –`,
+  never a zero. Opinions, so `selfupdate.py` must never touch them.
+- **Aufguss rating** — only rendered where `loyly == "staff"`, because rating the
+  Aufguss at a self-serve sauna would be scoring something that does not happen there.
 
 ## Images
 
