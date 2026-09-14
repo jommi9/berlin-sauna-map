@@ -128,7 +128,7 @@ OPEN = {
  "Saunabad Prenzlauer Berg": {"weekly": D(900, 1440), "src": "listed"},
  "The Westin Grand \u2014 Gezer Spa": {"weekly": D(840, 1320), "src": "venue"},
  "ANTI SPA": {"weekly": D(420, 960), "src": "venue"},
- "Stadtbad Neuk\u00f6lln": {"closedUntil": "2026-09-30", "src": "venue"},
+ "Stadtbad Neuk\u00f6lln": {"closedUntil": "2026-09-14", "src": "venue"},
 }
 
 HOURS_TEXT = {
@@ -250,7 +250,7 @@ PRACTICAL = ("For a normal sauna session rather than a luxury spa day, **KIEZ SA
              "more sense when the pool, terrace, relaxation area, or USC access is part of what "
              "you want.")
 
-LAST_CHECKED = "4 September 2026"
+LAST_CHECKED = "14 September 2026"
 
 
 # --- Reviews. reviewers.json and reviews.json are written by the issue-ingest

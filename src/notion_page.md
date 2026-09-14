@@ -1,5 +1,5 @@
 <callout icon="♨️" color="blue_bg">
-	Berlin sauna shortlist combining hotel day spas, Urban Sports Club options, and regular standalone saunas. **Last checked: 4 September 2026.** Cabin temperatures and Aufguss practice were confirmed by the venues themselves by email. Prices, USC limits and opening hours change often, so recheck before making a special trip. **This page is generated from the berlin-sauna-map repository — edits made here are overwritten by the next build.**
+	Berlin sauna shortlist combining hotel day spas, Urban Sports Club options, and regular standalone saunas. **Last checked: 14 September 2026.** Cabin temperatures and Aufguss practice were confirmed by the venues themselves by email. Prices, USC limits and opening hours change often, so recheck before making a special trip. **This page is generated from the berlin-sauna-map repository — edits made here are overwritten by the next build.**
 </callout>
 <table fit-page-width="true" header-row="true">
 <tr>
@@ -199,7 +199,7 @@
 <td>Included on Max</td>
 <td>**Not known.** Finnish sauna, herbal sauna, steam bath, caldarium</td>
 <td>Public bath facilities</td>
-<td>Sauna closed until 30 September 2026</td>
+<td>Sauna closed until 14 September 2026</td>
 <td>Excellent value once the sauna reopens</td>
 </tr>
 <tr>
