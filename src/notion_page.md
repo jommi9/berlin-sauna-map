@@ -1,5 +1,5 @@
 <callout icon="♨️" color="blue_bg">
-	Berlin sauna shortlist combining hotel day spas, Urban Sports Club options, and regular standalone saunas. **Last checked: 14 September 2026.** Cabin temperatures and Aufguss practice were confirmed by the venues themselves by email. Prices, USC limits and opening hours change often, so recheck before making a special trip. **This page is generated from the berlin-sauna-map repository — edits made here are overwritten by the next build.**
+	Berlin sauna shortlist combining hotel day spas, Urban Sports Club options, and regular standalone saunas. **Last checked: 28 September 2026.** Cabin temperatures and Aufguss practice were confirmed by the venues themselves by email. Prices, USC limits and opening hours change often, so recheck before making a special trip. **This page is generated from the berlin-sauna-map repository — edits made here are overwritten by the next build.**
 </callout>
 <table fit-page-width="true" header-row="true">
 <tr>
@@ -145,7 +145,7 @@
 <tr>
 <td>[Olivin](https://olivin-berlin.com/facts/)</td>
 <td>Standalone sauna</td>
-<td>€22 / 4h · reduced €21 · extra hour +€6 · late tariff from 21:30 €20 · happy hour Mon–Fri €20</td>
+<td>€24 / 4h · reduced €21 · extra hour +€6 · late tariff from 21:30 €22 · happy hour Mon–Fri €20</td>
 <td>Not on Urban Sports Club</td>
 <td>**Someone throws for you — Aufguss.** A single Finnish sauna at 90°C — there are no other cabins Aufguss: On the hour, every hour *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>No pool focus</td>

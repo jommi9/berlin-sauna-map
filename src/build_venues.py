@@ -47,7 +47,7 @@ V = [
  ["KIEZ SAUNA Friedrichshain",52.51545,13.44865,"Standalone sauna","Friedrichshain",22,"€22 / 4h","no","Not on Urban Sports Club",
   "90°C Finnish, 60°C bio, steam room, hourly Aufguss, terrace","No pool focus","15:00–24:00","Best neighborhood / proper sauna","Best local sauna",None,
   "https://www.kiezsauna.de/%C3%B6ffnungszeiten/"],
- ["Olivin",52.53160,13.41116,"Standalone sauna","Prenzlauer Berg",22,"€22 / 4h · reduced €21 · extra hour +€6 · late tariff from 21:30 €20 · happy hour Mon–Fri €20","no","Not on Urban Sports Club",
+ ["Olivin",52.53160,13.41116,"Standalone sauna","Prenzlauer Berg",24,"€24 / 4h · reduced €21 · extra hour +€6 · late tariff from 21:30 €22 · happy hour Mon–Fri €20","no","Not on Urban Sports Club",
   "Finnish sauna, hourly essential-oil Aufguss, small calm design-focused space","No pool focus","Tue 17:00–24:00; check daily hours","Quiet, smaller, design-y option",None,None,
   "https://olivin-berlin.com/facts/"],
  ["LIQUIDROM",52.50118,13.38140,"Standalone spa","Kreuzberg",24.5,"Short Escape 90 min €22 · Urban Flow 2h €24.50 · Deep Dive 3h €29.50 · +€5 per extra 30 min · sauna add-on +€2.50","partial","Premium / Max access exists, but USC entry excludes the sauna",
@@ -250,7 +250,7 @@ PRACTICAL = ("For a normal sauna session rather than a luxury spa day, **KIEZ SA
              "more sense when the pool, terrace, relaxation area, or USC access is part of what "
              "you want.")
 
-LAST_CHECKED = "14 September 2026"
+LAST_CHECKED = "28 September 2026"
 
 
 # --- Reviews. reviewers.json and reviews.json are written by the issue-ingest
