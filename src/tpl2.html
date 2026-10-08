@@ -73,6 +73,19 @@ a{color:inherit}
   .cover{grid-template-columns:repeat(2,1fr)}
   .tile.mark{grid-column:span 2; grid-row:auto; padding:26px 22px 30px}
 }
+/* On a phone the hero, four stat tiles and the filter bar used to fill the
+   whole first screen and the map began ~900px down. The stats become one
+   compact strip and the wordmark shrinks, so the map is one short scroll away. */
+@media (max-width:560px){
+  .cover{grid-template-columns:repeat(4,1fr); grid-auto-rows:auto; gap:2px}
+  .tile.mark{grid-column:span 4; padding:16px 16px 18px; gap:10px}
+  .wordmark{font-size:38px}
+  .strap{font-size:13.5px}
+  .tile{padding:10px 8px 9px; gap:3px}
+  .tile .k{font-size:9px; letter-spacing:.12em}
+  .tile .n{font-size:22px}
+  .tile .s{font-size:9px; letter-spacing:.03em; line-height:1.25}
+}
 
 /* ---------------- HUD control bar ---------------- */
 .bar{
@@ -106,7 +119,17 @@ a{color:inherit}
 .clear:hover{color:var(--gold)}
 /* On a phone the filter bar is ~217px tall; pinning that costs a quarter of
    the viewport, so it scrolls away with the page instead. */
-@media (max-width:760px){ .bar{position:static} }
+@media (max-width:760px){
+  .bar{
+    position:static; flex-wrap:nowrap; overflow-x:auto; gap:8px 14px; padding:9px 12px;
+    scrollbar-width:none; -webkit-overflow-scrolling:touch;
+  }
+  .bar::-webkit-scrollbar{display:none}
+  .bar > *{flex:none}
+  .find{flex:0 0 168px; max-width:168px}
+  .grp{flex-wrap:nowrap}
+  .clear{margin-left:0; padding-right:12px}
+}
 /* Below ~520px the map is cropped to the venue extent and district labels
    would render at about 4px, so they come out entirely. */
 svg.map.small .dlabel, svg.map.small .scalebar{display:none}
@@ -317,6 +340,7 @@ svg.map.dragging{cursor:grabbing}
 .joinline{display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 0}
 .pk .who{font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--dim)}
 .pgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:3px}
+.pgrid[hidden]{display:none}
 .pk{
   background:var(--panel-2); border:0; padding:16px 16px 18px; text-align:left; cursor:pointer;
   display:flex; flex-direction:column; gap:8px; color:inherit; font:inherit; transition:background .12s;
@@ -423,7 +447,7 @@ svg.map.dragging{cursor:grabbing}
 <div class="wrap">
   <div class="cover">
     <div class="tile mark">
-      <p class="stamp">Berlin <b>//</b> Last scan 01.09.2026</p>
+      <p class="stamp">Berlin <b>//</b> Last scan <time id="stamp-date">__LAST_SCAN__</time></p>
       <h1 class="wordmark"><span>Berlin</span><span>Sauna</span><span class="g">Map</span></h1>
       <p class="strap">Twenty saunas and spas across the city, priced and plotted. Hotel day spas, proper neighbourhood saunas, and the six you can walk into on an Urban Sports Club card.</p>
     </div>
@@ -473,7 +497,7 @@ svg.map.dragging{cursor:grabbing}
     <div class="mapcol">
       <div class="inner">
         <div class="mapbox">
-          <svg class="map" id="map" role="img" aria-label="Map of central Berlin showing 19 sauna and spa locations"></svg>
+          <svg class="map" id="map" role="img" aria-label="Map of central Berlin showing __COUNT__ sauna and spa locations"></svg>
           <i class="brk tl"></i><i class="brk tr"></i><i class="brk bl"></i><i class="brk br"></i>
           <div class="peek" id="peek" hidden>
             <button class="peek-x" id="peek-x" aria-label="Clear selection">&times;</button>
@@ -559,7 +583,7 @@ svg.map.dragging{cursor:grabbing}
       </div>
       <div>
         <h3>Two traps</h3>
-        <p><strong>Liquidrom</strong> is on Urban Sports Club, but USC entry does not include the sauna &mdash; you still pay the supplement. <strong>Stadtbad Neuk&ouml;lln&rsquo;s</strong> sauna is on summer break through 31 October 2026.</p>
+        <p id="traps"></p>
       </div>
       <div>
         <h3>Data</h3>
@@ -632,6 +656,24 @@ function hoursText(v, now){
   return now.date <= o.closedUntil
     ? `Sauna closed until ${pretty}`
     : `Sauna break ended ${pretty} \u2014 hours not re-verified since`;
+}
+/* The "two traps" box. A trap marked "closure" is composed from the venue's
+   closedUntil date on every render, like hoursText, so it can say "on break
+   until", then "reopened, hours unverified", and finally nothing at all once
+   the hours are confirmed again - without anyone editing prose. */
+function trapText(now){
+  return TRAPS.map(([name, text]) => {
+    const v = V.find(x => x.name === name);
+    if (!v) return "";
+    if (text !== "closure") return `<strong>${v.name}</strong> ${text}`;
+    const o = v.open;
+    if (!o || !o.closedUntil) return "";
+    const [y, m, d] = o.closedUntil.split("-").map(Number);
+    const pretty = `${d} ${MONTH[m - 1]} ${y}`;
+    return now.date <= o.closedUntil
+      ? `<strong>${v.name}\u2019s</strong> sauna is on its summer break until ${pretty}.`
+      : `<strong>${v.name}\u2019s</strong> sauna takes a summer break every year; it reopened on ${pretty} and its hours have not been re-verified since, so check before going.`;
+  }).filter(Boolean).join(" ");
 }
 const AUFGUSS = { scheduled: "Run to a schedule", self: "Pour your own", request: "On request",
                   auto: "Automatic aroma", unknown: "Not known" };
@@ -1071,6 +1113,7 @@ setInterval(() => {
 /* ---------- picks ---------- */
 const PICKS = /*__PICKS__*/;
 const REVIEWERS = /*__REVIEWERS__*/;
+const TRAPS = /*__TRAPS__*/;
 const pg = document.getElementById("picks");
 PICKS.forEach(([k, name]) => {
   const v = V.find(x => x.name === name);
@@ -1161,9 +1204,12 @@ grab.addEventListener("pointercancel", grabEnd);
 addEventListener("resize", () => { if (isMobile()) setSheet(sheetOpen ? expandedH() : COLLAPSED); });
 if (isMobile()) setSheet(COLLAPSED);
 
-/* The panel */
+/* The panel. Until a review exists the member grid would be one card saying
+   "0 reviews", which reads as unfinished, so only the invitation is shown. */
 const panel = document.getElementById("panel");
-Object.entries(REVIEWERS).forEach(([handle, r]) => {
+const anyReviews = V.some(v => v.reviews.length);
+panel.hidden = !anyReviews;
+if (anyReviews) Object.entries(REVIEWERS).forEach(([handle, r]) => {
   const n = V.reduce((a, v) => a + v.reviews.filter(x => x.handle === handle).length, 0);
   const el2 = document.createElement("div");
   el2.className = "pk";
@@ -1174,5 +1220,6 @@ Object.entries(REVIEWERS).forEach(([handle, r]) => {
   panel.appendChild(el2);
 });
 
+document.getElementById("traps").innerHTML = trapText(berlinNow());
 run();
 </script>

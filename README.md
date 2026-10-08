@@ -25,10 +25,12 @@ no build server.
 
 | File | What it is |
 |---|---|
-| `index.html` | The built page (~900 KB, images inlined). This is what gets published, and what a static host serves at the site root. |
+| `index.html` | The built page (~400 KB). This is what gets published, and what a static host serves at the site root. Its photos are served as files from `src/img/card/`, and it carries the canonical link, Open Graph tags and JSON-LD that the Artifact build leaves out. |
+| `artifact.html` | The same page as one self-contained fragment with the photos inlined (~900 KB), for publishing as an Artifact. |
+| `og.png` | The 1200x630 share image named in the Open Graph tags. Regenerate it by hand if the hero or the map changes. |
 | `src/tpl2.html` | **Current design.** Template with `/*__GEO__*/` and `/*__VENUES__*/` placeholders. Edit look and feel here. |
 | `src/tpl.html` | The previous, quieter atlas design, kept as a fallback. |
-| `src/build_venues.py` | **The source of truth.** Every venue fact, the löyly/score tables, the fast picks, plus map projection. Edit content here; everything else is generated from it. |
+| `src/build_venues.py` | **The source of truth.** Every venue fact, the löyly/score tables, the fast picks, the "two traps" box, the last-checked date, plus map projection. Edit content here; everything else is generated from it. |
 | `src/declutter.py` | Nudges overlapping blips apart (currently ≤ 90 m displacement; a hairline tick shows the true spot when moved). |
 | `src/build_geo2.py` | Projects and simplifies districts, water, parks, roads and rail into `geo.json`, collapsing each layer to one path so the SVG stays ~8 nodes instead of 9,400. |
 | `src/assemble.py` | Inlines the JSON and writes the final ASCII-only HTML. Takes `<template> <output>`. |

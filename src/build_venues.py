@@ -251,6 +251,20 @@ PRACTICAL = ("For a normal sauna session rather than a luxury spa day, **KIEZ SA
              "you want.")
 
 LAST_CHECKED = "28 September 2026"
+# The hero stamp wants the same date as dd.mm.yyyy; derived here so the two
+# can never show different days.
+LAST_CHECKED_STAMP = datetime.datetime.strptime(LAST_CHECKED, "%d %B %Y").strftime("%d.%m.%Y")
+
+# --- The "two traps" box. Each is a venue and either a fixed sentence or
+#     "closure", which means the sentence is composed in the browser from that
+#     venue's closedUntil date (see hoursText in the template). The old
+#     hand-written "summer break through 31 October" outlived the real break
+#     by weeks, which is why no dated prose is allowed here.
+TRAPS = [
+ ("LIQUIDROM", "is on Urban Sports Club, but USC entry does not include the sauna "
+               "\u2014 you still pay the supplement."),
+ ("Stadtbad Neuk\u00f6lln", "closure"),
+]
 
 
 # --- Reviews. reviewers.json and reviews.json are written by the issue-ingest
@@ -305,7 +319,8 @@ for i, row in enumerate(V):
     venues.append(d)
 json.dump(venues, open('venues.json','w'), separators=(',',':'), ensure_ascii=False)
 json.dump({"picks": [list(p) for p in PICKS], "practical": PRACTICAL, "lastChecked": LAST_CHECKED,
-           "reviewers": REVIEWERS, "loylyText": LOYLY_TEXT},
+           "lastCheckedStamp": LAST_CHECKED_STAMP, "traps": [list(t) for t in TRAPS],
+           "count": len(venues), "reviewers": REVIEWERS, "loylyText": LOYLY_TEXT},
           open('meta.json','w'), separators=(',',':'), ensure_ascii=False)
 print(len(venues), "venues")
 xs=[v['x'] for v in venues]; ys=[v['y'] for v in venues]
