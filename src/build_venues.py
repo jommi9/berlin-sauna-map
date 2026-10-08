@@ -8,7 +8,7 @@ def proj(lon, lat):
 # name, lat, lon, kind, district, price(from|None), priceLabel, usc, uscLabel,
 # sauna, pool, hours, bestFor, badge, flag, url
 V = [
- ["Vabali",52.52840,13.35889,"Standalone spa","Moabit",27.5,"€27.50 / 2h · €36.50 / 4h · €51.50 day","no","Not on Urban Sports Club",
+ ["Vabali",52.52840,13.35889,"Standalone spa","Moabit",27.5,"€27.50 / 2h · €36.50 / 4h · €51.50 day (weekends & holidays €29.50 / €39.50 / €56.50)","no","Not on Urban Sports Club",
   "10 saunas, 3 steam baths, frequent Aufguss, large garden","4 pools","09:00–24:00","Best full sauna day","Best sauna day",None,
   "https://www.vabali.de/berlin/"],
  ["Grand Hyatt — Club Olympus",52.50819,13.37248,"Hotel day spa","Tiergarten",40,"Weekday €40 / 2h · €80 day; weekend €50 / 2h · €95 day","no","Not on Urban Sports Club",
@@ -54,16 +54,16 @@ V = [
   "Sauna plus spa facilities and Onsen","Saltwater sound pool","09:00–24:00","Spa / pool atmosphere rather than pure sauna",None,"USC entry does not include the sauna — you pay the supplement.",
   "https://www.liquidrom-berlin.de/en/info.php"],
  ["Saunabad Prenzlauer Berg",52.53578,13.42035,"Standalone sauna","Prenzlauer Berg",18,"€18 / 2.5h · €20 / 4h","no","No verified USC access",
-  "Large 95°C sauna, hourly Aufguss, garden, quiet rooms","No pool focus","15:00–24:00","Best cheap traditional sauna","Best cheap sauna","Their own site saunabad-berlin.de is dead \u2014 the domain now serves a hosting parking page and https fails, so this links to their Facebook instead. Rykestr. 10, tel. 030 44046397.",
-  "https://www.facebook.com/p/Saunabad-Berlin-Prenzlauer-Berg-100061924915931/"],
+  "Large 95°C sauna, hourly Aufguss, garden, quiet rooms","No pool focus",None,"Best cheap traditional sauna","Best cheap sauna","Cash only, no cards. Their own site served a hosting parking page for a spell in September 2026; it is back as of 8 October with the same prices and hours. Rykestr. 10, tel. 030 44046397.",
+  "https://www.saunabad-berlin.de/"],
  ["Lützow Sauna",52.50154,13.36890,"Standalone sauna","Tiergarten",24,"€24 / 2h · €27 / 3h · €30 day","no","No verified USC access",
   "90°C sauna, sanarium, steam bath, hourly Aufguss","30°C pool and 14°C plunge","Closed Tuesdays; check other daily hours","Excellent classic hot–cold cycles",None,None,
   "https://www.luetzow-sauna.de/start"],
  ["ANTI SPA",52.53125,13.40084,"Sauna & cold plunge studio","Mitte",29,"Regular sessions around €29; promos vary","yes","Classic 4×/mo · Premium & Max 8×/mo",
   "Cedar sauna, lounge; swimwear mandatory","Proper cold plunge","Session based","Best USC sauna plus serious cold plunge","Best cold plunge",None,
   "https://www.antispaces.com/spa/welcome-pass"],
- ["Stadtbad Neukölln",52.47919,13.43973,"Public bath / sauna","Neukölln",20,"About €20 / 3h · €23 day","yes","Included on Max",
-  "Finnish sauna, herbal sauna, steam bath, caldarium","Public bath facilities",None,"Excellent value once the sauna reopens",None,None,
+ ["Stadtbad Neukölln",52.47919,13.43973,"Public bath / sauna","Neukölln",20,"€20 / 3h · €23 day (reduced €16 / €19) · €10 chip deposit, box office only","yes","Included on Max",
+  "Finnish sauna, herbal sauna, steam bath, caldarium","Public bath facilities",None,"Excellent value, and the warm-water pool is back",None,"Monday is a women-only sauna day. Entry closes an hour before closing time.",
   "https://www.berlinerbaeder.de/baeder/detail/stadtbad-neukoelln/"],
  ["Finnland Zentrum",52.48963,13.39737,"Private rental sauna","Kreuzberg",40,"€40 for up to 4 people (3h) · extra adults €10","no","Not mentioned",
   "Indoor sauna on the 2nd floor, adjacent shower and small changing room, fireplace room on the same floor; BYO drinks allowed, take the empties with you","No pool; cool off by the changing-room windows or in the rear courtyard","Booking by email or phone (+49 30 781 81 89); weekend availability varies","Private group sauna with BYO drinks",None,"Booked by email or phone rather than walking in — the €40 covers the whole group for three hours.",
@@ -125,10 +125,16 @@ OPEN = {
  "Hotel Adlon Kempinski": {"weekly": D(420, 1260), "src": "listed"},
  "Hotel de Rome \u2014 De Rome Spa": {"weekly": D(600, 1260), "src": "listed"},
  "sly Berlin": {"weekly": D(360, 1380), "src": "listed"},
- "Saunabad Prenzlauer Berg": {"weekly": D(900, 1440), "src": "listed"},
+ "Saunabad Prenzlauer Berg": {"weekly": [[900, 1440]] * 6 + [[720, 1440]], "src": "venue"},
  "The Westin Grand \u2014 Gezer Spa": {"weekly": D(840, 1320), "src": "venue"},
  "ANTI SPA": {"weekly": D(420, 960), "src": "venue"},
- "Stadtbad Neuk\u00f6lln": {"closedUntil": "2026-09-14", "src": "venue"},
+ # Reopened after the 2026 summer break. The winter listing (1 Oct to 30 Apr) was read
+ # off berlinerbaeder.de on 8 Oct 2026; the summer listing is not published yet, so the
+ # same hours stand in for it until May. Windows end at last entry (an hour before the
+ # sauna closes), so "Open now" never sends anyone to a shut box office. Monday is women only.
+ "Stadtbad Neuk\u00f6lln": {"weekly": [[720, 1290]] + [[600, 1290]] * 6, "src": "venue",
+            "seasons": [{"from": "10-01", "to": "04-30",
+                         "weekly": [[720, 1290]] + [[600, 1290]] * 6}]},
 }
 
 HOURS_TEXT = {
@@ -145,6 +151,8 @@ HOURS_TEXT = {
  "Finnland Zentrum": "By arrangement \u2014 book by phone or email (+49 30 781 81 89)",
  "ANTI SPA": "Open Spa daily 07:00\u201316:00 for self-guided sauna and cold plunge; guided sessions at other times \u2014 timetable on their site and Instagram",
  "The Westin Grand \u2014 Gezer Spa": "Daily 14:00\u201322:00 \u2014 only the Sanarium is running while two saunas are repaired",
+ "Stadtbad Neuk\u00f6lln": "Sauna Mon 12:00\u201322:30 (women only) \u00b7 Tue\u2013Sun 10:00\u201322:30 \u00b7 last entry 21:30",
+ "Saunabad Prenzlauer Berg": "Mon\u2013Sat 15:00\u201324:00 \u00b7 Sun 12:00\u201324:00",
 }
 
 
@@ -250,7 +258,22 @@ PRACTICAL = ("For a normal sauna session rather than a luxury spa day, **KIEZ SA
              "more sense when the pool, terrace, relaxation area, or USC access is part of what "
              "you want.")
 
-LAST_CHECKED = "28 September 2026"
+LAST_CHECKED = "8 October 2026"
+# The hero stamp wants the same date as dd.mm.yyyy; derived here so the two
+# can never show different days.
+LAST_CHECKED_STAMP = datetime.datetime.strptime(LAST_CHECKED, "%d %B %Y").strftime("%d.%m.%Y")
+
+# --- The "two traps" box: a venue and one sentence, no dates. When the venue
+#     has a closedUntil in force the browser appends "on break until ..." itself
+#     (see trapText in the template), so a closure is never written as prose
+#     here; the old "summer break through 31 October" outlived the real break
+#     by weeks.
+TRAPS = [
+ ("LIQUIDROM", "is on Urban Sports Club, but USC entry does not include the sauna "
+               "\u2014 you still pay the supplement."),
+ ("Stadtbad Neuk\u00f6lln", "\u2019s sauna is women-only on Mondays, and it closes for a summer "
+                           "break most years."),
+]
 
 
 # --- Reviews. reviewers.json and reviews.json are written by the issue-ingest
@@ -305,7 +328,8 @@ for i, row in enumerate(V):
     venues.append(d)
 json.dump(venues, open('venues.json','w'), separators=(',',':'), ensure_ascii=False)
 json.dump({"picks": [list(p) for p in PICKS], "practical": PRACTICAL, "lastChecked": LAST_CHECKED,
-           "reviewers": REVIEWERS, "loylyText": LOYLY_TEXT},
+           "lastCheckedStamp": LAST_CHECKED_STAMP, "traps": [list(t) for t in TRAPS],
+           "count": len(venues), "reviewers": REVIEWERS, "loylyText": LOYLY_TEXT},
           open('meta.json','w'), separators=(',',':'), ensure_ascii=False)
 print(len(venues), "venues")
 xs=[v['x'] for v in venues]; ys=[v['y'] for v in venues]

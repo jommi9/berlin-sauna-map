@@ -67,9 +67,13 @@ so every cell is whitespace-collapsed; and a code span inside a bold run collide
 into `****`, so notes are written as a bold **Heads up:** label followed by
 unbolded text rather than bolding the whole sentence.
 
-`PICKS`, `PRACTICAL` and `LAST_CHECKED` are defined once in `build_venues.py` and
-injected into both the site template and the Notion page, so the fast-picks list
-cannot say two different things.
+`PICKS`, `PRACTICAL`, `TRAPS` and `LAST_CHECKED` are defined once in `build_venues.py` and
+injected into both the site template and the Notion page (the traps as a "Two traps"
+list under the table), so the fast-picks list cannot say two different things. The hero stamp ("Last scan dd.mm.yyyy") is derived from
+`LAST_CHECKED`, so bump that one string when you re-verify the venues. A trap is one
+sentence with no dates in it; when the venue has a `closedUntil` in force the browser
+appends the date itself, the same way the card's hours line is composed. Never write a
+closure date as prose in the template or in `TRAPS`.
 
 Never edit venue data with a bare `str.replace()`. Assert the old string exists
 and is unique first — a silent no-op replace is what let the InterContinental
@@ -79,7 +83,10 @@ rates reach Notion but not the site.
 
 `index.html` (full document, has the viewport meta) is for GitHub Pages.
 `artifact.html` (bare fragment) is for publishing as an Artifact, which rejects
-`<html>`/`<head>`/`<body>` and supplies its own head. Serving the fragment as a
+`<html>`/`<head>`/`<body>` and supplies its own head. The Artifact also gets the twelve
+photos inlined as data URIs, because it is one file; the website gets them as
+`src/img/card/*.webp`, which halves the page. `og.png` at the repo root is the share
+image the website's Open Graph tags point at. Serving the fragment as a
 website makes phones lay it out at 980 px and shrink to fit — the bug that made the
 site unreadable on mobile while looking fine in scaled screenshots.
 

@@ -104,6 +104,10 @@ for label, name in M["picks"]:
     out.append(f"- **{label}:** {name}")
 out.append("## Practical note")
 out.append(M["practical"])
+out.append("## Two traps")
+for name, text in M["traps"]:
+    sep = "" if text.startswith("\u2019") else " "
+    out.append(f"- **{name}**{sep}{text}")
 
 # Reviews live on the site, not here: they arrive through GitHub issues and are
 # joined onto venues at build time, so a Notion column would be a fourth copy.

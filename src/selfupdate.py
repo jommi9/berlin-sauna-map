@@ -130,10 +130,12 @@ for name, pattern in sources.CLOSURES.items():
     txt = pages.get(name)
     if txt is None:
         continue
+    cur = (venues[name].get("open") or {}).get("closedUntil")
     m = once(pattern, txt)
     if not m:
-        notes.append(f"{name}: no closure notice on the page now "
-                     f"(matched {len(re.findall(pattern, txt))} times)")
+        if cur is not None:
+            notes.append(f"{name}: no closure notice on the page now "
+                         f"(matched {len(re.findall(pattern, txt))} times)")
         continue
     d, mo, y = (int(x) for x in m.groups())
     y += 2000 if y < 100 else 0
@@ -142,12 +144,16 @@ for name, pattern in sources.CLOSURES.items():
     except ValueError:
         problems.append(f"{name}: closure notice has an impossible date {m.group(0)!r}")
         continue
-    cur = (venues[name].get("open") or {}).get("closedUntil")
     if cur == until.isoformat():
         continue
     if until < TODAY:
         notes.append(f"{name}: its notice says {until} which has passed - the venue is "
                      f"reopening and the page has not caught up; leaving for a human")
+        continue
+    if cur is None:
+        has = "weekly hours" if venues[name].get("open") else "no hours entry"
+        notes.append(f"{name}: its page now carries a closure notice until {until} but the "
+                     f"venue has {has} rather than a closedUntil - a human should record it")
         continue
     changes.append({"venue": name, "what": "closedUntil", "old": cur, "new": until.isoformat(),
                     "headline": False, "old_frag": f'"closedUntil": "{cur}"',

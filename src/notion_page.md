@@ -1,5 +1,5 @@
 <callout icon="♨️" color="blue_bg">
-	Berlin sauna shortlist combining hotel day spas, Urban Sports Club options, and regular standalone saunas. **Last checked: 28 September 2026.** Cabin temperatures and Aufguss practice were confirmed by the venues themselves by email. Prices, USC limits and opening hours change often, so recheck before making a special trip. **This page is generated from the berlin-sauna-map repository — edits made here are overwritten by the next build.**
+	Berlin sauna shortlist combining hotel day spas, Urban Sports Club options, and regular standalone saunas. **Last checked: 8 October 2026.** Cabin temperatures and Aufguss practice were confirmed by the venues themselves by email. Prices, USC limits and opening hours change often, so recheck before making a special trip. **This page is generated from the berlin-sauna-map repository — edits made here are overwritten by the next build.**
 </callout>
 <table fit-page-width="true" header-row="true">
 <tr>
@@ -15,7 +15,7 @@
 <tr>
 <td>[Vabali](https://www.vabali.de/berlin/)</td>
 <td>Standalone spa</td>
-<td>€27.50 / 2h · €36.50 / 4h · €51.50 day</td>
+<td>€27.50 / 2h · €36.50 / 4h · €51.50 day (weekends & holidays €29.50 / €39.50 / €56.50)</td>
 <td>Not on Urban Sports Club</td>
 <td>**Someone throws for you — Aufguss.** 13 saunas: bio 55°C coolest, Gratensauna 90°C hottest, steam 45°C Aufguss rated 10/10. Aufguss: Plan rewritten daily and posted in-house — birch ceremonies, Asian scent journey, mint, orange peeling *(confirmed by the venue, email 3 Sep 2026)*</td>
 <td>4 pools</td>
@@ -163,13 +163,13 @@
 <td>Spa / pool atmosphere rather than pure sauna</td>
 </tr>
 <tr>
-<td>[Saunabad Prenzlauer Berg](https://www.facebook.com/p/Saunabad-Berlin-Prenzlauer-Berg-100061924915931/)</td>
+<td>[Saunabad Prenzlauer Berg](https://www.saunabad-berlin.de/)</td>
 <td>Standalone sauna</td>
 <td>€18 / 2.5h · €20 / 4h</td>
 <td>No verified USC access</td>
 <td>**Someone throws for you — Aufguss.** Large 95°C sauna, hourly Aufguss, garden, quiet rooms</td>
 <td>No pool focus</td>
-<td>15:00–24:00 (hours as published, not re-verified) **Heads up:** Their own site `saunabad-berlin.de` is dead — the domain now serves a hosting parking page and https fails, so this links to their Facebook instead. Rykestr. 10, tel. 030 44046397.</td>
+<td>Mon–Sat 15:00–24:00 · Sun 12:00–24:00 **Heads up:** Cash only, no cards. Their own site served a hosting parking page for a spell in September 2026; it is back as of 8 October with the same prices and hours. Rykestr. 10, tel. 030 44046397.</td>
 <td>**Best cheap traditional sauna**</td>
 </tr>
 <tr>
@@ -195,12 +195,12 @@
 <tr>
 <td>[Stadtbad Neukölln](https://www.berlinerbaeder.de/baeder/detail/stadtbad-neukoelln/)</td>
 <td>Public bath / sauna</td>
-<td>About €20 / 3h · €23 day</td>
+<td>€20 / 3h · €23 day (reduced €16 / €19) · €10 chip deposit, box office only</td>
 <td>Included on Max</td>
 <td>**Not known.** Finnish sauna, herbal sauna, steam bath, caldarium</td>
 <td>Public bath facilities</td>
-<td>Sauna closed until 14 September 2026</td>
-<td>Excellent value once the sauna reopens</td>
+<td>Sauna Mon 12:00–22:30 (women only) · Tue–Sun 10:00–22:30 · last entry 21:30 **Heads up:** Monday is a women-only sauna day. Entry closes an hour before closing time.</td>
+<td>Excellent value, and the warm-water pool is back</td>
 </tr>
 <tr>
 <td>[Finnland Zentrum](https://www.finnlandzentrum.de/sauna/)</td>
@@ -226,6 +226,9 @@
 - **Best sauna you can't easily book:** sly Berlin
 ## Practical note
 For a normal sauna session rather than a luxury spa day, **KIEZ SAUNA, Saunabad, Olivin and Lützow** are better benchmarks than most hotel spas. Hotel spas make more sense when the pool, terrace, relaxation area, or USC access is part of what you want.
+## Two traps
+- **LIQUIDROM** is on Urban Sports Club, but USC entry does not include the sauna — you still pay the supplement.
+- **Stadtbad Neukölln**’s sauna is women-only on Mondays, and it closes for a summer break most years.
 ## Scores
 **Finnish score** rates each place as a sauna out of 10 — heat, löyly, and whether you are allowed to throw water — judged by a Finn, not by the spa around it. Nothing scored yet.
 **Aufguss rating** applies only where someone throws for you; it is meaningless where you pour your own. Vabali 10/10.
