@@ -657,22 +657,21 @@ function hoursText(v, now){
     ? `Sauna closed until ${pretty}`
     : `Sauna break ended ${pretty} \u2014 hours not re-verified since`;
 }
-/* The "two traps" box. A trap marked "closure" is composed from the venue's
-   closedUntil date on every render, like hoursText, so it can say "on break
-   until", then "reopened, hours unverified", and finally nothing at all once
-   the hours are confirmed again - without anyone editing prose. */
+/* The "two traps" box. Each sentence is data; if the venue has a closedUntil
+   in force the date is appended here on every render, like hoursText, so a
+   closure never has to be written as prose and never outlives itself. */
 function trapText(now){
   return TRAPS.map(([name, text]) => {
     const v = V.find(x => x.name === name);
     if (!v) return "";
-    if (text !== "closure") return `<strong>${v.name}</strong> ${text}`;
+    const sep = text.startsWith("\u2019") ? "" : " ";
+    let s = `<strong>${v.name}</strong>${sep}${text}`;
     const o = v.open;
-    if (!o || !o.closedUntil) return "";
-    const [y, m, d] = o.closedUntil.split("-").map(Number);
-    const pretty = `${d} ${MONTH[m - 1]} ${y}`;
-    return now.date <= o.closedUntil
-      ? `<strong>${v.name}\u2019s</strong> sauna is on its summer break until ${pretty}.`
-      : `<strong>${v.name}\u2019s</strong> sauna takes a summer break every year; it reopened on ${pretty} and its hours have not been re-verified since, so check before going.`;
+    if (o && o.closedUntil && now.date <= o.closedUntil){
+      const [y, m, d] = o.closedUntil.split("-").map(Number);
+      s += ` It is on break until ${d} ${MONTH[m - 1]} ${y}.`;
+    }
+    return s;
   }).filter(Boolean).join(" ");
 }
 const AUFGUSS = { scheduled: "Run to a schedule", self: "Pour your own", request: "On request",

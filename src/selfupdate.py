@@ -145,6 +145,11 @@ for name, pattern in sources.CLOSURES.items():
     cur = (venues[name].get("open") or {}).get("closedUntil")
     if cur == until.isoformat():
         continue
+    if cur is None:
+        notes.append(f"{name}: its page now carries a closure notice until {until} but the "
+                     f"venue has weekly hours rather than a closedUntil - a human should "
+                     f"swap them over")
+        continue
     if until < TODAY:
         notes.append(f"{name}: its notice says {until} which has passed - the venue is "
                      f"reopening and the page has not caught up; leaving for a human")

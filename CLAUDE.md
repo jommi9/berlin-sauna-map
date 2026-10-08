@@ -70,9 +70,10 @@ unbolded text rather than bolding the whole sentence.
 `PICKS`, `PRACTICAL`, `TRAPS` and `LAST_CHECKED` are defined once in `build_venues.py` and
 injected into both the site template and the Notion page, so the fast-picks list
 cannot say two different things. The hero stamp ("Last scan dd.mm.yyyy") is derived from
-`LAST_CHECKED`, so bump that one string when you re-verify the venues. A trap marked
-`"closure"` is composed in the browser from the venue's `closedUntil`, the same way the
-card's hours line is; never write a closure date as prose in the template.
+`LAST_CHECKED`, so bump that one string when you re-verify the venues. A trap is one
+sentence with no dates in it; when the venue has a `closedUntil` in force the browser
+appends the date itself, the same way the card's hours line is composed. Never write a
+closure date as prose in the template or in `TRAPS`.
 
 Never edit venue data with a bare `str.replace()`. Assert the old string exists
 and is unique first — a silent no-op replace is what let the InterContinental
