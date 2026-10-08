@@ -54,7 +54,7 @@ V = [
   "Sauna plus spa facilities and Onsen","Saltwater sound pool","09:00–24:00","Spa / pool atmosphere rather than pure sauna",None,"USC entry does not include the sauna — you pay the supplement.",
   "https://www.liquidrom-berlin.de/en/info.php"],
  ["Saunabad Prenzlauer Berg",52.53578,13.42035,"Standalone sauna","Prenzlauer Berg",18,"€18 / 2.5h · €20 / 4h","no","No verified USC access",
-  "Large 95°C sauna, hourly Aufguss, garden, quiet rooms","No pool focus","Mon–Sat 15:00–24:00 · Sun 12:00–24:00","Best cheap traditional sauna","Best cheap sauna","Cash only, no cards. Their own site served a hosting parking page for a spell in September 2026; it is back as of 8 October with the same prices and hours. Rykestr. 10, tel. 030 44046397.",
+  "Large 95°C sauna, hourly Aufguss, garden, quiet rooms","No pool focus",None,"Best cheap traditional sauna","Best cheap sauna","Cash only, no cards. Their own site served a hosting parking page for a spell in September 2026; it is back as of 8 October with the same prices and hours. Rykestr. 10, tel. 030 44046397.",
   "https://www.saunabad-berlin.de/"],
  ["Lützow Sauna",52.50154,13.36890,"Standalone sauna","Tiergarten",24,"€24 / 2h · €27 / 3h · €30 day","no","No verified USC access",
   "90°C sauna, sanarium, steam bath, hourly Aufguss","30°C pool and 14°C plunge","Closed Tuesdays; check other daily hours","Excellent classic hot–cold cycles",None,None,
@@ -63,7 +63,7 @@ V = [
   "Cedar sauna, lounge; swimwear mandatory","Proper cold plunge","Session based","Best USC sauna plus serious cold plunge","Best cold plunge",None,
   "https://www.antispaces.com/spa/welcome-pass"],
  ["Stadtbad Neukölln",52.47919,13.43973,"Public bath / sauna","Neukölln",20,"€20 / 3h · €23 day (reduced €16 / €19) · €10 chip deposit, box office only","yes","Included on Max",
-  "Finnish sauna, herbal sauna, steam bath, caldarium","Public bath facilities","Mon 12:00–22:30 (women only) · Tue–Sun 10:00–22:30","Excellent value, and the warm-water pool is back",None,"Monday is a women-only sauna day. Entry closes an hour before closing time.",
+  "Finnish sauna, herbal sauna, steam bath, caldarium","Public bath facilities",None,"Excellent value, and the warm-water pool is back",None,"Monday is a women-only sauna day. Entry closes an hour before closing time.",
   "https://www.berlinerbaeder.de/baeder/detail/stadtbad-neukoelln/"],
  ["Finnland Zentrum",52.48963,13.39737,"Private rental sauna","Kreuzberg",40,"€40 for up to 4 people (3h) · extra adults €10","no","Not mentioned",
   "Indoor sauna on the 2nd floor, adjacent shower and small changing room, fireplace room on the same floor; BYO drinks allowed, take the empties with you","No pool; cool off by the changing-room windows or in the rear courtyard","Booking by email or phone (+49 30 781 81 89); weekend availability varies","Private group sauna with BYO drinks",None,"Booked by email or phone rather than walking in — the €40 covers the whole group for three hours.",
@@ -128,9 +128,13 @@ OPEN = {
  "Saunabad Prenzlauer Berg": {"weekly": [[900, 1440]] * 6 + [[720, 1440]], "src": "venue"},
  "The Westin Grand \u2014 Gezer Spa": {"weekly": D(840, 1320), "src": "venue"},
  "ANTI SPA": {"weekly": D(420, 960), "src": "venue"},
- # Reopened after the 2026 summer break; winter listing (1 Oct 2026 to 30 Apr 2027)
- # read off berlinerbaeder.de on 8 Oct 2026. Monday is women only.
- "Stadtbad Neuk\u00f6lln": {"weekly": [[720, 1350]] + [[600, 1350]] * 6, "src": "venue"},
+ # Reopened after the 2026 summer break. The winter listing (1 Oct to 30 Apr) was read
+ # off berlinerbaeder.de on 8 Oct 2026; the summer listing is not published yet, so the
+ # same hours stand in for it until May. Windows end at last entry (an hour before the
+ # sauna closes), so "Open now" never sends anyone to a shut box office. Monday is women only.
+ "Stadtbad Neuk\u00f6lln": {"weekly": [[720, 1290]] + [[600, 1290]] * 6, "src": "venue",
+            "seasons": [{"from": "10-01", "to": "04-30",
+                         "weekly": [[720, 1290]] + [[600, 1290]] * 6}]},
 }
 
 HOURS_TEXT = {
@@ -147,7 +151,7 @@ HOURS_TEXT = {
  "Finnland Zentrum": "By arrangement \u2014 book by phone or email (+49 30 781 81 89)",
  "ANTI SPA": "Open Spa daily 07:00\u201316:00 for self-guided sauna and cold plunge; guided sessions at other times \u2014 timetable on their site and Instagram",
  "The Westin Grand \u2014 Gezer Spa": "Daily 14:00\u201322:00 \u2014 only the Sanarium is running while two saunas are repaired",
- "Stadtbad Neuk\u00f6lln": "Sauna Mon 12:00\u201322:30 (women only) \u00b7 Tue\u2013Sun 10:00\u201322:30; last entry an hour before closing",
+ "Stadtbad Neuk\u00f6lln": "Sauna Mon 12:00\u201322:30 (women only) \u00b7 Tue\u2013Sun 10:00\u201322:30 \u00b7 last entry 21:30",
  "Saunabad Prenzlauer Berg": "Mon\u2013Sat 15:00\u201324:00 \u00b7 Sun 12:00\u201324:00",
 }
 

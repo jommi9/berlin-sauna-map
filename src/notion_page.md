@@ -199,7 +199,7 @@
 <td>Included on Max</td>
 <td>**Not known.** Finnish sauna, herbal sauna, steam bath, caldarium</td>
 <td>Public bath facilities</td>
-<td>Sauna Mon 12:00–22:30 (women only) · Tue–Sun 10:00–22:30; last entry an hour before closing **Heads up:** Monday is a women-only sauna day. Entry closes an hour before closing time.</td>
+<td>Sauna Mon 12:00–22:30 (women only) · Tue–Sun 10:00–22:30 · last entry 21:30 **Heads up:** Monday is a women-only sauna day. Entry closes an hour before closing time.</td>
 <td>Excellent value, and the warm-water pool is back</td>
 </tr>
 <tr>
@@ -226,6 +226,9 @@
 - **Best sauna you can't easily book:** sly Berlin
 ## Practical note
 For a normal sauna session rather than a luxury spa day, **KIEZ SAUNA, Saunabad, Olivin and Lützow** are better benchmarks than most hotel spas. Hotel spas make more sense when the pool, terrace, relaxation area, or USC access is part of what you want.
+## Two traps
+- **LIQUIDROM** is on Urban Sports Club, but USC entry does not include the sauna — you still pay the supplement.
+- **Stadtbad Neukölln**’s sauna is women-only on Mondays, and it closes for a summer break most years.
 ## Scores
 **Finnish score** rates each place as a sauna out of 10 — heat, löyly, and whether you are allowed to throw water — judged by a Finn, not by the spa around it. Nothing scored yet.
 **Aufguss rating** applies only where someone throws for you; it is meaningless where you pour your own. Vabali 10/10.

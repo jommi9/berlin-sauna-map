@@ -68,8 +68,8 @@ into `****`, so notes are written as a bold **Heads up:** label followed by
 unbolded text rather than bolding the whole sentence.
 
 `PICKS`, `PRACTICAL`, `TRAPS` and `LAST_CHECKED` are defined once in `build_venues.py` and
-injected into both the site template and the Notion page, so the fast-picks list
-cannot say two different things. The hero stamp ("Last scan dd.mm.yyyy") is derived from
+injected into both the site template and the Notion page (the traps as a "Two traps"
+list under the table), so the fast-picks list cannot say two different things. The hero stamp ("Last scan dd.mm.yyyy") is derived from
 `LAST_CHECKED`, so bump that one string when you re-verify the venues. A trap is one
 sentence with no dates in it; when the venue has a `closedUntil` in force the browser
 appends the date itself, the same way the card's hours line is composed. Never write a

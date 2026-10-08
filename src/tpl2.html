@@ -81,10 +81,13 @@ a{color:inherit}
   .tile.mark{grid-column:span 4; padding:16px 16px 18px; gap:10px}
   .wordmark{font-size:38px}
   .strap{font-size:13.5px}
-  .tile{padding:10px 8px 9px; gap:3px}
-  .tile .k{font-size:9px; letter-spacing:.12em}
-  .tile .n{font-size:22px}
-  .tile .s{font-size:9px; letter-spacing:.03em; line-height:1.25}
+  .tile{padding:10px 7px 9px; gap:3px; min-width:0}
+  .tile .k{font-size:9px; letter-spacing:.1em}
+  .tile .n{font-size:20px}
+  .tile .s{font-size:9px; letter-spacing:.02em; line-height:1.25; overflow-wrap:anywhere}
+}
+@media (max-width:360px){
+  .tile .n{font-size:17px}
 }
 
 /* ---------------- HUD control bar ---------------- */
@@ -117,12 +120,15 @@ a{color:inherit}
   text-transform:uppercase; background:none; border:0; color:var(--dim); cursor:pointer; padding:6px 0;
 }
 .clear:hover{color:var(--gold)}
-/* On a phone the filter bar is ~217px tall; pinning that costs a quarter of
-   the viewport, so it scrolls away with the page instead. */
+/* On a phone the bar is one horizontally scrolling row (~53px) rather than
+   five wrapped rows, so it stays pinned. The right edge fades to show there is
+   more to swipe to, since the scrollbar is hidden. */
 @media (max-width:760px){
   .bar{
-    position:static; flex-wrap:nowrap; overflow-x:auto; gap:8px 14px; padding:9px 12px;
+    flex-wrap:nowrap; overflow-x:auto; gap:8px 14px; padding:9px 12px;
     scrollbar-width:none; -webkit-overflow-scrolling:touch;
+    -webkit-mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent);
+    mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent);
   }
   .bar::-webkit-scrollbar{display:none}
   .bar > *{flex:none}
@@ -449,9 +455,9 @@ svg.map.dragging{cursor:grabbing}
     <div class="tile mark">
       <p class="stamp">Berlin <b>//</b> Last scan <time id="stamp-date">__LAST_SCAN__</time></p>
       <h1 class="wordmark"><span>Berlin</span><span>Sauna</span><span class="g">Map</span></h1>
-      <p class="strap">Twenty saunas and spas across the city, priced and plotted. Hotel day spas, proper neighbourhood saunas, and the six you can walk into on an Urban Sports Club card.</p>
+      <p class="strap">__COUNT__ saunas and spas across the city, priced and plotted. Hotel day spas, proper neighbourhood saunas, and the six you can walk into on an Urban Sports Club card.</p>
     </div>
-    <div class="tile"><span class="k">Locations</span><span class="n" id="n-count">20</span><span class="s">Mapped by hand</span></div>
+    <div class="tile"><span class="k">Locations</span><span class="n" id="n-count">__COUNT__</span><span class="s">Mapped by hand</span></div>
     <div class="tile"><span class="k">Cheapest</span><span class="n">&euro;12<span style="font-size:.62em">.50</span></span><span class="s">Gezer Alexanderplatz, 2h</span></div>
     <div class="tile"><span class="k">On USC</span><span class="n">6</span><span class="s">Membership entry</span></div>
     <div class="tile"><span class="k">Hottest</span><span class="n">95&deg;C</span><span class="s">Finnish cabin</span></div>

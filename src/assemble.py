@@ -15,10 +15,10 @@ for p in parts:
 doc = ''.join(out)
 
 geo = json.dumps(json.load(open('geo.json', encoding='utf-8')), separators=(',', ':'), ensure_ascii=True)
-ven = json.dumps(json.load(open('venues.json', encoding='utf-8')), separators=(',', ':'), ensure_ascii=True)
+venues = json.load(open('venues.json', encoding='utf-8'))
+ven = json.dumps(venues, separators=(',', ':'), ensure_ascii=True)
 images = json.load(open('img/embed.json', encoding='utf-8'))
 meta = json.load(open('meta.json', encoding='utf-8'))
-venues = json.load(open('venues.json', encoding='utf-8'))
 # The Artifact is one self-contained file, so it gets the photos inlined. The
 # website has a file system, so there the same photos are served as files and
 # the page shrinks from ~900 KB to ~500 KB; the <img> tags are already lazy.
