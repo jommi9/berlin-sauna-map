@@ -177,9 +177,26 @@ button{font:inherit; color:inherit}
 /* ---------------- split view ---------------- */
 .split{
   display:grid; grid-template-columns:400px minmax(0,1fr); grid-template-rows:minmax(0,1fr); gap:18px;
-  height:min(880px, calc(100dvh - 32px)); min-height:620px;
+  /* tall enough to use, short enough that the filter row and the whole panel fit one screen */
+  height:min(860px, calc(100dvh - 150px)); min-height:560px;
 }
-.listcol{display:flex; flex-direction:column; min-width:0; min-height:0}
+.listcol{position:relative; display:flex; flex-direction:column; min-width:0; min-height:0}
+/* The list scrolls inside its column, which nothing about a cut-off card says.
+   So while more is below, the list fades out at the bottom and a button counts
+   what is left; both go once the end is reached. */
+.cards.has-more{
+  -webkit-mask-image:linear-gradient(to bottom, #000 calc(100% - 72px), transparent);
+  mask-image:linear-gradient(to bottom, #000 calc(100% - 72px), transparent);
+}
+.more{
+  position:absolute; left:50%; bottom:14px; transform:translateX(-50%); z-index:4;
+  display:inline-flex; align-items:center; gap:7px; height:34px; padding:0 14px;
+  border:0; border-radius:var(--r-sm); cursor:pointer; white-space:nowrap;
+  background:var(--label); color:var(--bg); font:600 13.5px var(--font);
+  box-shadow:var(--shadow-lift); transition:transform .15s var(--ease), opacity .2s;
+}
+.more:hover{transform:translateX(-50%) translateY(1px)}
+.more:active{transform:translateX(-50%) scale(.97)}
 .mapcol{min-width:0; min-height:0}
 .mapcol .inner{
   position:relative; height:100%; border-radius:var(--r-xl); overflow:hidden;
@@ -584,6 +601,7 @@ button.pk:active{transform:scale(.98)}
         <span class="c" id="l-note">in pick order</span>
       </div>
       <ul class="cards" id="cards"></ul>
+      <button class="more" id="more" type="button" hidden><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="more-n"></span></button>
       <p class="none-msg" id="none" hidden>nothing matches. raise the price limit or clear a filter.</p>
     </div>
 
@@ -1157,7 +1175,24 @@ function choose(id, fromMap){
   showName(sel);
   showPeek(sel);
   if (sel != null && fromMap && !isMobile()) revealCard(sel);
+  setTimeout(updateMore, 450);   // after any smooth scroll has settled
 }
+
+/* ---------- "more below" ---------- */
+const moreBtn = document.getElementById("more"), moreN = document.getElementById("more-n");
+function updateMore(){
+  const box = cards.getBoundingClientRect();
+  const rest = cards.scrollHeight - cards.scrollTop - cards.clientHeight;
+  /* count the places not yet started on: a card whose top is already in view is being read */
+  const below = [...cards.children].filter(li => !li.hidden && li.getBoundingClientRect().top > box.bottom - 60).length;
+  const show = cards.clientHeight > 120 && rest > 8 && below > 0;
+  cards.classList.toggle("has-more", show);
+  moreBtn.hidden = !show;
+  if (show) moreN.textContent = `${below} more ${below === 1 ? "place" : "places"}`;
+}
+cards.addEventListener("scroll", updateMore, { passive: true });
+addEventListener("resize", updateMore);
+moreBtn.addEventListener("click", () => cards.scrollBy({ top: cards.clientHeight * 0.8, behavior: "smooth" }));
 
 /* ---------- filtering ---------- */
 const lTitle = document.getElementById("l-title"), lNote = document.getElementById("l-note"),
@@ -1175,6 +1210,7 @@ function run(){
   lNote.textContent = filtered ? "filtered" : "in pick order";
   nCount.textContent = n;
   noneMsg.hidden = n > 0;
+  if (typeof updateMore === "function") updateMore();
   if (typeof grabLabel !== "undefined" && grabLabel)
     grabLabel.textContent = `${n} ${n === 1 ? "venue" : "venues"}`;
 }
@@ -1282,6 +1318,7 @@ function openSheet(on){
   listcol.classList.toggle("open", on);
   grab.setAttribute("aria-expanded", String(on));
   setSheet(on ? expandedH() : COLLAPSED);
+  setTimeout(updateMore, 380);   // after the sheet's height transition
   /* The open sheet already shows the picked card, so the peek card steps aside
      and comes back when the sheet is lowered. */
   if (on) peekEl.hidden = true; else showPeek(sel);

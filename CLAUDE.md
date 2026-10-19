@@ -121,6 +121,9 @@ coherent:
   `COVER`, and only those with a photograph.
 - `og.png` is a screenshot of the hero over the map at 1200×630; retake it when
   the header changes.
+- The list scrolls inside its column, so it must say so: while places remain
+  below, it fades out at the bottom and a button counts them (`updateMore`).
+  The list-and-map panel is sized so it fits one screen under the filter row.
 
 ## After pushing, confirm the site actually changed
 
