@@ -212,6 +212,19 @@ HEAT = {
 LOYLY_OF = {"scheduled": "staff", "request": "staff", "self": "self",
             "auto": "machine", "unknown": "unknown"}
 
+# --- Which sauna culture a place belongs to, derived from who throws the water
+#     and never typed separately: you throw your own (Finnish), a sauna master
+#     throws the Aufguss (German), you throw your own in a banya (Russian), or a
+#     machine doses it and nobody may (no loyly - a fake sauna by Finnish
+#     standards). A banya is the one thing the loyly cannot tell apart, so it is
+#     named here; none of the listed venues is one yet.
+BANYA = set()
+
+def style_of(name, loyly):
+    if loyly == "self":
+        return "russian" if name in BANYA else "finnish"
+    return {"staff": "german", "machine": "none"}.get(loyly, "unknown")
+
 LOYLY_TEXT = {
  "staff":   "Someone throws for you \u2014 Aufguss",
  "self":    "You throw your own l\u00f6yly",
@@ -307,6 +320,7 @@ for i, row in enumerate(V):
     d["aufguss"], d["aufgussNote"] = a, note
     d["loyly"] = LOYLY_OF[a]
     d["loylyText"] = LOYLY_TEXT[d["loyly"]]
+    d["style"] = style_of(d["name"], d["loyly"])
     d["finnish"] = FINNISH.get(d["name"])
     # An Aufguss score on a sauna where you throw your own would be rating
     # something that does not happen there.

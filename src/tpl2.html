@@ -18,7 +18,7 @@
   --ember:#B94B24; --ember-soft:rgba(191,79,39,.10);
   --green:#23793B; --green-soft:rgba(35,121,59,.10);
   --red:#B5352A; --red-soft:rgba(184,54,42,.09);
-  --flag:#0B3D86; --knob:#FFFFFF;
+  --knob:#FFFFFF;
   --glass:rgba(250,249,247,.78);
   --shadow:0 1px 2px rgba(24,20,14,.05), 0 6px 20px rgba(24,20,14,.06);
   --shadow-lift:0 2px 6px rgba(24,20,14,.08), 0 18px 44px rgba(24,20,14,.13);
@@ -43,7 +43,7 @@
   --ember:#F08B5F; --ember-soft:rgba(240,139,95,.14);
   --green:#63C982; --green-soft:rgba(99,201,130,.13);
   --red:#F2796B; --red-soft:rgba(242,121,107,.13);
-  --flag:#2460BA; --knob:#F2F2EF;
+  --knob:#F2F2EF;
   --glass:rgba(30,31,34,.76);
   --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.28);
   --shadow-lift:0 2px 6px rgba(0,0,0,.40), 0 18px 44px rgba(0,0,0,.50);
@@ -62,7 +62,7 @@
   --ember:#F08B5F; --ember-soft:rgba(240,139,95,.14);
   --green:#63C982; --green-soft:rgba(99,201,130,.13);
   --red:#F2796B; --red-soft:rgba(242,121,107,.13);
-  --flag:#2460BA; --knob:#F2F2EF;
+  --knob:#F2F2EF;
   --glass:rgba(30,31,34,.76);
   --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.28);
   --shadow-lift:0 2px 6px rgba(0,0,0,.40), 0 18px 44px rgba(0,0,0,.50);
@@ -201,6 +201,14 @@ button{font:inherit; color:inherit}
 .card:not(.on) .rows, .card:not(.on) .alert, .card:not(.on) .revs, .card:not(.on) .acts{display:none}
 .card:not(.on) .tags{margin-top:8px}
 .card:not(.on) .cname{font-size:16px}
+/* on a narrow phone a row keeps only the flag; the word comes back when it opens */
+@media (max-width:420px){
+  .card:not(.on){padding-left:80px}
+  .card:not(.on) .shot{width:56px; height:56px}
+  .card:not(.on) .fin{padding:0 6px; gap:0}
+  .card:not(.on) .fin .lb{display:none}
+  .card:not(.on) .fin.st-unknown::after{content:"?"; padding:0 3px}
+}
 
 .mapcol{min-width:0; min-height:0}
 .mapcol .inner{
@@ -302,14 +310,18 @@ svg.map.dragging{cursor:grabbing}
 .ct{flex:1 1 auto; min-width:0}
 .cname{margin:0; font:600 17px/1.25 var(--font-display); letter-spacing:-.014em; text-wrap:balance}
 .cmeta{margin:2px 0 0; font:400 13px/1.35 var(--font); color:var(--label-2)}
+/* the sauna-culture badge: flag and name, plus the Finnish score once given */
 .fin{
-  flex:none; display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 9px 0 7px;
-  border-radius:3px; background:var(--flag); color:#FFFFFF;
-  font:600 14px var(--font-num); font-variant-numeric:tabular-nums;
+  flex:none; display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 8px 0 7px;
+  border-radius:3px; background:var(--fill); color:var(--label);
+  font:600 12.5px var(--font); white-space:nowrap; cursor:help;
 }
-.fin i{font-style:normal; font-size:11px; opacity:.72}
-.fin.none{background:var(--fill); color:var(--label-3)}
-.fin .flagi{display:block; border-radius:2px; box-shadow:0 0 0 .5px rgba(0,0,0,.12)}
+.fin .flagi{display:block; flex:none; border-radius:1.5px; box-shadow:0 0 0 1px var(--sep)}
+.fin .flagi.nodrop{box-shadow:none; color:var(--label-2)}
+.fin.st-none, .fin.st-unknown{color:var(--label-2)}
+.fin.st-unknown{background:transparent; box-shadow:inset 0 0 0 1px var(--sep)}
+.fin .sc{margin-left:2px; padding-left:7px; border-left:1px solid var(--sep); font:600 13px var(--font-num); font-variant-numeric:tabular-nums}
+.fin .sc i{font-style:normal; font-size:10.5px; color:var(--label-3)}
 .tags{display:flex; flex-wrap:wrap; gap:6px; margin:11px 0 0}
 .status, .price, .pick-tag{
   display:inline-flex; align-items:center; height:24px; padding:0 9px; border-radius:3px;
@@ -1083,8 +1095,26 @@ const CURATOR = (([h, r]) => ({ handle: h, name: r ? r.name : "the editor" }))(
 const cards = document.getElementById("cards"), cardOf = new Map();
 const priceShort = v => v.price == null ? "price unclear"
   : v.pricing === "group" ? `\u20ac${money(v.price)} per booking` : `from \u20ac${money(v.price)}`;
-/* The Finnish score wears the flag it is named for: white field, blue cross, 18:11. */
-const FLAG = `<svg class="flagi" width="16" height="10" viewBox="0 0 18 11" aria-hidden="true"><rect width="18" height="11" fill="#FFFFFF"></rect><path d="M0 4h18v3H0z M5 0h3v11H5z" fill="#002F6C"></path></svg>`;
+/* Which sauna culture a place belongs to, from who throws the water: the flag
+   says it at a glance. Flags keep their own colours in both themes. The Finnish
+   score, once given, rides on the same badge. */
+const FLAGBOX = (body) => `<svg class="flagi" width="17" height="11" viewBox="0 0 18 11" aria-hidden="true">${body}</svg>`;
+const STYLE = {
+  finnish: { label: "finnish", title: "Finnish sauna: you throw the water on the stones yourself",
+    icon: FLAGBOX(`<rect width="18" height="11" fill="#FFFFFF"></rect><path d="M0 4h18v3H0z M5 0h3v11H5z" fill="#002F6C"></path>`) },
+  german:  { label: "german", title: "German sauna: a sauna master throws the Aufguss for you",
+    icon: FLAGBOX(`<rect width="18" height="3.67" fill="#000000"></rect><rect y="3.67" width="18" height="3.67" fill="#DD0000"></rect><rect y="7.33" width="18" height="3.67" fill="#FFCE00"></rect>`) },
+  russian: { label: "banya", title: "Russian banya: you throw your own water, banya-style",
+    icon: FLAGBOX(`<rect width="18" height="3.67" fill="#FFFFFF"></rect><rect y="3.67" width="18" height="3.67" fill="#0039A6"></rect><rect y="7.33" width="18" height="3.67" fill="#D52B1E"></rect>`) },
+  none:    { label: "no l\u00f6yly", title: "No l\u00f6yly: a machine doses the water and nobody may throw it. Not a real sauna by Finnish standards.",
+    icon: `<svg class="flagi nodrop" width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.6C5 4.4 3.4 6.4 3.4 8.4a3.6 3.6 0 0 0 7.2 0C10.6 6.4 9 4.4 7 1.6Z" fill="none" stroke="currentColor" stroke-width="1.4"></path><path d="M2 12.5 12 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>` },
+  unknown: { label: "not known", title: "Not known yet who throws the water here", icon: "" },
+};
+function styleBadge(v){
+  const s = STYLE[v.style] || STYLE.unknown;
+  const score = v.finnish == null ? "" : `<span class="sc">${v.finnish}<i>/10</i></span>`;
+  return `<span class="fin st-${v.style}" title="${s.title}${v.finnish == null ? "" : `. Finnish score ${v.finnish}/10.`}">${s.icon}<span class="lb">${s.label}</span>${score}</span>`;
+}
 V.forEach(v => {
   const li = document.createElement("li");
   li.className = "card"; li.tabIndex = 0;
@@ -1111,7 +1141,7 @@ V.forEach(v => {
         <h3 class="cname">${v.name}</h3>
         <p class="cmeta">${v.kind} &middot; ${v.district}</p>
       </div>
-      <span class="fin${v.finnish == null ? " none" : ""}" title="Finnish score: how good it is as a sauna, judged by a Finn"><span class="sr">Finnish score </span>${FLAG}${v.finnish == null ? "\u2013" : `${v.finnish}<i>/10</i>`}</span>
+      ${styleBadge(v)}
     </div>
     <div class="tags">
       <span class="status ${STATUS_CLASS[st]}" data-status>${STATUS_TEXT[st]}</span>

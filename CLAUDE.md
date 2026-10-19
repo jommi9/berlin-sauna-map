@@ -216,6 +216,13 @@ nobody throws anything). Hilton is the clearest `machine` — they wrote that
 pouring your own is *not allowed*. Change the kind in `HEAT` and the löyly
 follows; there is no second dict to keep in step.
 
+**Which sauna culture** a place belongs to is derived from the löyly too
+(`style_of` in `build_venues.py`) and shown as the flag badge on each card:
+you throw your own is **Finnish**, a sauna master's Aufguss is **German**, a
+machine dosing it with nobody allowed to throw is **no löyly** (a fake sauna by
+Finnish standards). A **banya** throws its own like a Finnish sauna, which the
+löyly cannot tell apart, so banyas are named in `BANYA`; none is listed yet.
+
 **`FINNISH`** is one Finn's score out of 10 of the place *as a sauna* — heat,
 löyly, and whether you may throw water — not of the spa around it. `None` means
 not scored yet and the card shows `FIN –`, never a zero. These are opinions, so
