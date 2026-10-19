@@ -31,8 +31,11 @@ doc = (doc.replace('/*__GEO__*/', geo).replace('/*__VENUES__*/', ven)
           .replace('/*__REVIEWERS__*/', json.dumps(meta['reviewers'], separators=(',', ':'), ensure_ascii=True))
           .replace('/*__TRAPS__*/', json.dumps(meta['traps'], separators=(',', ':'), ensure_ascii=True))
           .replace('__LAST_SCAN__', meta['lastCheckedStamp'])
+          # PRACTICAL is one string in build_venues.py, shared with Notion; its
+          # **bold** becomes <strong> here and its non-ASCII becomes entities.
+          .replace('__PRACTICAL__', ent(re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', meta['practical'])))
           .replace('__COUNT__', str(meta['count'])))
-for token in ('__LAST_SCAN__', '__COUNT__', '/*__'):
+for token in ('__LAST_SCAN__', '__COUNT__', '__PRACTICAL__', '/*__'):
     assert token not in doc, f"unfilled placeholder {token}"
 assert doc.isascii(), "non-ascii survived"
 # Two outputs from one template.
@@ -47,12 +50,15 @@ else:
     head, sep, body = doc.partition('</style>')
     assert sep, "template must contain a </style> to split on"
     SITE = 'https://jommi9.github.io/berlin-sauna-map/'
-    DESC = f"{meta['count']} Berlin saunas and spas, priced and plotted as an open-world game atlas."
-    # The map blip, as the tab icon.
+    DESC = f"{meta['count']} Berlin saunas and spas, priced and plotted on one map, with a Finn's notes on the loyly."
+    # The app icon from the header, as the tab icon: steam rising off the stones.
     icon = ('data:image/svg+xml,' +
-            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-8 -8 16 16">'
-            '<rect x="-8" y="-8" width="16" height="16" rx="4" fill="%23E8801F"/>'
-            '<path d="M0,-5.3 C2.5,-2.6 4.2,-.9 4.2,1.3 C4.2,3.7 2.3,5.3 0,5.3 C-2.3,5.3 -4.2,3.7 -4.2,1.3 C-4.2,-1 -1.7,-2.1 -1,-4.2 Z" fill="%23fff"/>'
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
+            '<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">'
+            '<stop offset="0" stop-color="#E9A462"/><stop offset="1" stop-color="#B3502A"/></linearGradient></defs>'
+            '<rect width="64" height="64" rx="15" fill="url(#g)"/>'
+            '<path d="M21 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11 M32 45 q-5 -6.5 0 -13 q5 -6.5 0 -13 M43 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11" fill="none" stroke="#fff" stroke-width="4.6" stroke-linecap="round"/>'
+            '<path d="M15 52 h34" stroke="#fff" stroke-opacity=".6" stroke-width="4.6" stroke-linecap="round"/>'
             '</svg>').replace('"', "'").replace('<', '%3C').replace('>', '%3E').replace('#', '%23')
     # Structured data: the list of places, so a search engine sees twenty named
     # venues with coordinates rather than one opaque page.
@@ -69,8 +75,10 @@ else:
     ldjson = json.dumps(ld, separators=(',', ':'), ensure_ascii=True).replace('</', '<\\/')
     page = ('<!doctype html>\n<html lang="en">\n<head>\n'
             '<meta charset="utf-8">\n'
-            '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-            '<meta name="theme-color" content="#0A0D0F">\n'
+            '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
+            '<meta name="theme-color" content="#F2F1EE" media="(prefers-color-scheme: light)">\n'
+            '<meta name="theme-color" content="#0E0F11" media="(prefers-color-scheme: dark)">\n'
+            '<meta name="color-scheme" content="light dark">\n'
             f'<meta name="description" content="{DESC}">\n'
             f'<link rel="canonical" href="{SITE}">\n'
             f'<link rel="icon" href="{icon}">\n'

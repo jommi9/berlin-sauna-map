@@ -93,6 +93,30 @@ site unreadable on mobile while looking fine in scaled screenshots.
 When checking mobile, assert `innerWidth` is what you set. If it reports 980, the
 viewport meta is missing and everything measured after that is meaningless.
 
+## Design
+
+The page is built like a places app. On a computer it is a split view, the list
+in a sidebar beside the map; on a phone the map fills a framed screen and the
+list, search and filters ride up over it as a sheet. Rules that keep it
+coherent:
+
+- Every colour is a token at the top of `tpl2.html`'s `<style>`: light values on
+  `:root`, the same names redefined for dark mode. A component never uses a
+  literal colour, except over a photo.
+- Two accents only. Lake blue (`--tint`) is anything you can tap; the warm
+  `--ember` is heat, prices and picks. Pin colours are the price bands
+  `--b0`..`--b4`.
+- Pins are drawn by one function, `pin()`: a squircle (per person) or circle
+  (per booking) with three curls of steam, because a sauna is about the löyly
+  rising off the stones. The picked pin lifts a photo bubble (`showName`).
+- The voice is lowercase for headings, labels and buttons; venue names and
+  acronyms keep their case (`lower()` keeps USC).
+- The header figures and the collage are computed in the browser from the
+  venue data, so they cannot drift. The collage shows the venues named in
+  `COVER`, and only those with a photograph.
+- `og.png` is a screenshot of the hero over the map at 1200×630; retake it when
+  the header changes.
+
 ## After pushing, confirm the site actually changed
 
 A `git push` succeeding is not the same as the site updating. On 4 September 2026
