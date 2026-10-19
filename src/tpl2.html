@@ -124,6 +124,7 @@ button{font:inherit; color:inherit}
 }
 .eyebrow{margin:0 0 3px; font:600 13px/1.2 var(--font); color:var(--label-2)}
 .eyebrow time{font-variant-numeric:tabular-nums}
+.eyebrow .crumb{color:var(--label-2)}   /* up to the hub of all the sauna maps */
 .title{
   margin:0; font:700 clamp(30px, 3.3vw, 40px)/1.04 var(--font-display);
   letter-spacing:-.028em; text-wrap:balance;
@@ -556,7 +557,7 @@ button.pk:active{transform:scale(.98)}
           <path d="M15 52 h34" stroke="#FFFFFF" stroke-opacity=".6" stroke-width="4" stroke-linecap="round"/>
         </svg>
         <div>
-          <p class="eyebrow">berlin &middot; checked <time id="stamp-date">__LAST_SCAN__</time></p>
+          <p class="eyebrow"><a class="crumb" href="https://jommi.fi/sauna/">sauna maps</a> / berlin &middot; checked <time id="stamp-date">__LAST_SCAN__</time></p>
           <h1 class="title">berlin sauna map</h1>
         </div>
       </div>
