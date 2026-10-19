@@ -181,22 +181,27 @@ button{font:inherit; color:inherit}
   height:min(860px, calc(100dvh - 150px)); min-height:560px;
 }
 .listcol{position:relative; display:flex; flex-direction:column; min-width:0; min-height:0}
-/* The list scrolls inside its column, which nothing about a cut-off card says.
-   So while more is below, the list fades out at the bottom and a button counts
-   what is left; both go once the end is reached. */
+/* The list scrolls inside its column. Places are compact rows until one is
+   picked, so several are always in view; while more lie below, the list fades
+   out at the bottom, and its scrollbar stays visible. */
 .cards.has-more{
-  -webkit-mask-image:linear-gradient(to bottom, #000 calc(100% - 72px), transparent);
-  mask-image:linear-gradient(to bottom, #000 calc(100% - 72px), transparent);
+  -webkit-mask-image:linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
+  mask-image:linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
 }
-.more{
-  position:absolute; left:50%; bottom:14px; transform:translateX(-50%); z-index:4;
-  display:inline-flex; align-items:center; gap:7px; height:34px; padding:0 14px;
-  border:0; border-radius:var(--r-sm); cursor:pointer; white-space:nowrap;
-  background:var(--label); color:var(--bg); font:600 13.5px var(--font);
-  box-shadow:var(--shadow-lift); transition:transform .15s var(--ease), opacity .2s;
-}
-.more:hover{transform:translateX(-50%) translateY(1px)}
-.more:active{transform:translateX(-50%) scale(.97)}
+.cards::-webkit-scrollbar{width:7px}
+.cards::-webkit-scrollbar-track{background:transparent}
+.cards::-webkit-scrollbar-thumb{background:var(--fill-2); border-radius:4px}
+
+/* A place is a compact row until it is picked: thumbnail, name, status. The
+   picked one opens into the full card with its photo and every fact. */
+.card:not(.on){padding:12px 14px 12px 90px; min-height:88px}
+.card:not(.on) .shot{position:absolute; left:12px; top:12px; width:64px; height:64px; margin:0; border-radius:var(--r-sm)}
+.card:not(.on) .shot img, .card:not(.on) .shot svg{aspect-ratio:1; height:100%}
+.card:not(.on) .shot figcaption, .card:not(.on) .ic,
+.card:not(.on) .rows, .card:not(.on) .alert, .card:not(.on) .revs, .card:not(.on) .acts{display:none}
+.card:not(.on) .tags{margin-top:8px}
+.card:not(.on) .cname{font-size:16px}
+
 .mapcol{min-width:0; min-height:0}
 .mapcol .inner{
   position:relative; height:100%; border-radius:var(--r-xl); overflow:hidden;
@@ -601,7 +606,6 @@ button.pk:active{transform:scale(.98)}
         <span class="c" id="l-note">in pick order</span>
       </div>
       <ul class="cards" id="cards"></ul>
-      <button class="more" id="more" type="button" hidden><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="more-n"></span></button>
       <p class="none-msg" id="none" hidden>nothing matches. raise the price limit or clear a filter.</p>
     </div>
 
@@ -1179,20 +1183,12 @@ function choose(id, fromMap){
 }
 
 /* ---------- "more below" ---------- */
-const moreBtn = document.getElementById("more"), moreN = document.getElementById("more-n");
 function updateMore(){
-  const box = cards.getBoundingClientRect();
   const rest = cards.scrollHeight - cards.scrollTop - cards.clientHeight;
-  /* count the places not yet started on: a card whose top is already in view is being read */
-  const below = [...cards.children].filter(li => !li.hidden && li.getBoundingClientRect().top > box.bottom - 60).length;
-  const show = cards.clientHeight > 120 && rest > 8 && below > 0;
-  cards.classList.toggle("has-more", show);
-  moreBtn.hidden = !show;
-  if (show) moreN.textContent = `${below} more ${below === 1 ? "place" : "places"}`;
+  cards.classList.toggle("has-more", cards.clientHeight > 120 && rest > 8);
 }
 cards.addEventListener("scroll", updateMore, { passive: true });
 addEventListener("resize", updateMore);
-moreBtn.addEventListener("click", () => cards.scrollBy({ top: cards.clientHeight * 0.8, behavior: "smooth" }));
 
 /* ---------- filtering ---------- */
 const lTitle = document.getElementById("l-title"), lNote = document.getElementById("l-note"),

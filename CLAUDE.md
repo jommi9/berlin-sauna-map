@@ -121,8 +121,10 @@ coherent:
   `COVER`, and only those with a photograph.
 - `og.png` is a screenshot of the hero over the map at 1200×630; retake it when
   the header changes.
-- The list scrolls inside its column, so it must say so: while places remain
-  below, it fades out at the bottom and a button counts them (`updateMore`).
+- A place is a compact row (thumbnail, name, status) until it is picked; only
+  the picked one opens into the full card. That keeps several places in view,
+  which is what shows the list scrolls; a soft fade at its bottom edge and a
+  visible scrollbar back it up (`updateMore`). No floating buttons over the list.
   The list-and-map panel is sized so it fits one screen under the filter row.
 
 ## After pushing, confirm the site actually changed
