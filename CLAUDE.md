@@ -93,6 +93,40 @@ site unreadable on mobile while looking fine in scaled screenshots.
 When checking mobile, assert `innerWidth` is what you set. If it reports 980, the
 viewport meta is missing and everything measured after that is meaningless.
 
+## Design
+
+The page is built like a places app. Search and filters are one row above
+everything; under it, on a computer, the list sits in a sidebar beside the map,
+and on a phone the map fills a framed screen with the list riding up over it as
+a sheet that collapses to its handle and the place count. Rules that keep it
+coherent:
+
+- Corners are small and few: 4 to 6 px on surfaces (`--r-*`), 2 to 3 px on tags,
+  photos flush to their card's edges. Full rounding is kept for things that are
+  round by meaning: dots, the slider knob, the app icon.
+
+- Every colour is a token at the top of `tpl2.html`'s `<style>`: light values on
+  `:root`, the same names redefined for dark mode. A component never uses a
+  literal colour, except over a photo.
+- Two accents only. Lake blue (`--tint`) is anything you can tap; the warm
+  `--ember` is heat, prices and picks. Pin colours are the price bands
+  `--b0`..`--b4`.
+- Pins are drawn by one function, `pin()`: a squircle (per person) or circle
+  (per booking) with three curls of steam, because a sauna is about the löyly
+  rising off the stones. The picked pin lifts a photo bubble (`showName`).
+- The voice is lowercase for headings, labels and buttons; venue names and
+  acronyms keep their case (`lower()` keeps USC).
+- The header figures and the collage are computed in the browser from the
+  venue data, so they cannot drift. The collage shows the venues named in
+  `COVER`, and only those with a photograph.
+- `og.png` is a screenshot of the hero over the map at 1200×630; retake it when
+  the header changes.
+- A place is a compact row (thumbnail, name, status) until it is picked; only
+  the picked one opens into the full card. That keeps several places in view,
+  which is what shows the list scrolls; a soft fade at its bottom edge and a
+  visible scrollbar back it up (`updateMore`). No floating buttons over the list.
+  The list-and-map panel is sized so it fits one screen under the filter row.
+
 ## After pushing, confirm the site actually changed
 
 A `git push` succeeding is not the same as the site updating. On 4 September 2026
@@ -181,6 +215,13 @@ you), `self` (you throw your own) or `machine` (a dispenser doses aroma and
 nobody throws anything). Hilton is the clearest `machine` — they wrote that
 pouring your own is *not allowed*. Change the kind in `HEAT` and the löyly
 follows; there is no second dict to keep in step.
+
+**Which sauna culture** a place belongs to is derived from the löyly too
+(`style_of` in `build_venues.py`) and shown as the flag badge on each card:
+you throw your own is **Finnish**, a sauna master's Aufguss is **German**, a
+machine dosing it with nobody allowed to throw is **no löyly** (a fake sauna by
+Finnish standards). A **banya** throws its own like a Finnish sauna, which the
+löyly cannot tell apart, so banyas are named in `BANYA`; none is listed yet.
 
 **`FINNISH`** is one Finn's score out of 10 of the place *as a sauna* — heat,
 löyly, and whether you may throw water — not of the spa around it. `None` means

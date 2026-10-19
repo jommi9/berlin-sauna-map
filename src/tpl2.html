@@ -1,510 +1,630 @@
 <title>Berlin Sauna Map</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Archivo:wght@400;500;600&display=swap">
+<meta name="claude:viewport-fit-sides" content="cover">
 
 <style>
-/* A committed single-theme design: a game-map HUD reads as one fixed world,
-   so every colour is painted explicitly and nothing follows the host theme. */
+/* Layout: an iPad-style split view. A sidebar of venue cards sits beside one
+   large map; on a phone the map fills a framed screen and the list rides up
+   over it as a sheet, the way Maps does it. Below sit the picks and the fine
+   print as inset grouped sections.
+   Colour: light first, like a Nordic room in daylight, with a dark set for the
+   evening. One warm colour, the heat of the kiuas stones, marks prices and
+   picks; everything you can tap is lake blue. Type is the system face, so on
+   an iPhone it is San Francisco, with rounded numerals for the figures. */
 :root{
-  --void:#0A0D0F; --panel:#151A1D; --panel-2:#1C2327; --panel-3:#232B30;
-  --line:#2E373C; --line-2:#3C474D;
-  --ink:#F4F6F6; --ink-2:#C8D1D4; --dim:#8C979C; --faint:#6A7479;
-  --gold:#FFC12B; --gold-deep:#C98F12; --cyan:#3FD0F5; --red:#E8402F;
-  --land:#E4DDC9; --park:#C3CFA4; --water:#3C6076;
-  --road-case:#C6BEA6; --road:#FFFFFF; --mtw:#F3C24E; --mtw-case:#C1932C;
-  --rail:#A9A08A; --dist:#7C7259; --border:#9A907A;
-  --b1:#F5C542; --b2:#E8801F; --b3:#CE3B18; --b4:#8F2410; --b0:#EDE7D6;
-  /* Rockstar sets the GTA logo in Pricedown and the UI in Chalet 1960 /
-     Chalet Comprime 1960. Pricedown's free licence is desktop-only - no web
-     embedding - so these are the closest Google Fonts stand-ins. */
-  --disp:"Anton","Arial Narrow",Impact,sans-serif;
-  --hud:"Oswald","Arial Narrow",Impact,sans-serif;
-  --body:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --bg:#F2F1EE; --surface:#FFFFFF; --surface-2:#F7F6F3;
+  --fill:rgba(118,112,102,.12); --fill-2:rgba(118,112,102,.24);
+  --label:#151514; --label-2:rgba(38,36,32,.66); --label-3:rgba(38,36,32,.44); --sep:rgba(38,36,32,.11);
+  --tint:#1D5AA6; --tint-soft:rgba(29,90,166,.10); --on-tint:#FFFFFF;
+  --ember:#B94B24; --ember-soft:rgba(191,79,39,.10);
+  --green:#23793B; --green-soft:rgba(35,121,59,.10);
+  --red:#B5352A; --red-soft:rgba(184,54,42,.09);
+  --knob:#FFFFFF;
+  --glass:rgba(250,249,247,.78);
+  --shadow:0 1px 2px rgba(24,20,14,.05), 0 6px 20px rgba(24,20,14,.06);
+  --shadow-lift:0 2px 6px rgba(24,20,14,.08), 0 18px 44px rgba(24,20,14,.13);
+  --sheet-shadow:rgba(24,20,14,.10); --pin-shadow:rgba(24,20,14,.30);
+  --land:#ECE9E2; --park:#D2E0C3; --water:#A9C7DC; --road-case:#DCD6CA; --road:#FFFFFF;
+  --mtw:#F1D18E; --mtw-case:#D8B265; --rail:#B7B1A4; --border:#A39C8F; --dist:#8A8377;
+  --b0:#D9D5CD; --b1:#E2AC45; --b2:#DC8031; --b3:#C9582A; --b4:#983720;
+  --pin-ring:#FFFFFF; --pin-glyph:#FFFFFF; --pin-glyph-0:#857F74;
+  --font:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+  --font-display:-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+  --font-num:ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --r-xl:6px; --r-lg:6px; --r:4px; --r-sm:4px;
+  --gutter-l:max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r:max(16px, env(safe-area-inset-right, 0px));
+  --ease:cubic-bezier(.32,.72,0,1);
 }
-*{box-sizing:border-box}
-body{
-  margin:0; background:var(--void); color:var(--ink);
-  font-family:var(--body); font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased;
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0E0F11; --surface:#1A1B1E; --surface-2:#232428;
+  --fill:rgba(150,150,160,.16); --fill-2:rgba(150,150,160,.30);
+  --label:#F2F2EF; --label-2:rgba(236,236,230,.64); --label-3:rgba(236,236,230,.40); --sep:rgba(236,236,230,.10);
+  --tint:#7AAEF2; --tint-soft:rgba(122,174,242,.15); --on-tint:#0B1A2E;
+  --ember:#F08B5F; --ember-soft:rgba(240,139,95,.14);
+  --green:#63C982; --green-soft:rgba(99,201,130,.13);
+  --red:#F2796B; --red-soft:rgba(242,121,107,.13);
+  --knob:#F2F2EF;
+  --glass:rgba(30,31,34,.76);
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.28);
+  --shadow-lift:0 2px 6px rgba(0,0,0,.40), 0 18px 44px rgba(0,0,0,.50);
+  --sheet-shadow:rgba(0,0,0,.40); --pin-shadow:rgba(0,0,0,.55);
+  --land:#1D1E21; --park:#202C24; --water:#1B2F42; --road-case:#2A2B2F; --road:#393B41;
+  --mtw:#6D5933; --mtw-case:#4C3F26; --rail:#47484E; --border:#5D5E64; --dist:#808188;
+  --b0:#4A4A4F; --b1:#E2AC45; --b2:#DC8031; --b3:#C9582A; --b4:#983720;
+  --pin-ring:#F2F2EF; --pin-glyph:#FFFFFF; --pin-glyph-0:#B3B0A8;
+  color-scheme:dark;
+} }
+:root[data-theme="dark"]{
+  --bg:#0E0F11; --surface:#1A1B1E; --surface-2:#232428;
+  --fill:rgba(150,150,160,.16); --fill-2:rgba(150,150,160,.30);
+  --label:#F2F2EF; --label-2:rgba(236,236,230,.64); --label-3:rgba(236,236,230,.40); --sep:rgba(236,236,230,.10);
+  --tint:#7AAEF2; --tint-soft:rgba(122,174,242,.15); --on-tint:#0B1A2E;
+  --ember:#F08B5F; --ember-soft:rgba(240,139,95,.14);
+  --green:#63C982; --green-soft:rgba(99,201,130,.13);
+  --red:#F2796B; --red-soft:rgba(242,121,107,.13);
+  --knob:#F2F2EF;
+  --glass:rgba(30,31,34,.76);
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.28);
+  --shadow-lift:0 2px 6px rgba(0,0,0,.40), 0 18px 44px rgba(0,0,0,.50);
+  --sheet-shadow:rgba(0,0,0,.40); --pin-shadow:rgba(0,0,0,.55);
+  --land:#1D1E21; --park:#202C24; --water:#1B2F42; --road-case:#2A2B2F; --road:#393B41;
+  --mtw:#6D5933; --mtw-case:#4C3F26; --rail:#47484E; --border:#5D5E64; --dist:#808188;
+  --b0:#4A4A4F; --b1:#E2AC45; --b2:#DC8031; --b3:#C9582A; --b4:#983720;
+  --pin-ring:#F2F2EF; --pin-glyph:#FFFFFF; --pin-glyph-0:#B3B0A8;
+  color-scheme:dark;
 }
-a{color:inherit}
-:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
-.wrap{max-width:1500px; margin:0 auto; padding:0 clamp(12px,2.4vw,32px)}
-.hud{font-family:var(--hud); font-weight:600; letter-spacing:.14em; text-transform:uppercase}
 
-/* ---------------- cover grid ---------------- */
-.cover{
-  display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:minmax(118px,auto);
-  gap:3px; margin:clamp(12px,2.4vw,26px) 0 0;
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--label);
+  font:400 15px/1.45 var(--font); letter-spacing:-.006em;
+  -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color:transparent;
 }
-.tile{background:var(--panel); padding:20px 22px; display:flex; flex-direction:column; justify-content:space-between}
-.tile.mark{
-  grid-column:span 2; grid-row:span 2; justify-content:center; gap:14px;
-  background:
-    radial-gradient(120% 90% at 12% 0%, rgba(255,193,43,.13), transparent 62%),
-    linear-gradient(180deg, var(--panel-2), var(--panel));
+a{color:var(--tint); text-decoration:none}
+a:hover{text-decoration:underline}
+button{font:inherit; color:inherit}
+:focus-visible{outline:2.5px solid var(--tint); outline-offset:2px}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+.wrap{
+  max-width:1400px; margin:0 auto;
+  padding-left:var(--gutter-l); padding-right:var(--gutter-r); padding-block:0 28px;
 }
-.stamp{font-family:var(--hud); font-weight:600; font-size:11.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold)}
-.stamp b{color:var(--dim); font-weight:600}
-.wordmark{
-  font-family:var(--disp); font-size:clamp(46px,7.6vw,104px); line-height:.82;
-  letter-spacing:.005em; text-transform:uppercase; margin:0; color:var(--ink);
-  text-shadow:
-    1px 1px 0 var(--gold-deep), 2px 2px 0 var(--gold-deep), 3px 3px 0 var(--gold-deep),
-    4px 4px 0 var(--gold-deep), 5px 5px 0 var(--gold-deep), 6px 6px 0 var(--gold-deep),
-    7px 8px 12px rgba(0,0,0,.5);
+
+/* ---------------- header ---------------- */
+.top{
+  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,460px); gap:22px 56px;
+  align-items:center; padding-block:30px 26px;
 }
-.wordmark span{display:block}
-.wordmark .g{
-  color:var(--gold);
-  text-shadow:
-    1px 1px 0 #7A5606, 2px 2px 0 #7A5606, 3px 3px 0 #7A5606,
-    4px 4px 0 #7A5606, 5px 5px 0 #7A5606, 6px 6px 0 #7A5606,
-    7px 8px 12px rgba(0,0,0,.5);
+.intro{min-width:0}
+.intro .stats{margin-top:22px; max-width:600px}
+/* The collage: three places pinned up like photos on a fridge door, each one
+   a way into the map. */
+.collage{position:relative; height:260px}
+.snap{
+  position:absolute; width:58%; aspect-ratio:4/3; padding:5px; border:0; margin:0;
+  border-radius:var(--r-sm); background:var(--surface); box-shadow:var(--shadow-lift);
+  cursor:pointer; transition:transform .4s var(--ease), box-shadow .4s var(--ease);
 }
-.strap{margin:0; max-width:44ch; color:var(--ink-2); font-size:clamp(14px,1.15vw,16px); line-height:1.5}
-.tile .k{font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--dim)}
-.tile .n{
-  font-family:var(--disp); font-size:clamp(32px,3.9vw,50px); line-height:1;
-  letter-spacing:.005em; color:var(--gold); font-variant-numeric:tabular-nums;
+.snap img{display:block; width:100%; height:100%; object-fit:cover; border-radius:2px}
+.snap .tag{
+  position:absolute; left:13px; bottom:13px; max-width:calc(100% - 26px); padding:4px 10px;
+  border-radius:2px; background:var(--glass); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+  color:var(--label); font:600 12.5px/1.3 var(--font); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-.tile .s{font-family:var(--hud); font-weight:500; font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--faint)}
-@media (max-width:860px){
-  .cover{grid-template-columns:repeat(2,1fr)}
-  .tile.mark{grid-column:span 2; grid-row:auto; padding:26px 22px 30px}
+.snap:nth-child(1){left:0; top:34px; transform:rotate(-7deg)}
+.snap:nth-child(2){left:21%; top:0; transform:rotate(3deg); z-index:2}
+.snap:nth-child(3){right:0; top:70px; transform:rotate(-2.5deg); z-index:1}
+.snap:hover, .snap:focus-visible{transform:rotate(0) translateY(-4px) scale(1.03); z-index:3}
+.brand{display:flex; gap:16px; align-items:center}
+.appicon{
+  width:62px; height:62px; flex:none; border-radius:13px;
+  box-shadow:0 1px 2px rgba(60,30,10,.12), 0 8px 20px rgba(180,83,42,.24);
 }
-/* On a phone the hero, four stat tiles and the filter bar used to fill the
-   whole first screen and the map began ~900px down. The stats become one
-   compact strip and the wordmark shrinks, so the map is one short scroll away. */
+.eyebrow{margin:0 0 3px; font:600 13px/1.2 var(--font); color:var(--label-2)}
+.eyebrow time{font-variant-numeric:tabular-nums}
+.title{
+  margin:0; font:700 clamp(30px, 3.3vw, 40px)/1.04 var(--font-display);
+  letter-spacing:-.028em; text-wrap:balance;
+}
+.lede{margin:14px 0 0; max-width:54ch; color:var(--label-2); font-size:16px; line-height:1.5}
+.stats{
+  display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); margin:0;
+  background:var(--surface); border-radius:var(--r-lg); box-shadow:var(--shadow);
+}
+.stats > div{padding:14px 16px 13px; min-width:0}
+.stats > div + div{border-left:1px solid var(--sep)}
+.stats dt{font:500 12.5px/1.2 var(--font); color:var(--label-2)}
+.stats dd{margin:5px 0 0}
+.stats .n{
+  display:block; font:600 27px/1.05 var(--font-num); letter-spacing:-.01em;
+  font-variant-numeric:tabular-nums;
+}
+.stats .n small{font-size:.58em; font-weight:600; letter-spacing:0}
+.stats .s{
+  display:block; margin-top:4px; font:400 12px/1.3 var(--font); color:var(--label-3);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+@media (max-width:980px){
+  .top{grid-template-columns:minmax(0,1fr); padding-block:22px 18px}
+  .collage{height:min(52vw, 230px); max-width:520px; margin:6px 4px 4px}
+}
 @media (max-width:560px){
-  .cover{grid-template-columns:repeat(4,1fr); grid-auto-rows:auto; gap:2px}
-  .tile.mark{grid-column:span 4; padding:16px 16px 18px; gap:10px}
-  .wordmark{font-size:38px}
-  .strap{font-size:13.5px}
-  .tile{padding:10px 7px 9px; gap:3px; min-width:0}
-  .tile .k{font-size:9px; letter-spacing:.1em}
-  .tile .n{font-size:20px}
-  .tile .s{font-size:9px; letter-spacing:.02em; line-height:1.25; overflow-wrap:anywhere}
+  .collage{height:min(42vw, 176px); margin:2px 2px 0}
+  .snap{width:54%; padding:4px}
+  .snap .tag{left:9px; bottom:9px; font-size:11.5px; padding:3px 8px}
+  .snap .tag .pr{display:none}
+  /* each photo is 54% wide at 4:3, so these tops keep all three inside the strip */
+  .snap:nth-child(1){top:22px}
+  .snap:nth-child(3){top:30px}
+  .collage{margin-bottom:12px}
+}
+@media (max-width:560px){
+  .top{gap:16px}
+  .appicon{width:54px; height:54px; border-radius:11px}
+  .lede{font-size:15px; margin-top:12px}
+  .stats > div{padding:11px 10px 10px}
+  .stats dt{font-size:11.5px}
+  .stats .n{font-size:21px}
+  .stats .s{display:none}
 }
 @media (max-width:360px){
-  .tile .n{font-size:17px}
+  .stats > div{padding:10px 7px 9px}
+  .stats .n{font-size:18px}
 }
 
-/* ---------------- HUD control bar ---------------- */
-.bar{
-  position:sticky; top:0; z-index:50; margin-top:3px;
-  background:var(--panel); border-top:2px solid var(--gold);
-  padding:11px clamp(12px,2.4vw,22px); display:flex; flex-wrap:wrap; gap:10px 20px; align-items:center;
+/* ---------------- split view ---------------- */
+.split{
+  display:grid; grid-template-columns:400px minmax(0,1fr); grid-template-rows:minmax(0,1fr); gap:18px;
+  /* tall enough to use, short enough that the filter row and the whole panel fit one screen */
+  height:min(860px, calc(100dvh - 150px)); min-height:560px;
 }
-.bar .lbl{font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--faint)}
-.find{position:relative; flex:1 1 190px; max-width:250px}
+.listcol{position:relative; display:flex; flex-direction:column; min-width:0; min-height:0}
+/* The list scrolls inside its column. Places are compact rows until one is
+   picked, so several are always in view; while more lie below, the list fades
+   out at the bottom, and its scrollbar stays visible. */
+.cards.has-more{
+  -webkit-mask-image:linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
+  mask-image:linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
+}
+.cards::-webkit-scrollbar{width:7px}
+.cards::-webkit-scrollbar-track{background:transparent}
+.cards::-webkit-scrollbar-thumb{background:var(--fill-2); border-radius:4px}
+
+/* A place is a compact row until it is picked: thumbnail, name, status. The
+   picked one opens into the full card with its photo and every fact. */
+.card:not(.on){padding:12px 14px 12px 90px; min-height:88px}
+.card:not(.on) .shot{position:absolute; left:12px; top:12px; width:64px; height:64px; margin:0; border-radius:var(--r-sm)}
+.card:not(.on) .shot img, .card:not(.on) .shot svg{aspect-ratio:1; height:100%}
+.card:not(.on) .shot figcaption, .card:not(.on) .ic,
+.card:not(.on) .rows, .card:not(.on) .alert, .card:not(.on) .revs, .card:not(.on) .acts{display:none}
+.card:not(.on) .tags{margin-top:8px}
+.card:not(.on) .cname{font-size:16px}
+/* on a narrow phone a row keeps only the flag; the word comes back when it opens */
+@media (max-width:420px){
+  .card:not(.on){padding-left:80px}
+  .card:not(.on) .shot{width:56px; height:56px}
+  .card:not(.on) .fin{padding:0 6px; gap:0}
+  .card:not(.on) .fin .lb{display:none}
+  .card:not(.on) .fin.st-unknown::after{content:"?"; padding:0 3px}
+}
+
+.mapcol{min-width:0; min-height:0}
+.mapcol .inner{
+  position:relative; height:100%; border-radius:var(--r-xl); overflow:hidden;
+  background:var(--land); box-shadow:var(--shadow);
+}
+.mapbox{position:absolute; inset:0}
+svg.map{display:block; width:100%; height:100%; touch-action:none; cursor:grab}
+svg.map.dragging{cursor:grabbing}
+.peek, .grab{display:none}
+
+/* search and filters: one row above the list and the map */
+.bar{display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; padding-bottom:16px}
+.find{position:relative; display:block; flex:0 0 300px}
 .find input{
-  width:100%; font-family:var(--body); font-size:14px; color:var(--ink);
-  background:var(--void); border:1px solid var(--line); border-radius:2px; padding:7px 10px 7px 29px;
+  width:100%; height:40px; border:0; border-radius:var(--r-sm);
+  background:var(--fill); color:var(--label); font:400 16px var(--font);
+  padding:0 12px 0 36px; -webkit-appearance:none; appearance:none;
+  transition:background .15s, box-shadow .15s;
 }
-.find input::placeholder{color:var(--faint)}
-.find svg{position:absolute; left:8px; top:50%; transform:translateY(-50%); color:var(--faint)}
-.grp{display:flex; align-items:center; gap:5px; flex-wrap:wrap}
+.find input::placeholder{color:var(--label-3)}
+.find input:focus{outline:none; background:var(--surface); box-shadow:0 0 0 3px var(--tint-soft), inset 0 0 0 1px var(--tint)}
+.find input::-webkit-search-cancel-button{opacity:.5}
+.find svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--label-3); pointer-events:none}
+.filters{display:flex; flex-wrap:wrap; gap:8px 6px; align-items:center; flex:1 1 560px; min-width:0}
+.grp{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+.grp + .grp{margin-left:4px}
+.lbl{font:500 12.5px var(--font); color:var(--label-2); margin-right:2px}
 .chip{
-  font-family:var(--hud); font-weight:600; font-size:12.5px; letter-spacing:.09em; text-transform:uppercase;
-  color:var(--ink-2); background:var(--panel-2); border:1px solid var(--line); border-radius:2px;
-  padding:6px 11px; cursor:pointer; transition:background .12s,color .12s,border-color .12s;
+  height:32px; padding:0 12px; border:0; border-radius:var(--r-sm); cursor:pointer;
+  background:var(--surface); box-shadow:inset 0 0 0 1px var(--sep);
+  color:var(--label); font:500 14px/32px var(--font); white-space:nowrap;
+  transition:background .15s, color .15s, box-shadow .15s, transform .1s;
 }
-.chip:hover{border-color:var(--line-2); color:var(--ink)}
-.chip[aria-pressed="true"]{background:var(--gold); border-color:var(--gold); color:#161005}
-.slide{display:flex; align-items:center; gap:8px}
-.slide input{width:110px; accent-color:var(--gold)}
-.slide output{font-family:var(--hud); font-weight:600; font-size:13px; letter-spacing:.06em; min-width:62px; color:var(--gold)}
+.chip:hover{background:var(--surface-2)}
+.chip:active{transform:scale(.96)}
+.chip[aria-pressed="true"]{background:var(--tint); color:var(--on-tint); box-shadow:none}
+.slide{display:flex; align-items:center; gap:10px; flex:1 1 230px; max-width:320px; min-width:0}
+.slide output{
+  min-width:46px; text-align:right; font:600 14px var(--font-num);
+  font-variant-numeric:tabular-nums; color:var(--label);
+}
+.slide input{
+  flex:1 1 auto; min-width:90px; height:28px; margin:0; background:transparent;
+  -webkit-appearance:none; appearance:none; cursor:pointer; --pct:100%;
+}
+.slide input::-webkit-slider-runnable-track{
+  height:4px; border-radius:2px;
+  background:linear-gradient(var(--tint), var(--tint)) 0 0 / var(--pct) 100% no-repeat, var(--fill-2);
+}
+.slide input::-webkit-slider-thumb{
+  -webkit-appearance:none; width:26px; height:26px; margin-top:-11px; border-radius:50%;
+  background:var(--knob); box-shadow:0 0 0 .5px rgba(0,0,0,.06), 0 3px 8px rgba(0,0,0,.18);
+}
+.slide input::-moz-range-track{height:4px; border-radius:2px; background:var(--fill-2)}
+.slide input::-moz-range-progress{height:4px; border-radius:2px; background:var(--tint)}
+.slide input::-moz-range-thumb{
+  width:26px; height:26px; border:0; border-radius:50%; background:var(--knob);
+  box-shadow:0 0 0 .5px rgba(0,0,0,.06), 0 3px 8px rgba(0,0,0,.18);
+}
 .clear{
-  margin-left:auto; font-family:var(--hud); font-weight:600; font-size:11.5px; letter-spacing:.16em;
-  text-transform:uppercase; background:none; border:0; color:var(--dim); cursor:pointer; padding:6px 0;
+  margin-left:auto; border:0; background:none; padding:6px 2px; cursor:pointer;
+  color:var(--tint); font:500 15px var(--font);
 }
-.clear:hover{color:var(--gold)}
-/* On a phone the bar is one horizontally scrolling row (~53px) rather than
-   five wrapped rows, so it stays pinned. The right edge fades to show there is
-   more to swipe to, since the scrollbar is hidden. */
-@media (max-width:760px){
-  .bar{
-    flex-wrap:nowrap; overflow-x:auto; gap:8px 14px; padding:9px 12px;
-    scrollbar-width:none; -webkit-overflow-scrolling:touch;
-    -webkit-mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent);
-    mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent);
-  }
-  .bar::-webkit-scrollbar{display:none}
-  .bar > *{flex:none}
-  .find{flex:0 0 168px; max-width:168px}
-  .grp{flex-wrap:nowrap}
-  .clear{margin-left:0; padding-right:12px}
+.clear:hover{opacity:.75}
+
+/* list */
+.lhead{display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:2px 4px 10px}
+.lhead h2{margin:0; font:600 17px/1.2 var(--font-display); letter-spacing:-.012em}
+.lhead .c{font:400 13px var(--font); color:var(--label-2)}
+.cards{
+  list-style:none; margin:0 -6px; padding:2px 6px 18px; flex:1 1 auto; min-height:0;
+  overflow-y:auto; overscroll-behavior:contain; display:flex; flex-direction:column; gap:12px;
+  scrollbar-width:thin; scrollbar-color:var(--fill-2) transparent;
 }
-/* Below ~520px the map is cropped to the venue extent and district labels
-   would render at about 4px, so they come out entirely. */
-svg.map.small .dlabel, svg.map.small .scalebar{display:none}
+.none-msg{margin:24px 4px; color:var(--label-2); font-size:15px; text-align:center}
 
-/* ---------------- split ---------------- */
-.split{display:grid; grid-template-columns:minmax(0,1.24fr) minmax(0,1fr); gap:3px; margin-top:3px}
-@media (max-width:1000px){ .split{grid-template-columns:minmax(0,1fr)} }
-.mapcol{background:var(--panel); padding:12px}
-.mapcol .inner{position:sticky; top:70px}
-@media (max-width:1000px){ .mapcol .inner{position:static} }
-.mapbox{position:relative; background:var(--land)}
-svg.map{display:block; width:100%; height:auto}
-.brk{position:absolute; width:16px; height:16px; border:2px solid var(--gold); pointer-events:none}
-.brk.tl{top:5px;left:5px;border-right:0;border-bottom:0}
-.brk.tr{top:5px;right:5px;border-left:0;border-bottom:0}
-.brk.bl{bottom:5px;left:5px;border-right:0;border-top:0}
-.brk.br{bottom:5px;right:5px;border-left:0;border-top:0}
+/* venue card */
+.card{
+  position:relative; overflow:hidden; background:var(--surface); border-radius:var(--r-lg); padding:12px 14px 14px;
+  box-shadow:var(--shadow); cursor:pointer; flex:none;
+  transition:box-shadow .2s var(--ease); scroll-margin-top:6px;
+}
+.card:hover{box-shadow:var(--shadow-lift)}
+.card.on{box-shadow:0 0 0 2px var(--tint), var(--shadow-lift)}
+.card:focus-visible{outline-offset:3px; border-radius:var(--r-lg)}
+.shot{margin:-12px -14px 12px; position:relative; overflow:hidden; background:var(--land)}
+.shot img, .shot svg{display:block; width:100%; max-width:100%; height:auto; aspect-ratio:2.2/1; object-fit:cover}
+.shot figcaption{
+  position:absolute; left:8px; bottom:8px; max-width:calc(100% - 16px);
+  padding:3px 8px; border-radius:2px; background:rgba(0,0,0,.45);
+  -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+  color:#FFFFFF; font:500 11px/1.4 var(--font);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.shot figcaption a{color:#FFFFFF; text-decoration:underline; text-decoration-color:rgba(255,255,255,.5)}
+.chead{display:flex; align-items:flex-start; gap:10px}
+.ic{flex:none; margin-top:-1px}
+.ct{flex:1 1 auto; min-width:0}
+.cname{margin:0; font:600 17px/1.25 var(--font-display); letter-spacing:-.014em; text-wrap:balance}
+.cmeta{margin:2px 0 0; font:400 13px/1.35 var(--font); color:var(--label-2)}
+/* the sauna-culture badge: flag and name, plus the Finnish score once given */
+.fin{
+  flex:none; display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 8px 0 7px;
+  border-radius:3px; background:var(--fill); color:var(--label);
+  font:600 12.5px var(--font); white-space:nowrap; cursor:help;
+}
+.fin .flagi{display:block; flex:none; border-radius:1.5px; box-shadow:0 0 0 1px var(--sep)}
+.fin .flagi.nodrop{box-shadow:none; color:var(--label-2)}
+.fin.st-none, .fin.st-unknown{color:var(--label-2)}
+.fin.st-unknown{background:transparent; box-shadow:inset 0 0 0 1px var(--sep)}
+.fin .sc{margin-left:2px; padding-left:7px; border-left:1px solid var(--sep); font:600 13px var(--font-num); font-variant-numeric:tabular-nums}
+.fin .sc i{font-style:normal; font-size:10.5px; color:var(--label-3)}
+.tags{display:flex; flex-wrap:wrap; gap:6px; margin:11px 0 0}
+.status, .price, .pick-tag{
+  display:inline-flex; align-items:center; height:24px; padding:0 9px; border-radius:3px;
+  font:600 12.5px var(--font); white-space:nowrap;
+}
+.status::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor; margin-right:6px}
+.status.open{color:var(--green); background:var(--green-soft)}
+.status.shut{color:var(--red); background:var(--red-soft)}
+.status.unk{color:var(--label-2); background:var(--fill)}
+.price{color:var(--label); background:var(--fill); font-variant-numeric:tabular-nums}
+.pick-tag{color:var(--ember); background:var(--ember-soft)}
+.rows{margin:12px 0 0; display:grid; grid-template-columns:78px minmax(0,1fr); font-size:14px; line-height:1.45}
+.rows dt, .rows dd{margin:0; padding:8px 0; border-top:1px solid var(--sep)}
+.rows dt{color:var(--label-2); font-size:13px; padding-top:9px}
+.rows dd{min-width:0; overflow-wrap:anywhere}
+.rows dd b{font-weight:600}
+.tiers{display:flex; flex-wrap:wrap; gap:4px; margin-top:6px}
+.tier{padding:0 7px; border-radius:3px; font:600 11.5px/21px var(--font); color:var(--tint); background:var(--tint-soft)}
+.tier.off{color:var(--label-3); background:transparent; box-shadow:inset 0 0 0 1px var(--sep); text-decoration:line-through}
+.ly{display:inline-block; padding:1px 8px; border-radius:3px; font:600 12.5px/1.6 var(--font)}
+.ly-staff{color:var(--ember); background:var(--ember-soft)}
+.ly-self{color:var(--tint); background:var(--tint-soft)}
+.ly-machine{color:var(--label-2); background:var(--fill)}
+.ly-unknown{color:var(--label-3); box-shadow:inset 0 0 0 1px var(--sep)}
+.augrade{margin-left:6px; font:600 13px var(--font-num); color:var(--ember); white-space:nowrap}
+.augrade i{font-style:normal; color:var(--label-3); font-size:11px}
+.src{color:var(--label-3); font-size:12px; white-space:nowrap}
+.src2{display:block; margin-top:4px; color:var(--label-2); font-size:13px}
+.alert{
+  margin:12px 0 0; padding:10px 12px; border-radius:var(--r-sm);
+  background:var(--ember-soft); font-size:13.5px; line-height:1.45;
+}
+.alert b{display:block; margin-bottom:2px; color:var(--ember); font:600 12.5px var(--font)}
+.revs{margin:14px 0 0; display:flex; flex-direction:column; gap:8px}
+.revs-h{margin:0; display:flex; align-items:center; gap:8px; font:600 13px var(--font); color:var(--label-2)}
+.score{font:600 14px var(--font-num); color:var(--green)}
+.score em{font-style:normal; font-size:11px; color:var(--label-3)}
+.rev{margin:0; padding:10px 12px; border-radius:var(--r-sm); background:var(--surface-2)}
+.rev-t{margin:0; font-size:14px; line-height:1.55}
+.rev footer{display:flex; flex-wrap:wrap; gap:4px 8px; margin-top:6px; font-size:12.5px; color:var(--label-2)}
+.rev-w{font-weight:600; color:var(--label)}
+.acts{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px}
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; height:36px; padding:0 16px;
+  border-radius:var(--r-sm); background:var(--tint-soft); color:var(--tint);
+  font:600 14.5px var(--font); white-space:nowrap; transition:filter .15s, transform .1s;
+}
+.btn:hover{text-decoration:none; filter:brightness(1.06)}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--tint); color:var(--on-tint)}
 
+/* map drawing */
 .parks{fill:var(--park)} .water{fill:var(--water)}
-.river{fill:none;stroke:var(--water);stroke-linecap:round;stroke-linejoin:round}
-.districts{fill:none;stroke:var(--border);stroke-width:1.1;opacity:.38}
-.rail{fill:none;stroke:var(--rail);stroke-width:.9;stroke-dasharray:3.4 3.6;opacity:.5}
-.rcase,.mcase,.rfill,.mfill{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.river{fill:none; stroke:var(--water); stroke-linecap:round; stroke-linejoin:round}
+.districts{fill:none; stroke:var(--border); stroke-width:1; stroke-dasharray:4 3; opacity:.5}
+.rail{fill:none; stroke:var(--rail); stroke-width:.9; stroke-dasharray:3.4 3.6; opacity:.6}
+.rcase, .mcase, .rfill, .mfill{fill:none; stroke-linecap:round; stroke-linejoin:round}
 .rcase{stroke:var(--road-case)} .rfill{stroke:var(--road)}
 .mcase{stroke:var(--mtw-case)} .mfill{stroke:var(--mtw)}
 .dlabel{
-  font-family:var(--hud); font-weight:600; font-size:12px; letter-spacing:.22em; fill:var(--dist);
-  text-anchor:middle; paint-order:stroke; stroke:var(--land); stroke-width:3.5; opacity:.9;
+  font:600 10.5px var(--font); letter-spacing:.16em; text-transform:uppercase; fill:var(--dist);
+  text-anchor:middle; paint-order:stroke; stroke:var(--land); stroke-width:3.5; stroke-linejoin:round;
   pointer-events:none; user-select:none;
 }
-.scale{font-family:var(--hud); font-weight:600; font-size:10px; letter-spacing:.14em; fill:#5F5847}
-.blip{cursor:pointer}
-.blip .b{stroke:#201C15; stroke-width:1.8}
-.blip .pulse{fill:none; stroke:#fff; stroke-width:2.2; opacity:0}
-.blip.on .pulse{opacity:1}
-.blip.on{filter:drop-shadow(0 2px 5px rgba(0,0,0,.55))}
-.blip.dim{opacity:.22}
+.scale{font:600 10px var(--font); letter-spacing:.06em; fill:var(--label-2)}
+svg.map.tiny .dlabel, svg.map.tiny .scalebar{display:none}
+svg .b{stroke:var(--pin-ring); stroke-width:2}
+svg .g{fill:none; stroke:var(--pin-glyph); stroke-width:1.9; stroke-linecap:round}
+svg .g.unk{stroke:var(--pin-glyph-0)}
+svg .usc{fill:var(--tint); stroke:var(--pin-ring); stroke-width:1.7}
+.blip{cursor:pointer; filter:drop-shadow(0 1px 1.5px var(--pin-shadow))}
+.blip .halo{fill:var(--tint); opacity:0; transition:opacity .2s}
+.blip.on .halo{opacity:.2}
+.blip.on .b{stroke:var(--tint); stroke-width:2.6}
+.blip.dim{opacity:.25}
 .blip.gone{display:none}
-.bname{
-  font-family:var(--hud); font-weight:700; font-size:13px; letter-spacing:.1em; text-transform:uppercase;
-  fill:#1B1811; text-anchor:middle; paint-order:stroke; stroke:var(--land); stroke-width:4.5;
-  pointer-events:none;
+.blip:focus{outline:none}
+.blip:focus-visible .halo{opacity:.3}
+.tick{stroke:var(--label-3)}
+.callout{pointer-events:none; filter:drop-shadow(0 4px 10px var(--pin-shadow))}
+.co-frame{fill:var(--surface)}
+.co-name text{font:600 15px var(--font); letter-spacing:-.01em; fill:var(--label); text-anchor:middle}
+
+/* floating map controls, in the frosted material Maps uses */
+.zoom, .key, .peek, .listcol{--blur:blur(22px) saturate(1.7)}
+.zoom{
+  position:absolute; top:12px; right:12px; display:flex; flex-direction:column;
+  border-radius:var(--r-sm); overflow:hidden; background:var(--glass);
+  -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur); box-shadow:var(--shadow);
 }
-.zoom{position:absolute; right:12px; bottom:12px; display:flex; flex-direction:column; gap:3px}
 .zoom button{
-  width:34px; height:34px; font-family:var(--hud); font-weight:600; font-size:15px; line-height:1;
-  color:var(--ink); background:rgba(10,13,16,.82); border:1px solid var(--line-2); border-radius:2px;
-  cursor:pointer; padding:0;
+  width:42px; height:42px; border:0; padding:0; background:transparent; cursor:pointer;
+  color:var(--label); font:400 22px/1 var(--font); display:grid; place-items:center;
 }
-.zoom button#z-fit{font-size:11px; letter-spacing:.1em}
-.zoom button:hover{background:var(--gold); color:#161005; border-color:var(--gold)}
-/* On the cropped mobile frame the bottom-right corner has a venue under it
-   (Stadtbad Neukoelln), and the scale bar is hidden, so move the controls to
-   the empty bottom-left and lay them out in a row. */
-@media (max-width:760px){
-  .zoom{left:10px; right:auto; bottom:10px; flex-direction:row}
-  .zoom button{width:30px; height:30px; font-size:14px}
+.zoom button + button{border-top:1px solid var(--sep)}
+.zoom button:hover{background:var(--fill)}
+.zoom button#z-fit{font:600 12px var(--font)}
+.key{
+  position:absolute; left:12px; bottom:12px; max-width:calc(100% - 24px);
+  display:flex; flex-wrap:wrap; gap:6px 16px; align-items:center; padding:9px 14px;
+  border-radius:var(--r-sm); background:var(--glass); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur);
+  box-shadow:var(--shadow); font:500 12px var(--font); color:var(--label-2);
 }
-svg.map{touch-action:none; cursor:grab}
-svg.map.dragging{cursor:grabbing}
-.status{
-  flex:none; font-family:var(--hud); font-weight:600; font-size:10px; letter-spacing:.13em;
-  text-transform:uppercase; padding:3px 7px; border-radius:2px; border:1px solid;
-  align-self:flex-start; margin-top:3px;
-}
-.status.open{color:#63D2A2; border-color:#2C6B52; background:rgba(99,210,162,.09)}
-.status.shut{color:#E8806F; border-color:#7A3327; background:rgba(232,128,111,.09)}
-.status.unk{color:var(--dim); border-color:var(--line)}
-.tiers{display:flex; gap:4px; flex-wrap:wrap; margin-top:5px}
-.tier{
-  font-family:var(--hud); font-weight:600; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
-  border:1px solid var(--cyan); color:var(--cyan); border-radius:2px; padding:2px 6px;
-}
-.tier.off{border-color:var(--line); color:var(--faint); text-decoration:line-through}
-.src{
-  font-family:var(--hud); font-weight:500; font-size:10px; letter-spacing:.1em;
-  text-transform:uppercase; color:var(--faint); white-space:nowrap;
-}
-.src2{color:var(--dim)}
-.key{display:flex; flex-wrap:wrap; gap:9px 20px; align-items:center; padding:12px 2px 2px}
-.key .lbl{font-family:var(--hud); font-weight:600; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint)}
-.bands{display:flex; align-items:center; gap:4px}
-.bands i{width:15px;height:15px;border-radius:4px;border:1.5px solid #201C15;display:block}
-.bands em{font-family:var(--hud);font-weight:600;font-size:11px;letter-spacing:.1em;color:var(--dim);font-style:normal}
+.key .ki{display:inline-flex; align-items:center; gap:6px; white-space:nowrap}
+.ramp{display:inline-flex; gap:2px}
+.ramp i{width:13px; height:13px; border-radius:2px; display:block}
 
-/* ---------------- dossier list ---------------- */
-.listcol{background:var(--panel); padding:0}
-/* On desktop the list is its own scrollport, so picking a blip moves the list
-   beside the map rather than teleporting the page away from the map. */
-@media (min-width:1001px){
-  .listcol{
-    position:sticky; top:73px; max-height:calc(100vh - 76px);
-    overflow-y:auto; overscroll-behavior:contain;
-  }
-}
-.lhead{
-  display:flex; align-items:center; justify-content:space-between; gap:12px;
-  padding:14px 18px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--panel); z-index:20;
-}
-@media (max-width:1000px){ .lhead{position:static} }
-.lhead h2{font-family:var(--hud); font-weight:600; font-size:16px; letter-spacing:.12em; text-transform:uppercase; margin:0}
-.lhead .c{font-family:var(--hud); font-weight:600; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim)}
-.cards{list-style:none; margin:0; padding:0}
-.card{
-  border-bottom:1px solid var(--line); border-left:3px solid transparent;
-  padding:16px 18px 18px; cursor:pointer; transition:background .12s,border-left-color .12s;
-  scroll-margin-top:56px;
-}
-.card:hover{background:var(--panel-2)}
-.card.on{background:var(--panel-2); border-left-color:var(--gold)}
-.shot{margin:0 0 13px; position:relative; background:var(--panel-3); overflow:hidden; border-radius:2px}
-.shot img, .shot svg{display:block; width:100%; height:auto; aspect-ratio:16/9; object-fit:cover}
-.shot.maptile svg{background:var(--land)}
-.shot figcaption{
-  position:absolute; left:0; right:0; bottom:0; padding:14px 9px 5px;
-  font-family:var(--hud); font-weight:500; font-size:10px; letter-spacing:.08em; text-transform:uppercase;
-  color:#E6E9EA; background:linear-gradient(180deg, transparent, rgba(0,0,0,.78));
-}
-.shot figcaption a{color:#FFD98A}
-.chead{display:flex; align-items:flex-start; gap:11px}
-.chead .ic{flex:none; margin-top:2px}
-.ct{flex:1 1 auto; min-width:0}
-.cname{font-family:var(--hud); font-weight:600; font-size:19px; line-height:1.18; letter-spacing:.03em; text-transform:uppercase; margin:0}
-.card.on .cname{color:var(--gold)}
-.cmeta{font-family:var(--hud); font-weight:500; font-size:12px; letter-spacing:.13em; text-transform:uppercase; color:var(--dim); margin:3px 0 0}
-.rank{
-  flex:none; font-family:var(--disp); font-size:16px; letter-spacing:.02em; color:var(--gold);
-  background:var(--void); border:1px solid var(--line); border-radius:2px; padding:4px 8px 3px;
-}
-.grouptag{
-  display:inline-block; font-family:var(--hud); font-weight:600; font-size:10px;
-  letter-spacing:.1em; text-transform:uppercase; color:var(--gold);
-  border:1px solid var(--gold-deep); border-radius:2px; padding:1px 5px; margin-left:5px;
-}
-.rank.none{color:var(--faint); font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.12em; padding:6px 8px}
-.pick-tag{
-  display:inline-block; font-family:var(--hud); font-weight:700; font-size:10.5px; letter-spacing:.15em;
-  text-transform:uppercase; background:var(--gold); color:#161005; padding:3px 8px; margin:11px 0 0;
-}
-.rows{margin:12px 0 0; display:grid; grid-template-columns:74px minmax(0,1fr); gap:6px 12px; font-size:14.6px}
-.rows dt{font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--faint); padding-top:4px}
-.rows dd{margin:0; color:var(--ink-2)}
-.rows dd b{color:var(--ink); font-weight:600}
-.usc-y{color:var(--cyan)}
-.alert{
-  margin:12px 0 0; padding:9px 12px; background:rgba(232,64,47,.09);
-  border-left:3px solid var(--red); font-size:13.8px; color:var(--ink-2);
-}
-.alert b{font-family:var(--hud); font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--red); font-size:11.5px; display:block; margin-bottom:2px}
-.fin{
-  flex:none; display:flex; align-items:baseline; gap:3px;
-  font-family:var(--disp); font-size:17px; letter-spacing:.02em; color:#0B2530;
-  background:var(--cyan); border:1px solid #1FA8CC; border-radius:2px;
-  padding:3px 7px 2px; margin-left:5px;
-}
-.fin em{font-family:var(--hud); font-weight:700; font-style:normal; font-size:9px; letter-spacing:.12em}
-.fin i{font-style:normal; font-size:10px; opacity:.7}
-.fin.none{background:var(--void); border-color:var(--line); color:var(--faint)}
-.ly{
-  font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.1em;
-  text-transform:uppercase; border:1px solid; border-radius:2px; padding:2px 6px;
-  display:inline-block;
-}
-.ly-staff{color:var(--gold); border-color:var(--gold-deep); background:rgba(255,193,43,.08)}
-.ly-self{color:var(--cyan); border-color:#1FA8CC; background:rgba(63,208,245,.08)}
-.ly-machine{color:var(--dim); border-color:var(--line-2)}
-.ly-unknown{color:var(--faint); border-color:var(--line)}
-.augrade{
-  font-family:var(--hud); font-weight:700; font-size:11px; letter-spacing:.09em;
-  color:var(--gold); text-transform:uppercase; margin-left:4px;
-}
-.augrade i{font-style:normal; font-size:9px; color:var(--dim)}
-.revs-h{
-  margin:0 0 2px; display:flex; align-items:center; gap:7px;
-  font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.15em;
-  text-transform:uppercase; color:var(--faint);
-}
-.score{
-  flex:none; font-family:var(--hud); font-weight:700; font-size:15px; letter-spacing:.02em;
-  color:#63D2A2; background:var(--void); border:1px solid #2C6B52; border-radius:2px;
-  padding:4px 8px 3px; margin-left:5px;
-}
-.score em{font-style:normal; font-size:10px; color:var(--dim); letter-spacing:.06em}
-.revs{margin:13px 0 0; display:flex; flex-direction:column; gap:9px}
-.rev{
-  margin:0; padding:10px 12px; background:var(--panel-3); border-left:2.5px solid #2C6B52;
-  border-radius:0 5px 5px 0;
-}
-.rev-t{margin:0; font-size:14.3px; color:var(--ink-2); line-height:1.55}
-.rev footer{display:flex; flex-wrap:wrap; gap:4px 9px; align-items:baseline; margin-top:7px}
-.rev-w{font-family:var(--hud); font-weight:600; font-size:12px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink)}
-.rev-m{font-family:var(--hud); font-weight:500; font-size:11px; letter-spacing:.09em; color:var(--dim)}
-.go{
-  display:inline-block; margin-top:14px; font-family:var(--hud); font-weight:600; font-size:12px;
-  letter-spacing:.16em; text-transform:uppercase; color:var(--gold); text-decoration:none;
-  border:1px solid var(--line); padding:6px 12px; border-radius:2px;
-}
-.go:hover{border-color:var(--gold); background:rgba(255,193,43,.09)}
-.go.alt{margin-left:6px; color:var(--ink-2)}
-.go.alt:hover{color:var(--gold)}
-.none-msg{padding:44px 18px; text-align:center; color:var(--dim); font-family:var(--hud); letter-spacing:.12em; text-transform:uppercase}
-
-/* ---------------- picks ---------------- */
-.picks{margin-top:3px; background:var(--panel); padding:clamp(22px,3vw,34px) clamp(14px,2.4vw,26px)}
-.picks h2{font-family:var(--disp); font-size:clamp(26px,3.2vw,40px); letter-spacing:.01em; text-transform:uppercase; margin:0 0 6px}
-.picks .sub{color:var(--dim); margin:0 0 22px; font-size:15px; max-width:62ch}
-.panel-rev{margin-top:3px}
-.joinline{display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 0}
-.pk .who{font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--dim)}
-.pgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:3px}
-.pgrid[hidden]{display:none}
+/* ---------------- sections below the map ---------------- */
+.sec{margin-top:44px}
+.sec-h{margin:0; font:700 22px/1.2 var(--font-display); letter-spacing:-.022em; text-wrap:balance}
+.sec-sub{margin:5px 0 16px; color:var(--label-2); max-width:62ch}
+.pgrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:12px}
+/* ten picks: five across fills two rows exactly */
+@media (min-width:1100px){ #picks{grid-template-columns:repeat(5, minmax(0,1fr))} }
 .pk{
-  background:var(--panel-2); border:0; padding:16px 16px 18px; text-align:left; cursor:pointer;
-  display:flex; flex-direction:column; gap:8px; color:inherit; font:inherit; transition:background .12s;
-  border-top:2px solid var(--line);
+  display:flex; flex-direction:column; gap:6px; text-align:left; border:0; margin:0; overflow:hidden;
+  background:var(--surface); border-radius:var(--r-lg); padding:14px 16px 15px;
+  box-shadow:var(--shadow); color:var(--label);
 }
-.pk:hover{background:var(--panel-3); border-top-color:var(--gold)}
-.pk .k{font-family:var(--hud); font-weight:600; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--gold)}
-.pk .v{font-family:var(--hud); font-weight:600; font-size:16.5px; line-height:1.2; letter-spacing:.03em; text-transform:uppercase}
-.pk .p{font-family:var(--hud); font-weight:600; font-size:12.5px; letter-spacing:.1em; color:var(--dim)}
-
-/* ---------------- credits ---------------- */
-.credits{margin-top:3px; background:var(--panel); padding:clamp(22px,3vw,32px) clamp(14px,2.4vw,26px) 46px}
-.cgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(258px,1fr)); gap:24px 38px}
-.cgrid h3{font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); margin:0 0 8px}
-.cgrid p{margin:0; font-size:14.4px; color:var(--ink-2); line-height:1.6; max-width:56ch}
-.cgrid strong{color:var(--ink); font-weight:600}
-.cgrid a{color:var(--gold)}
-.credits-imgs{margin-top:30px; padding-top:22px; border-top:1px solid var(--line)}
-.credits-imgs h3{
-  font-family:var(--hud); font-weight:600; font-size:11px; letter-spacing:.18em;
-  text-transform:uppercase; color:var(--gold); margin:0 0 8px;
+button.pk{cursor:pointer; transition:box-shadow .2s var(--ease), transform .2s var(--ease)}
+button.pk:hover{box-shadow:var(--shadow-lift); transform:translateY(-1px)}
+button.pk:active{transform:scale(.98)}
+.pk .k{font:600 12.5px/1.3 var(--font); color:var(--ember)}
+.pk .ph{display:block; margin:-14px -16px 8px; overflow:hidden; background:var(--land); aspect-ratio:4/3}
+.pk .ph img, .pk .ph svg{display:block; width:100%; height:100%; object-fit:cover}
+.pick-tag .av{
+  display:inline-grid; place-items:center; width:16px; height:16px; margin:0 6px 0 -5px; border-radius:50%;
+  background:var(--ember); color:var(--surface); font:700 9.5px/1 var(--font); font-style:normal;
 }
-.cnote{margin:0 0 12px; font-size:14.4px; color:var(--ink-2); max-width:70ch; line-height:1.6}
+.pk .v{font:600 16px/1.25 var(--font-display); letter-spacing:-.012em}
+.pk .p, .pk .who{font:500 13px/1.45 var(--font); color:var(--label-2); font-variant-numeric:tabular-nums}
+.panel-grid .pk .k{color:var(--label-2)}
+.info{display:grid; grid-template-columns:repeat(auto-fit, minmax(270px, 1fr)); gap:12px}
+.note{background:var(--surface); border-radius:var(--r-lg); padding:16px 18px 17px; box-shadow:var(--shadow); min-width:0}
+.note h3{margin:0 0 6px; font:600 15.5px/1.3 var(--font-display); letter-spacing:-.01em}
+.note p{margin:0; color:var(--label-2); font-size:14.5px; line-height:1.55; max-width:60ch}
+.note strong{color:var(--label); font-weight:600}
+.joinline{display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0}
+.credits{margin-top:44px; padding-top:22px; border-top:1px solid var(--sep)}
+.credits h3{margin:0 0 6px; font:600 13px var(--font); color:var(--label-2)}
+.cnote{margin:0 0 12px; font-size:13.5px; color:var(--label-2); max-width:72ch; line-height:1.55}
 #credit-list{
   list-style:none; margin:0; padding:0; display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(268px,1fr)); gap:5px 26px;
+  grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:4px 24px;
 }
-#credit-list li{font-size:13px; color:var(--dim); line-height:1.5}
-#credit-list b{color:var(--ink-2); font-weight:600}
-#credit-list a{color:var(--gold); text-decoration-color:var(--line)}
-/* ---------- mobile: map-first explorer ----------
-   The map, a peek card for whatever is selected, and the list as a bottom sheet
-   you can drag up - rather than a short map with 20 long cards stacked beneath. */
-.peek, .grab{display:none}
+#credit-list li{font-size:12.5px; color:var(--label-3); line-height:1.5}
+#credit-list b{color:var(--label-2); font-weight:500}
+.sign{
+  display:flex; align-items:center; gap:14px; margin-top:32px; padding-top:22px;
+  border-top:1px solid var(--sep); color:var(--label-2); font-size:13px;
+}
+.sign .appicon{width:36px; height:36px; border-radius:8px; box-shadow:none}
+.sign b{display:block; color:var(--label); font:600 17px/1.2 var(--font-display); letter-spacing:-.012em}
+
+/* ---------------- phone and small tablet: map first, list as a sheet ---------------- */
 @media (max-width:1000px){
-  .split{display:block; position:relative; height:82dvh; min-height:460px; overflow:hidden}
-  .mapcol{padding:0; height:100%}
-  .mapcol .inner{height:100%; position:relative; top:auto}   /* clear the desktop sticky offset */
-  .mapbox{position:absolute; inset:0}
-  svg.map{width:100%; height:100%}
-  .key{
-    position:absolute; left:0; right:0; bottom:0; margin:0; z-index:3;
-    padding:8px 10px calc(var(--sheet, 84px) + 10px); pointer-events:none;
-    display:none;
+  .split{
+    display:block; position:relative; height:min(80dvh, 780px); min-height:520px;
+    border-radius:var(--r-xl); overflow:hidden; box-shadow:var(--shadow); background:var(--land);
   }
-  .zoom{bottom:calc(var(--sheet, 84px) + 12px); transition:bottom .18s ease}
-
+  .mapcol{position:absolute; inset:0}
+  .mapcol .inner{border-radius:0; box-shadow:none}
+  .key{display:none}
   .listcol{
-    position:absolute; left:0; right:0; bottom:0; z-index:6;
-    height:var(--sheet, 84px); max-height:none;
-    background:var(--panel); border-top:1px solid var(--line-2);
-    border-radius:14px 14px 0 0; box-shadow:0 -14px 34px rgba(0,0,0,.55);
-    display:flex; flex-direction:column; overflow:hidden;
-    transition:height .22s cubic-bezier(.22,.61,.36,1);
+    position:absolute; left:0; right:0; bottom:0; z-index:6; height:var(--sheet, 72px);
+    background:var(--glass); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur);
+    border-radius:var(--r-lg) var(--r-lg) 0 0; box-shadow:0 -1px 0 var(--sep), 0 -12px 32px var(--sheet-shadow);
+    overflow:hidden; transition:height .34s var(--ease);
   }
-  .cards{flex:1 1 auto; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch}
   .grab{
-    display:flex; flex-direction:column; align-items:center; gap:7px; flex:none;
-    background:none; border:0; width:100%; padding:9px 0 7px; cursor:grab;
-    touch-action:none; color:inherit;
+    display:flex; justify-content:center; flex:none; width:100%; padding:7px 0 10px;
+    background:none; border:0; cursor:grab; touch-action:none;
   }
-  .grab-bar{width:38px; height:4px; border-radius:99px; background:var(--line-2)}
-  .grab-label{
-    font-family:var(--hud); font-weight:600; font-size:13px; letter-spacing:.13em;
-    text-transform:uppercase; color:var(--ink);
+  .grab-bar{width:36px; height:5px; border-radius:3px; background:var(--fill-2)}
+  .bar{flex-direction:column; flex-wrap:nowrap; align-items:stretch; gap:10px; padding-bottom:12px}
+  .find{flex:none}
+  .filters{
+    flex:none; flex-wrap:nowrap; overflow-x:auto;
+    margin-right:calc(-1 * var(--gutter-r)); padding-right:calc(var(--gutter-r) + 20px);
+    scrollbar-width:none; -webkit-overflow-scrolling:touch;
+    -webkit-mask-image:linear-gradient(90deg, #000 calc(100% - 30px), transparent);
+    mask-image:linear-gradient(90deg, #000 calc(100% - 30px), transparent);
   }
-  .lhead{display:none}
-  .listcol.open .lhead{display:flex; flex:none}
-
+  .filters::-webkit-scrollbar{display:none}
+  .grp{flex-wrap:nowrap; flex:none}
+  .slide{flex:0 0 210px}
+  .clear{flex:none; margin-left:0}
+  .lhead{flex:none; padding:0 16px 10px}
+  .listcol .shot img, .listcol .shot svg{aspect-ratio:2.8/1}
+  .cards{margin:0; padding:2px 12px 20px}
   .peek{
-    display:flex; gap:11px; position:absolute; z-index:5;
-    left:9px; right:9px; bottom:calc(var(--sheet, 84px) + 10px);
-    background:var(--panel); border:1px solid var(--line-2); border-radius:11px;
-    padding:9px; box-shadow:0 10px 28px rgba(0,0,0,.5); cursor:pointer;
-    transition:bottom .22s cubic-bezier(.22,.61,.36,1);
+    display:flex; gap:12px; position:absolute; z-index:5; left:10px; right:10px;
+    bottom:calc(var(--sheet, 72px) + 10px); padding:10px; border-radius:var(--r-lg);
+    background:var(--glass); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur);
+    box-shadow:var(--shadow-lift); cursor:pointer; transition:bottom .34s var(--ease);
   }
-  .peek[hidden]{display:none}
-  .peek-thumb{
-    width:74px; height:60px; border-radius:7px; overflow:hidden; flex:none;
-    background:var(--land); display:grid; place-items:center;
-  }
+  .peek-thumb{width:72px; height:58px; border-radius:2px; overflow:hidden; flex:none; background:var(--land)}
   .peek-thumb img, .peek-thumb svg{width:100%; height:100%; object-fit:cover; display:block}
-  .peek-body{min-width:0; flex:1 1 auto; padding-right:16px}
-  .peek-name{
-    font-family:var(--hud); font-weight:600; font-size:16px; line-height:1.15;
-    letter-spacing:.03em; text-transform:uppercase; margin:1px 0 0;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  }
-  .peek-meta{
-    font-family:var(--hud); font-weight:500; font-size:11px; letter-spacing:.11em;
-    text-transform:uppercase; color:var(--dim); margin:3px 0 0;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  }
-  .peek-price{font-size:13.5px; color:var(--gold); margin:4px 0 0; font-family:var(--hud); font-weight:600}
+  .peek-body{min-width:0; flex:1 1 auto; padding-right:30px}
+  .peek-name{margin:2px 0 0; font:600 16px/1.2 var(--font-display); letter-spacing:-.012em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .peek-meta{margin:2px 0 0; font:400 12.5px/1.3 var(--font); color:var(--label-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .peek-price{margin:5px 0 0; font:600 13.5px var(--font); color:var(--ember)}
   .peek-x{
-    position:absolute; top:5px; right:6px; width:26px; height:26px; line-height:1;
-    font-size:19px; background:none; border:0; color:var(--dim); cursor:pointer; padding:0;
+    position:absolute; top:8px; right:8px; width:26px; height:26px; padding:0; border:0;
+    border-radius:50%; background:var(--fill); color:var(--label-2); font:500 16px/1 var(--font); cursor:pointer;
   }
-  .peek-x:hover{color:var(--ink)}
 }
-@media (prefers-reduced-motion:reduce){ *{transition:none !important; animation:none !important} }
+@media (max-width:700px){
+  .pgrid.scroll{
+    grid-template-columns:none; grid-auto-flow:column; grid-auto-columns:minmax(210px, 68%);
+    overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none;
+    margin-left:calc(-1 * var(--gutter-l)); margin-right:calc(-1 * var(--gutter-r));
+    padding:4px var(--gutter-r) 12px var(--gutter-l); scroll-padding-left:var(--gutter-l);
+  }
+  .pgrid.scroll::-webkit-scrollbar{display:none}
+  .pgrid.scroll .pk{scroll-snap-align:start}
+  .sec{margin-top:36px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important; animation:none !important; scroll-behavior:auto !important}
+}
 </style>
 
 <div class="wrap">
-  <div class="cover">
-    <div class="tile mark">
-      <p class="stamp">Berlin <b>//</b> Last scan <time id="stamp-date">__LAST_SCAN__</time></p>
-      <h1 class="wordmark"><span>Berlin</span><span>Sauna</span><span class="g">Map</span></h1>
-      <p class="strap">__COUNT__ saunas and spas across the city, priced and plotted. Hotel day spas, proper neighbourhood saunas, and the six you can walk into on an Urban Sports Club card.</p>
+  <header class="top">
+    <div class="intro">
+      <div class="brand">
+        <svg class="appicon" viewBox="0 0 64 64" aria-hidden="true">
+          <defs><linearGradient id="aig" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9A462"/><stop offset="1" stop-color="#B3502A"/></linearGradient></defs>
+          <rect width="64" height="64" rx="15" fill="url(#aig)"/>
+          <path d="M21 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11 M32 45 q-5 -6.5 0 -13 q5 -6.5 0 -13 M43 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+          <path d="M15 52 h34" stroke="#FFFFFF" stroke-opacity=".6" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <p class="eyebrow">berlin &middot; checked <time id="stamp-date">__LAST_SCAN__</time></p>
+          <h1 class="title">berlin sauna map</h1>
+        </div>
+      </div>
+      <p class="lede">__COUNT__ saunas and spas across the city, priced and plotted. Hotel day spas, proper neighbourhood saunas, and the ones you can walk into on an Urban Sports Club card.</p>
+      <dl class="stats">
+        <div><dt>places</dt><dd><span class="n" id="n-count">__COUNT__</span><span class="s">read at source</span></dd></div>
+        <div><dt>cheapest</dt><dd><span class="n" id="stat-cheap">&ndash;</span><span class="s" id="stat-cheap-s">&nbsp;</span></dd></div>
+        <div><dt>on USC</dt><dd><span class="n" id="stat-usc">&ndash;</span><span class="s">Urban Sports Club</span></dd></div>
+        <div><dt>hottest</dt><dd><span class="n" id="stat-hot">&ndash;</span><span class="s" id="stat-hot-s">&nbsp;</span></dd></div>
+      </dl>
     </div>
-    <div class="tile"><span class="k">Locations</span><span class="n" id="n-count">__COUNT__</span><span class="s">Mapped by hand</span></div>
-    <div class="tile"><span class="k">Cheapest</span><span class="n">&euro;12<span style="font-size:.62em">.50</span></span><span class="s">Gezer Alexanderplatz, 2h</span></div>
-    <div class="tile"><span class="k">On USC</span><span class="n">6</span><span class="s">Membership entry</span></div>
-    <div class="tile"><span class="k">Hottest</span><span class="n">95&deg;C</span><span class="s">Finnish cabin</span></div>
-  </div>
+    <div class="collage" id="collage"></div>
+  </header>
 
-  <div class="bar">
-    <label class="find">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input type="search" id="q" placeholder="Search name, district, feature" aria-label="Search saunas">
-    </label>
-    <div class="grp" id="g-access" role="group" aria-label="Filter by access">
-      <span class="lbl">Access</span>
-      <button class="chip" data-v="cash" aria-pressed="false">Cash</button>
-      <button class="chip" data-v="usc" aria-pressed="false">USC</button>
+    <div class="bar" id="bar">
+      <label class="find">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+        <input type="search" id="q" placeholder="search saunas" aria-label="Search saunas" autocomplete="off">
+      </label>
+      <div class="filters">
+        <div class="grp" id="g-open" role="group" aria-label="Filter by opening hours">
+          <button class="chip" data-v="open" aria-pressed="false">open now</button>
+        </div>
+        <div class="grp" id="g-access" role="group" aria-label="Filter by access">
+          <button class="chip" data-v="cash" aria-pressed="false">day ticket</button>
+          <button class="chip" data-v="usc" aria-pressed="false">on USC</button>
+        </div>
+        <div class="grp" id="g-kind" role="group" aria-label="Filter by venue type">
+          <button class="chip" data-v="sauna" aria-pressed="false">not a hotel</button>
+          <button class="chip" data-v="hotel" aria-pressed="false">hotel spa</button>
+          <button class="chip" data-v="pool" aria-pressed="false">pool or plunge</button>
+          <button class="chip" data-v="aufguss" aria-pressed="false">aufguss</button>
+          <button class="chip" data-v="ownloyly" aria-pressed="false">throw your own</button>
+          <button class="chip" data-v="group" aria-pressed="false">group hire</button>
+        </div>
+        <div class="grp" id="g-usc" role="group" aria-label="Filter by Urban Sports Club tier">
+          <span class="lbl">USC tier</span>
+          <button class="chip" data-v="Classic" aria-pressed="false">Classic</button>
+          <button class="chip" data-v="Premium" aria-pressed="false">Premium</button>
+          <button class="chip" data-v="Max" aria-pressed="false">Max</button>
+        </div>
+        <label class="slide">
+          <span class="lbl">up to</span>
+          <input type="range" id="pmax" min="12" max="90" step="1" value="90" aria-label="Maximum price">
+          <output id="pout" for="pmax">Any</output>
+        </label>
+        <button class="clear" id="clear" type="button">reset</button>
+      </div>
     </div>
-    <div class="grp" id="g-open" role="group" aria-label="Filter by opening hours">
-      <button class="chip" data-v="open" aria-pressed="false">Open now</button>
-    </div>
-    <div class="grp" id="g-kind" role="group" aria-label="Filter by venue type">
-      <span class="lbl">Type</span>
-      <button class="chip" data-v="sauna" aria-pressed="false">Not a hotel</button>
-      <button class="chip" data-v="hotel" aria-pressed="false">Hotel spa</button>
-      <button class="chip" data-v="pool" aria-pressed="false">Pool / plunge</button>
-      <button class="chip" data-v="group" aria-pressed="false">Group hire</button>
-      <button class="chip" data-v="aufguss" aria-pressed="false">Aufguss</button>
-      <button class="chip" data-v="ownloyly" aria-pressed="false">Throw your own</button>
-    </div>
-    <div class="grp" id="g-usc" role="group" aria-label="Filter by Urban Sports Club tier">
-      <span class="lbl">USC tier</span>
-      <button class="chip" data-v="Classic" aria-pressed="false">Classic</button>
-      <button class="chip" data-v="Premium" aria-pressed="false">Premium</button>
-      <button class="chip" data-v="Max" aria-pressed="false">Max</button>
-    </div>
-    <label class="slide">
-      <span class="lbl">Max</span>
-      <input type="range" id="pmax" min="12" max="90" step="1" value="90" aria-label="Maximum price">
-      <output id="pout">Any</output>
-    </label>
-    <button class="clear" id="clear">Reset</button>
-  </div>
 
   <div class="split">
+    <div class="listcol">
+      <button class="grab" id="grab" aria-expanded="false" aria-controls="cards">
+        <span class="grab-bar" aria-hidden="true"></span>
+        <span class="grab-label sr" id="grab-label">__COUNT__ venues</span>
+      </button>
+      <div class="lhead">
+        <h2 id="l-title">all __COUNT__ places</h2>
+        <span class="c" id="l-note">in pick order</span>
+      </div>
+      <ul class="cards" id="cards"></ul>
+      <p class="none-msg" id="none" hidden>nothing matches. raise the price limit or clear a filter.</p>
+    </div>
+
     <div class="mapcol">
       <div class="inner">
         <div class="mapbox">
           <svg class="map" id="map" role="img" aria-label="Map of central Berlin showing __COUNT__ sauna and spa locations"></svg>
-          <i class="brk tl"></i><i class="brk tr"></i><i class="brk bl"></i><i class="brk br"></i>
           <div class="peek" id="peek" hidden>
             <button class="peek-x" id="peek-x" aria-label="Clear selection">&times;</button>
             <div class="peek-thumb" id="peek-thumb"></div>
@@ -515,95 +635,73 @@ svg.map.dragging{cursor:grabbing}
             </div>
           </div>
           <div class="zoom">
-            <button type="button" id="z-in"  aria-label="Zoom in">+</button>
+            <button type="button" id="z-in" aria-label="Zoom in">+</button>
             <button type="button" id="z-out" aria-label="Zoom out">&minus;</button>
-            <button type="button" id="z-fit" aria-label="Reset the map view">Fit</button>
+            <button type="button" id="z-fit" aria-label="Reset the map view">fit</button>
           </div>
         </div>
-        <div class="key">
-          <span class="lbl">Price</span>
-          <span class="bands">
-            <em>&euro;12.50</em>
-            <i style="background:var(--b1)"></i><i style="background:var(--b2)"></i><i style="background:var(--b3)"></i><i style="background:var(--b4)"></i>
-            <em>&euro;90</em>
-          </span>
-          <span class="bands">
-            <svg width="19" height="19" viewBox="0 0 19 19" aria-hidden="true"><rect x="1.5" y="3.5" width="14" height="14" rx="4" fill="var(--b2)" stroke="#201C15" stroke-width="1.6"/><circle cx="15" cy="4" r="3.4" fill="var(--cyan)" stroke="#0B2530" stroke-width="1.2"/></svg>
-            <em>On USC</em>
-          </span>
-          <span class="bands">
-            <svg width="19" height="19" viewBox="0 0 19 19" aria-hidden="true"><rect x="2.5" y="2.5" width="14" height="14" rx="4" fill="var(--b0)" stroke="#201C15" stroke-width="1.6"/></svg>
-            <em>Price unclear or closed</em>
-          </span>
-          <span class="bands">
-            <svg width="19" height="19" viewBox="0 0 19 19" aria-hidden="true"><circle cx="9.5" cy="9.5" r="7" fill="var(--b3)" stroke="#201C15" stroke-width="1.6"/></svg>
-            <em>Priced per booking, not per person</em>
-          </span>
+        <div class="key" aria-label="Map key">
+          <span class="ki">&euro;12.50 <span class="ramp" aria-hidden="true"><i style="background:var(--b1)"></i><i style="background:var(--b2)"></i><i style="background:var(--b3)"></i><i style="background:var(--b4)"></i></span> &euro;90</span>
+          <span class="ki"><svg width="12" height="12" viewBox="-6 -6 12 12" aria-hidden="true"><circle class="usc" r="4.4"/></svg>on USC</span>
+          <span class="ki"><svg width="15" height="15" viewBox="-13 -13 26 26" aria-hidden="true"><circle class="b" r="11" fill="var(--b3)"/></svg>priced per booking</span>
+          <span class="ki"><svg width="15" height="15" viewBox="-13 -13 26 26" aria-hidden="true"><rect class="b" x="-11" y="-11" width="22" height="22" rx="4.5" fill="var(--b0)"/></svg>price unclear</span>
         </div>
       </div>
-    </div>
-
-    <div class="listcol">
-      <button class="grab" id="grab" aria-expanded="false" aria-controls="cards">
-        <span class="grab-bar"></span>
-        <span class="grab-label" id="grab-label">20 venues</span>
-      </button>
-      <div class="lhead">
-        <h2 id="l-title">All 20 locations</h2>
-        <span class="c" id="l-note">Pick order</span>
-      </div>
-      <ul class="cards" id="cards"></ul>
-      <p class="none-msg" id="none" hidden>No locations match &mdash; widen the price or clear a filter</p>
     </div>
   </div>
 
-  <section class="picks">
-    <h2>If you only remember one thing</h2>
-    <p class="sub">The single best answer for each way you might turn up &mdash; cash in hand, membership card, or two hours to kill.</p>
-    <div class="pgrid" id="picks"></div>
+  <section class="sec" aria-labelledby="h-picks">
+    <h2 class="sec-h" id="h-picks">fast picks</h2>
+    <p class="sec-sub">The one answer for each way you might turn up: cash in hand, a membership card, or two hours to kill.</p>
+    <div class="pgrid scroll" id="picks"></div>
   </section>
 
-  <section class="picks panel-rev">
-    <h2>The panel</h2>
-    <p class="sub">Reviews come from a small panel rather than the open internet, so a review means
-    something. Anyone who actually uses Berlin's saunas can ask to join.</p>
-    <div class="pgrid" id="panel"></div>
+  <section class="sec" aria-labelledby="h-info">
+    <h2 class="sec-h" id="h-info">before you go</h2>
+    <div class="info" style="margin-top:16px">
+      <article class="note">
+        <h3>benchmarks</h3>
+        <p>__PRACTICAL__</p>
+      </article>
+      <article class="note">
+        <h3>two traps</h3>
+        <p id="traps"></p>
+      </article>
+      <article class="note">
+        <h3>prices change</h3>
+        <p>This is a personal, non-commercial guide with no affiliation to any venue listed. Prices, opening hours and Urban Sports Club terms are recorded as each venue publishes them and <strong>change without notice</strong>, so check with the venue before a special trip. Where a schedule could not be confirmed, the card says so rather than guessing.</p>
+      </article>
+      <article class="note">
+        <h3>where the data comes from</h3>
+        <p>Every figure is read off the venue&rsquo;s own site and re-checked weekly; corrections are welcome. Locations from OpenStreetMap; roads, rail, water, parks and district outlines &copy; OpenStreetMap contributors, <a href="https://www.openstreetmap.org/copyright">ODbL</a>.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="h-panel">
+    <h2 class="sec-h" id="h-panel">the panel</h2>
+    <p class="sec-sub">Reviews come from a small panel rather than the open internet, so a review means something. Anyone who uses Berlin&rsquo;s saunas can ask to join.</p>
+    <div class="pgrid panel-grid" id="panel"></div>
     <p class="joinline">
-      <a class="go" href="https://github.com/jommi9/berlin-sauna-map/issues/new?template=reviewer-application.yml" target="_blank" rel="noopener noreferrer">Apply to review</a>
-      <a class="go alt" href="https://github.com/jommi9/berlin-sauna-map/issues/new?template=review.yml" target="_blank" rel="noopener noreferrer">Post a review</a>
+      <a class="btn primary" href="https://github.com/jommi9/berlin-sauna-map/issues/new?template=reviewer-application.yml" target="_blank" rel="noopener noreferrer">apply to review</a>
+      <a class="btn" href="https://github.com/jommi9/berlin-sauna-map/issues/new?template=review.yml" target="_blank" rel="noopener noreferrer">post a review</a>
     </p>
   </section>
-  <section class="credits">
-    <div class="cgrid">
-      <div>
-        <h3>Disclaimer</h3>
-        <p>This is a personal, non-commercial guide with no affiliation to, sponsorship by,
-        or endorsement from any venue listed. Prices, opening hours and Urban Sports Club
-        terms are recorded as published by each venue and <strong>change without notice</strong> &mdash;
-        always check with the venue before travelling. Where a schedule could not be confirmed
-        the card says so rather than guessing. Corrections are welcome.</p>
-      </div>
-      <div>
-        <h3>Before you go</h3>
-        <p>For a normal sauna session rather than a luxury spa day, <strong>KIEZ SAUNA, Saunabad, Olivin and L&uuml;tzow</strong> are better benchmarks than most hotel spas. Hotel spas make sense when the pool, terrace, relaxation area, or USC access is part of what you want.</p>
-      </div>
-      <div>
-        <h3>Two traps</h3>
-        <p id="traps"></p>
-      </div>
-      <div>
-        <h3>Data</h3>
-        <p>Curated by hand and kept in Notion; prices, USC limits and opening hours change often, so recheck before making a special trip. Locations geocoded from OpenStreetMap; roads, rail, water, parks and district outlines &copy; OpenStreetMap contributors, <a href="https://www.openstreetmap.org/copyright">ODbL</a>.</p>
-      </div>
-    </div>
-    <div class="credits-imgs">
-      <h3>Image credits</h3>
-      <p class="cnote">Photographs are used under their Creative Commons or Free Art licences, with the
-      photographer and licence named below. Venues without a freely licensed photograph show a
-      generated map tile instead, and link to their own pictures.</p>
-      <ul id="credit-list"></ul>
-    </div>
+
+  <section class="credits" aria-labelledby="h-credits">
+    <h3 id="h-credits">image credits</h3>
+    <p class="cnote">Photographs are used under their Creative Commons or Free Art licences, with the photographer and licence named below. Venues without a freely licensed photograph show a map of their street instead, and link to their own pictures.</p>
+    <ul id="credit-list"></ul>
   </section>
+
+  <footer class="sign">
+    <svg class="appicon" viewBox="0 0 64 64" aria-hidden="true">
+      <rect width="64" height="64" rx="15" fill="#C4703F"/>
+      <path d="M21 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11 M32 45 q-5 -6.5 0 -13 q5 -6.5 0 -13 M43 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+      <path d="M15 52 h34" stroke="#FFFFFF" stroke-opacity=".6" stroke-width="4" stroke-linecap="round"/>
+    </svg>
+    <div><b lang="fi">Hyv&auml;t l&ouml;ylyt.</b>What Finns wish each other on the way into the sauna.</div>
+  </footer>
 </div>
 
 <script>
@@ -682,7 +780,7 @@ function trapText(now){
 }
 const AUFGUSS = { scheduled: "Run to a schedule", self: "Pour your own", request: "On request",
                   auto: "Automatic aroma", unknown: "Not known" };
-const STATUS_TEXT = { open: "Open now", shut: "Closed now", unknown: "Check hours" };
+const STATUS_TEXT = { open: "open now", shut: "closed now", unknown: "check hours" };
 const STATUS_CLASS = { open: "open", shut: "shut", unknown: "unk" };
 
 /* ---------- map ---------- */
@@ -706,27 +804,34 @@ GEO.labels.forEach(l => { const t = el("text", { x: l.x, y: l.y, class: "dlabel"
 const KM = 77.66, sx = 22, sy = GEO.h - 22;
 const sg = el("g", { class: "scalebar" });
 sg.appendChild(el("rect", { x: sx - 9, y: sy - 17, width: KM * 2 + 52, height: 26, rx: 3, fill: "var(--land)", opacity: .82 }));
-sg.appendChild(el("path", { d: `M${sx},${sy - 6} v6 h${KM * 2} v-6 M${sx + KM},${sy} v-4`, fill: "none", stroke: "#5F5847", "stroke-width": 1.6 }));
+sg.appendChild(el("path", { d: `M${sx},${sy - 6} v6 h${KM * 2} v-6 M${sx + KM},${sy} v-4`, fill: "none", stroke: "var(--label-2)", "stroke-width": 1.4 }));
 const st = el("text", { x: sx + KM * 2 + 6, y: sy + 1, class: "scale" }); st.textContent = "2 KM";
 sg.appendChild(st); map.appendChild(sg);
 
-const FLAME = "M0,-6.6 C3.1,-3.2 5.2,-1.1 5.2,1.6 C5.2,4.6 2.9,6.6 0,6.6 C-2.9,6.6 -5.2,4.6 -5.2,1.6 C-5.2,-1.3 -2.1,-2.6 -1.3,-5.2 Z";
+/* Every pin is the same drawing: a squircle (per person) or a circle (per
+   booking) in its price colour, three curls of steam, and a blue dot when the
+   venue takes Urban Sports Club. Steam rather than a flame, because a sauna is
+   about the loyly rising off the stones, not the fire under them. */
+const STEAM = "M-4.4,5 q-2.1,-2.5 0,-5 q2.1,-2.5 0,-5 M0,6.2 q-2.3,-3.1 0,-6.2 q2.3,-3.1 0,-6.2 M4.4,5 q-2.1,-2.5 0,-5 q2.1,-2.5 0,-5";
+function pin(v, usc){
+  const shape = v.pricing === "group"
+    ? `<circle class="b" cx="0" cy="0" r="11.5" fill="${heat(v.price)}"></circle>`
+    : `<rect class="b" x="-11" y="-11" width="22" height="22" rx="4.5" fill="${heat(v.price)}"></rect>`;
+  return shape + `<path class="g${v.price == null ? " unk" : ""}" d="${STEAM}"></path>` +
+    (usc && v.usc === "yes" ? `<circle class="usc" cx="9.6" cy="-9.6" r="4"></circle>` : "");
+}
 const blips = new Map();
 V.forEach(v => {
   const g = el("g", { class: "blip", transform: `translate(${v.px} ${v.py})`, tabindex: "0", role: "button", "aria-label": v.name });
-  g.appendChild(el("rect", { class: "pulse", x: -15, y: -15, width: 30, height: 30, rx: 8 }));
-  g.appendChild(v.pricing === "group"
-    ? el("circle", { class: "b", cx: 0, cy: 0, r: 11.5, fill: heat(v.price) })
-    : el("rect", { class: "b", x: -11, y: -11, width: 22, height: 22, rx: 6, fill: heat(v.price) }));
-  g.appendChild(el("path", { d: FLAME, fill: v.price != null ? "#FFFFFF" : "#5A5246" }));
-  if (v.usc === "yes") g.appendChild(el("circle", { cx: 9.4, cy: -9.4, r: 3.9, fill: "var(--cyan)", stroke: "#0B2530", "stroke-width": 1.4 }));
+  g.innerHTML = `<circle class="halo" cx="0" cy="0" r="18"></circle>${pin(v, true)}`;
   map.appendChild(g); blips.set(v.id, g);
   g.addEventListener("click", () => { if (dragPx > DRAG_PX) return; choose(v.id, true); });
   g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); choose(v.id, true); } });
   g.addEventListener("mouseenter", () => peek(v.id, true));
   g.addEventListener("mouseleave", () => peek(v.id, false));
 });
-const nameTag = el("text", { class: "bname" });
+const nameTag = el("g", { class: "callout" });   // the photo bubble over a picked pin
+let PS = 1;                                          // pin scale at the current zoom
 map.appendChild(nameTag);
 
 /* The map is one fixed drawing shown at wildly different sizes. At 327 CSS px
@@ -770,14 +875,21 @@ function frameFor(w, h){                 // fit EXTENT to the container's aspect
 }
 function fitMap(){
   const w = map.clientWidth || GEO.w, h = map.clientHeight || GEO.h;
-  const small = w < 1001;
-  VB = small ? frameFor(w, Math.max(h, 1)) : [0, 0, GEO.w, GEO.h];
+  const small = w < 1400;
+  map.classList.toggle("tiny", w < 560);
+  /* On a phone the sheet covers the bottom of the map, so the venues are
+     framed in the part above it and the frame is then extended under it. */
+  const lc = document.querySelector(".listcol");
+  const hidden = lc && getComputedStyle(lc).position === "absolute" ? Math.min(lc.offsetHeight, h * 0.4) : 0;
+  VB = small ? frameFor(w, Math.max(h - hidden, 1)) : [0, 0, GEO.w, GEO.h];
+  if (small && hidden) VB[3] = VB[3] * h / (h - hidden);
   map.setAttribute("viewBox", VB.join(" "));
   map.classList.toggle("small", small);
   base = VB.slice(); view = VB.slice(); zoomed = false;
   const perPx = VB[2] / w;                        // viewBox units per CSS pixel
   const target = small ? 17 : 15;                 // minimum blip size in CSS px
   const scale = Math.max(1, (target * perPx) / 22);
+  PS = scale;
   POS = scale > 1.02 ? spread(22 * scale * 1.14)
                      : new Map(V.map(v => [v.id, { px: v.px, py: v.py }]));
   blips.forEach((g, id) => {
@@ -786,7 +898,7 @@ function fitMap(){
     const off = Math.hypot(v.x - q.px, v.y - q.py);
     let tick = g.querySelector("line.tick");
     if (off > 3){                                  // draw a hairline back to the true spot
-      if (!tick){ tick = el("line", { class: "tick", stroke: "#8A8067" }); g.insertBefore(tick, g.firstChild); }
+      if (!tick){ tick = el("line", { class: "tick" }); g.insertBefore(tick, g.firstChild); }
       tick.setAttribute("x1", ((v.x - q.px) / scale).toFixed(1));
       tick.setAttribute("y1", ((v.y - q.py) / scale).toFixed(1));
       tick.setAttribute("x2", 0); tick.setAttribute("y2", 0);
@@ -809,6 +921,7 @@ function applyView(){
   const w = map.clientWidth || GEO.w;
   const perPx = view[2] / w;
   const scale = Math.max(0.55, (map.classList.contains("small") ? 17 : 15) * perPx / 22);
+  PS = scale;
   POS = scale > 1.02 ? spread(22 * scale * 1.14) : new Map(V.map(v => [v.id, { px: v.px, py: v.py }]));
   blips.forEach((g, id) => {
     const v = V.find(x => x.id === id), q = POS.get(id);
@@ -816,7 +929,7 @@ function applyView(){
     const off = Math.hypot(v.x - q.px, v.y - q.py);
     let tick = g.querySelector("line.tick");
     if (off > 3){
-      if (!tick){ tick = el("line", { class: "tick", stroke: "#8A8067" }); g.insertBefore(tick, g.firstChild); }
+      if (!tick){ tick = el("line", { class: "tick" }); g.insertBefore(tick, g.firstChild); }
       tick.setAttribute("x1", ((v.x - q.px) / scale).toFixed(1));
       tick.setAttribute("y1", ((v.y - q.py) / scale).toFixed(1));
       tick.setAttribute("x2", 0); tick.setAttribute("y2", 0);
@@ -914,13 +1027,36 @@ map.addEventListener("pointerleave", endPointer);
 document.getElementById("z-in").addEventListener("click", () => zoomAt(1 / 1.5, view[0] + view[2] / 2, view[1] + view[3] / 2));
 document.getElementById("z-out").addEventListener("click", () => zoomAt(1.5, view[0] + view[2] / 2, view[1] + view[3] / 2));
 document.getElementById("z-fit").addEventListener("click", resetView);
+/* The picked or hovered place lifts off the map as a photo bubble with its name
+   in a pill on the bubble's outer edge, drawn in pin units so it keeps one size
+   on screen at any zoom. Near the top edge it hangs below the pin instead. */
 function showName(id){
-  if (id == null) { nameTag.textContent = ""; return; }
-  const v = V.find(x => x.id === id);
-  nameTag.textContent = v.name.toUpperCase();
-  const q = POS.get(id) || v, pad = VB[2] * 0.12;
-  nameTag.setAttribute("x", Math.min(Math.max(q.px, VB[0] + pad), VB[0] + VB[2] - pad));
-  nameTag.setAttribute("y", q.py > VB[1] + 46 ? q.py - 20 : q.py + 32);
+  nameTag.innerHTML = "";
+  if (id == null) return;
+  const v = V.find(x => x.id === id), q = POS.get(id) || v, im = v.img ? IMG[v.img] : null;
+  const top = (view || VB)[1], up = q.py - 112 * PS > top, k = up ? -1 : 1;
+  const cy = k * 59;                                   // centre of the photo
+  nameTag.setAttribute("transform", `translate(${q.px.toFixed(1)} ${q.py.toFixed(1)}) scale(${PS.toFixed(3)})`);
+  nameTag.innerHTML =
+    `<path class="co-frame" d="M-7,${k * 27.5} L0,${k * 17} L7,${k * 27.5} Z"></path>` +
+    `<g class="co-ph"><rect class="co-frame" x="-33" y="${cy - 33}" width="66" height="66" rx="6"></rect>` +
+    (im
+      ? `<clipPath id="co-clip"><rect x="-29" y="${cy - 29}" width="58" height="58" rx="3"></rect></clipPath>` +
+        `<image href="${im.src}" x="-29" y="${cy - 29}" width="58" height="58" preserveAspectRatio="xMidYMid slice" clip-path="url(#co-clip)"></image>`
+      : `<rect x="-29" y="${cy - 29}" width="58" height="58" rx="3" fill="${heat(v.price)}"></rect>` +
+        `<g transform="translate(0 ${cy}) scale(2.3)"><path class="g${v.price == null ? " unk" : ""}" d="${STEAM}" style="stroke-width:1.3"></path></g>`) + `</g>` +
+    `<g class="co-name"><rect class="co-frame"></rect><text x="0" y="${cy + k * 35}" dy=".34em">${v.name.split(" \u2014 ")[0]}</text></g>`;
+  const t = nameTag.querySelector("text"), bb = t.getBBox(), r = nameTag.querySelector(".co-name rect");
+  r.setAttribute("x", (bb.x - 9).toFixed(1)); r.setAttribute("y", (bb.y - 4).toFixed(1));
+  r.setAttribute("width", (bb.width + 18).toFixed(1)); r.setAttribute("height", (bb.height + 8).toFixed(1));
+  r.setAttribute("rx", "4");
+  /* Near the frame's edge, slide the photo and the name inward; the pointer
+     stays on the pin. */
+  const [L, , W] = view || VB, R = L + W;
+  const inward = (x0, x1) => { const a = q.px + x0 * PS, b = q.px + x1 * PS;
+    return a < L ? (L - a) / PS + 6 : b > R ? (R - b) / PS - 6 : 0; };
+  nameTag.querySelector(".co-name").setAttribute("transform", `translate(${inward(bb.x - 9, bb.x + bb.width + 9).toFixed(1)} 0)`);
+  nameTag.querySelector(".co-ph").setAttribute("transform", `translate(${inward(-33, 33).toFixed(1)} 0)`);
 }
 
 /* ---------- state ---------- */
@@ -950,74 +1086,92 @@ function ok(v){
   return true;
 }
 
-/* ---------- dossier cards ---------- */
+/* ---------- venue cards ---------- */
+const lower = t => t.toLowerCase().replace(/\busc\b/g, "USC");   // the voice is lowercase; acronyms stay
+/* The picks are one person's, so they carry that person's initial, the way a
+   saved list on a places app shows who saved it. */
+const CURATOR = (([h, r]) => ({ handle: h, name: r ? r.name : "the editor" }))(
+  Object.entries(/*__REVIEWERS__*/).find(([, r]) => r.founder) || []);
 const cards = document.getElementById("cards"), cardOf = new Map();
+const priceShort = v => v.price == null ? "price unclear"
+  : v.pricing === "group" ? `\u20ac${money(v.price)} per booking` : `from \u20ac${money(v.price)}`;
+/* Which sauna culture a place belongs to, from who throws the water: the flag
+   says it at a glance. Flags keep their own colours in both themes. The Finnish
+   score, once given, rides on the same badge. */
+const FLAGBOX = (body) => `<svg class="flagi" width="17" height="11" viewBox="0 0 18 11" aria-hidden="true">${body}</svg>`;
+const STYLE = {
+  finnish: { label: "finnish", title: "Finnish sauna: you throw the water on the stones yourself",
+    icon: FLAGBOX(`<rect width="18" height="11" fill="#FFFFFF"></rect><path d="M0 4h18v3H0z M5 0h3v11H5z" fill="#002F6C"></path>`) },
+  german:  { label: "german", title: "German sauna: a sauna master throws the Aufguss for you",
+    icon: FLAGBOX(`<rect width="18" height="3.67" fill="#000000"></rect><rect y="3.67" width="18" height="3.67" fill="#DD0000"></rect><rect y="7.33" width="18" height="3.67" fill="#FFCE00"></rect>`) },
+  russian: { label: "banya", title: "Russian banya: you throw your own water, banya-style",
+    icon: FLAGBOX(`<rect width="18" height="3.67" fill="#FFFFFF"></rect><rect y="3.67" width="18" height="3.67" fill="#0039A6"></rect><rect y="7.33" width="18" height="3.67" fill="#D52B1E"></rect>`) },
+  none:    { label: "no l\u00f6yly", title: "No l\u00f6yly: a machine doses the water and nobody may throw it. Not a real sauna by Finnish standards.",
+    icon: `<svg class="flagi nodrop" width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.6C5 4.4 3.4 6.4 3.4 8.4a3.6 3.6 0 0 0 7.2 0C10.6 6.4 9 4.4 7 1.6Z" fill="none" stroke="currentColor" stroke-width="1.4"></path><path d="M2 12.5 12 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>` },
+  unknown: { label: "not known", title: "Not known yet who throws the water here", icon: "" },
+};
+function styleBadge(v){
+  const s = STYLE[v.style] || STYLE.unknown;
+  const score = v.finnish == null ? "" : `<span class="sc">${v.finnish}<i>/10</i></span>`;
+  return `<span class="fin st-${v.style}" title="${s.title}${v.finnish == null ? "" : `. Finnish score ${v.finnish}/10.`}">${s.icon}<span class="lb">${s.label}</span>${score}</span>`;
+}
 V.forEach(v => {
   const li = document.createElement("li");
   li.className = "card"; li.tabIndex = 0;
-  const known = v.price != null, d = dollars(v.price);
   const im = v.img ? IMG[v.img] : null;
   const TW = 200, TH = 112.5;                     // 16:9, matching .shot - ~2.6 km across
   const media = im
     ? `<figure class="shot">
-         <img src="${im.src}" alt="${v.name}" loading="lazy" width="640" height="400">
-         <figcaption>Photo: ${im.by} &middot; <a href="${im.page}" target="_blank" rel="noopener noreferrer">${im.lic}</a></figcaption>
+         <img src="${im.src}" alt="${v.name}" loading="lazy" width="640" height="360">
+         <figcaption>Photo ${im.by} &middot; <a href="${im.page}" target="_blank" rel="noopener noreferrer">${im.lic}</a></figcaption>
        </figure>`
     : `<figure class="shot maptile">
-         <svg viewBox="${(v.x - TW / 2).toFixed(1)} ${(v.y - TH / 2).toFixed(1)} ${TW} ${TH}" preserveAspectRatio="xMidYMid slice" aria-label="Map around ${v.name}">
+         <svg viewBox="${(v.x - TW / 2).toFixed(1)} ${(v.y - TH / 2).toFixed(1)} ${TW} ${TH}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Map around ${v.name}">
            <use href="#atlas"></use>
-           <g transform="translate(${v.x} ${v.y}) scale(0.42)">
-             ${v.pricing === "group"
-               ? `<circle class="b" cx="0" cy="0" r="11.5" fill="${heat(v.price)}"/>`
-               : `<rect class="b" x="-11" y="-11" width="22" height="22" rx="6" fill="${heat(v.price)}"/>`}
-             <path d="${FLAME}" fill="${v.price != null ? "#FFFFFF" : "#5A5246"}"/>
-           </g>
+           <g transform="translate(${v.x} ${v.y}) scale(0.5)">${pin(v, false)}</g>
          </svg>
-         <figcaption>${v.district} &middot; map data &copy; OpenStreetMap</figcaption>
+         <figcaption>${v.district} &middot; map &copy; OpenStreetMap</figcaption>
        </figure>`;
+  const st = openState(v, berlinNow());
   li.innerHTML = `
     ${media}
     <div class="chead">
-      <svg class="ic" width="24" height="24" viewBox="-12 -12 24 24" aria-hidden="true">
-        ${v.pricing === "group"
-          ? `<circle cx="0" cy="0" r="11.5" fill="${heat(v.price)}" stroke="#201C15" stroke-width="1.8"/>`
-          : `<rect x="-11" y="-11" width="22" height="22" rx="6" fill="${heat(v.price)}" stroke="#201C15" stroke-width="1.8"/>`}
-        <path d="${FLAME}" fill="${known ? "#FFFFFF" : "#5A5246"}"/>
-        ${v.usc === "yes" ? '<circle cx="9.4" cy="-9.4" r="3.9" fill="var(--cyan)" stroke="#0B2530" stroke-width="1.4"/>' : ""}
-      </svg>
+      <svg class="ic" width="28" height="28" viewBox="-14 -14 28 28" aria-hidden="true">${pin(v, true)}</svg>
       <div class="ct">
         <h3 class="cname">${v.name}</h3>
-        <p class="cmeta">${v.kind} // ${v.district}${v.pricing === "group"
-          ? ' <span class="grouptag">priced per booking</span>' : ""}</p>
+        <p class="cmeta">${v.kind} &middot; ${v.district}</p>
       </div>
-      <span class="rank${known ? "" : " none"}">${known ? (v.pricing === "group" ? "\u20ac" + money(v.price) + " group" : d) : "N/A"}</span>
-      <span class="fin${v.finnish == null ? " none" : ""}" title="Finnish score \u2014 how good it is as a sauna, judged by a Finn">
-        <em>FIN</em>${v.finnish == null ? "\u2013" : `${v.finnish}<i>/10</i>`}</span>
+      ${styleBadge(v)}
     </div>
-    <span class="status ${STATUS_CLASS[openState(v, berlinNow())]}" data-status>${STATUS_TEXT[openState(v, berlinNow())]}</span>
-    ${v.badge ? `<span class="pick-tag">${v.badge}</span>` : ""}
+    <div class="tags">
+      <span class="status ${STATUS_CLASS[st]}" data-status>${STATUS_TEXT[st]}</span>
+      <span class="price">${priceShort(v)}</span>
+      ${v.badge ? `<span class="pick-tag" title="Picked by ${CURATOR.name}"><i class="av" aria-hidden="true">${CURATOR.name[0]}</i>${lower(v.badge)}</span>` : ""}
+    </div>
     <dl class="rows">
-      <dt>Entry</dt><dd><b>${v.priceLabel}</b></dd>
-      <dt>USC</dt><dd class="${v.usc === "yes" ? "usc-y" : ""}">${v.uscLabel}
+      <dt>entry</dt><dd><b>${v.priceLabel}</b></dd>
+      <dt>USC</dt><dd>${v.uscLabel}
         ${v.usc !== "no" ? `<span class="tiers">${["Classic","Premium","Max"]
           .map(t => `<span class="tier${v.uscTiers.includes(t) ? "" : " off"}">${t}</span>`).join("")}</span>` : ""}</dd>
-      <dt>Heat</dt><dd>${v.sauna}</dd>
-      <dt>L\u00f6yly</dt><dd><span class="ly ly-${v.loyly}">${v.loylyText}</span>${
-        v.aufgussScore != null ? ` <span class="augrade">Aufguss ${v.aufgussScore}<i>/10</i></span>` : ""}${
-        v.aufgussNote ? `<br><span class="src2">${v.aufgussNote}</span>` : ""}</dd>
-      <dt>Water</dt><dd>${v.pool}</dd>
-      <dt>Open</dt><dd>${hoursText(v, berlinNow())}${v.open && SRC_NOTE[v.open.src]
+      <dt>heat</dt><dd>${v.sauna}</dd>
+      <dt>l\u00f6yly</dt><dd><span class="ly ly-${v.loyly}">${v.loylyText}</span>${
+        v.aufgussScore != null ? `<span class="augrade">Aufguss ${v.aufgussScore}<i>/10</i></span>` : ""}${
+        v.aufgussNote ? `<span class="src2">${v.aufgussNote}</span>` : ""}</dd>
+      <dt>water</dt><dd>${v.pool}</dd>
+      <dt>open</dt><dd>${hoursText(v, berlinNow())}${v.open && SRC_NOTE[v.open.src]
         ? ` <span class="src">${SRC_NOTE[v.open.src]}</span>` : ""}</dd>
-      <dt>Best for</dt><dd>${v.bestFor}</dd>
+      <dt>best for</dt><dd>${v.bestFor}</dd>
     </dl>
-    ${v.flag ? `<p class="alert"><b>Heads up</b>${v.flag}</p>` : ""}
+    ${v.flag ? `<p class="alert"><b>heads up</b>${v.flag}</p>` : ""}
     ${v.reviews.length ? `<div class="revs"><p class="revs-h">Reviews <span class="score">${v.rating}<em>/5</em></span></p>${v.reviews.map(r => `
       <blockquote class="rev">
         <p class="rev-t">${r.text}</p>
         <footer><span class="rev-w">${r.by}</span> <span class="rev-m">${"\u2605".repeat(r.rating)}${"\u2606".repeat(5 - r.rating)} \u00b7 visited ${r.visited}</span></footer>
       </blockquote>`).join("")}</div>` : ""}
-    <a class="go" href="${v.url}" target="_blank" rel="noopener noreferrer">Hours &amp; booking</a>
-    ${im ? "" : `<a class="go alt" href="${v.url}" target="_blank" rel="noopener noreferrer">See their photos</a>`}`;
+    <div class="acts">
+      <a class="btn primary" href="${v.url}" target="_blank" rel="noopener noreferrer">hours &amp; booking</a>
+      ${im ? "" : `<a class="btn" href="${v.url}" target="_blank" rel="noopener noreferrer">their photos</a>`}
+    </div>`;
   cards.appendChild(li); cardOf.set(v.id, li);
   li.addEventListener("click", e => { if (!e.target.closest("a")) choose(v.id, false); });
   li.addEventListener("keydown", e => { if (e.key === "Enter" && !e.target.closest("a")) choose(v.id, false); });
@@ -1055,7 +1209,16 @@ function choose(id, fromMap){
   showName(sel);
   showPeek(sel);
   if (sel != null && fromMap && !isMobile()) revealCard(sel);
+  setTimeout(updateMore, 450);   // after any smooth scroll has settled
 }
+
+/* ---------- "more below" ---------- */
+function updateMore(){
+  const rest = cards.scrollHeight - cards.scrollTop - cards.clientHeight;
+  cards.classList.toggle("has-more", cards.clientHeight > 120 && rest > 8);
+}
+cards.addEventListener("scroll", updateMore, { passive: true });
+addEventListener("resize", updateMore);
 
 /* ---------- filtering ---------- */
 const lTitle = document.getElementById("l-title"), lNote = document.getElementById("l-note"),
@@ -1069,10 +1232,11 @@ function run(){
   });
   if (sel != null && !ok(V.find(v => v.id === sel))) choose(sel, false);
   const filtered = n !== V.length;
-  lTitle.textContent = filtered ? `${n} match${n === 1 ? "" : "es"}` : `All ${V.length} locations`;
-  lNote.textContent = filtered ? "Filtered" : "Pick order";
+  lTitle.textContent = filtered ? `${n} match${n === 1 ? "" : "es"}` : `all ${V.length} places`;
+  lNote.textContent = filtered ? "filtered" : "in pick order";
   nCount.textContent = n;
   noneMsg.hidden = n > 0;
+  if (typeof updateMore === "function") updateMore();
   if (typeof grabLabel !== "undefined" && grabLabel)
     grabLabel.textContent = `${n} ${n === 1 ? "venue" : "venues"}`;
 }
@@ -1093,14 +1257,17 @@ document.getElementById("g-open").addEventListener("click", e => {
   });
 });
 const pmax = document.getElementById("pmax"), pout = document.getElementById("pout");
+const setPct = () => pmax.style.setProperty("--pct", ((pmax.value - pmax.min) / (pmax.max - pmax.min) * 100) + "%");
+setPct();
 pmax.addEventListener("input", e => {
   F.pmax = +e.target.value;
   pout.textContent = F.pmax >= 90 ? "Any" : "€" + F.pmax;
+  setPct();
   run();
 });
 document.getElementById("clear").addEventListener("click", () => {
   F.q = ""; F.access.clear(); F.kind.clear(); F.usc.clear(); F.openNow = false; F.pmax = 90;
-  document.getElementById("q").value = ""; pmax.value = 90; pout.textContent = "Any";
+  document.getElementById("q").value = ""; pmax.value = 90; pout.textContent = "Any"; setPct();
   document.querySelectorAll(".grp .chip").forEach(c => c.setAttribute("aria-pressed", "false"));
   if (sel != null) choose(sel, false);
   run();
@@ -1125,9 +1292,27 @@ PICKS.forEach(([k, name]) => {
   if (!v) return;
   const b = document.createElement("button");
   b.type = "button"; b.className = "pk";
-  b.innerHTML = `<span class="k">${k}</span><span class="v">${v.name}</span><span class="p">${v.price != null ? "From €" + String(v.price).replace(".5", ".50") : "Access unclear"}</span>`;
+  const im = v.img ? IMG[v.img] : null;
+  b.innerHTML = `<span class="ph">${im ? `<img src="${im.src}" alt="" loading="lazy">`
+      : `<svg viewBox="${(v.x - 60).toFixed(1)} ${(v.y - 45).toFixed(1)} 120 90" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#atlas"></use><g transform="translate(${v.x} ${v.y}) scale(0.8)">${pin(v, false)}</g></svg>`}</span>` +
+    `<span class="k">${lower(k)}</span><span class="v">${v.name}</span><span class="p">${v.price != null ? priceShort(v) : "no public day pass"}</span>`;
   b.addEventListener("click", () => { if (sel !== v.id) choose(v.id, false); revealCard(v.id); });
   pg.appendChild(b);
+});
+
+/* The header collage: three places with photographs, each a way into the map. */
+const COVER = ["LIQUIDROM", "Hotel Palace \u2014 Palace Spa", "Stadtbad Neuk\u00f6lln"];
+const collage = document.getElementById("collage");
+COVER.map(n => V.find(v => v.name === n)).filter(v => v && v.img).forEach(v => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "snap";
+  b.innerHTML = `<img src="${IMG[v.img].src}" alt="${v.name}"><span class="tag">${v.name.split(" \u2014 ")[0].toLowerCase()}<span class="pr"> \u00b7 ${priceShort(v)}</span></span>`;
+  b.addEventListener("click", () => {
+    document.querySelector(".split").scrollIntoView({ behavior: "smooth", block: "start" });
+    if (sel !== v.id) choose(v.id, false);
+    if (!isMobile()) revealCard(v.id);
+  });
+  collage.appendChild(b);
 });
 
 /* Image credits, generated so they can never drift from what is embedded. */
@@ -1144,9 +1329,13 @@ V.filter(v => v.img).forEach(v => {
 const listcol = document.querySelector(".listcol");
 const peekEl = document.getElementById("peek"), grab = document.getElementById("grab");
 const grabLabel = document.getElementById("grab-label");
-const COLLAPSED = 84;
-const expandedH = () => Math.round(document.querySelector(".split").clientHeight * 0.72);
+let COLLAPSED = 72;
+const expandedH = () => Math.round(document.querySelector(".split").clientHeight * 0.92);
 const isMobile = () => matchMedia("(max-width:1000px)").matches;
+/* Collapsed, the sheet shows only its grabber and the place count, so the map
+   keeps the screen; search and filters sit in their own row above the map. */
+const sheetHead = document.querySelector(".listcol .lhead");
+function measureSheet(){ COLLAPSED = Math.round(grab.offsetHeight + sheetHead.offsetHeight + 2); }
 let sheetOpen = false;
 
 function setSheet(px){ document.documentElement.style.setProperty("--sheet", px + "px"); }
@@ -1155,10 +1344,14 @@ function openSheet(on){
   listcol.classList.toggle("open", on);
   grab.setAttribute("aria-expanded", String(on));
   setSheet(on ? expandedH() : COLLAPSED);
+  setTimeout(updateMore, 380);   // after the sheet's height transition
+  /* The open sheet already shows the picked card, so the peek card steps aside
+     and comes back when the sheet is lowered. */
+  if (on) peekEl.hidden = true; else showPeek(sel);
 }
 function showPeek(id){
   if (!isMobile()) return;
-  if (id == null){ peekEl.hidden = true; return; }
+  if (id == null || sheetOpen){ peekEl.hidden = true; return; }
   const v = V.find(x => x.id === id), im = v.img ? IMG[v.img] : null;
   document.getElementById("peek-name").textContent = v.name;
   document.getElementById("peek-meta").textContent = `${v.kind} \u00b7 ${v.district}`;
@@ -1168,10 +1361,7 @@ function showPeek(id){
   const thumb = document.getElementById("peek-thumb");
   thumb.innerHTML = im
     ? `<img src="${im.src}" alt="">`
-    : `<svg viewBox="-14 -14 28 28" aria-hidden="true">${v.pricing === "group"
-        ? `<circle cx="0" cy="0" r="11.5" fill="${heat(v.price)}" stroke="#201C15" stroke-width="1.8"/>`
-        : `<rect x="-11" y="-11" width="22" height="22" rx="6" fill="${heat(v.price)}" stroke="#201C15" stroke-width="1.8"/>`}
-       <path d="${FLAME}" fill="${v.price != null ? "#FFFFFF" : "#5A5246"}"/></svg>`;
+    : `<svg viewBox="${(v.x - 45).toFixed(1)} ${(v.y - 36).toFixed(1)} 90 72" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#atlas"></use><g transform="translate(${v.x} ${v.y}) scale(0.62)">${pin(v, false)}</g></svg>`;
   peekEl.hidden = false;
 }
 peekEl.addEventListener("click", e => {
@@ -1206,8 +1396,10 @@ grab.addEventListener("pointerup", grabEnd);
 grab.addEventListener("pointercancel", grabEnd);
 
 /* keep the sheet honest when the viewport or the filters change */
-addEventListener("resize", () => { if (isMobile()) setSheet(sheetOpen ? expandedH() : COLLAPSED); });
-if (isMobile()) setSheet(COLLAPSED);
+addEventListener("resize", () => { if (isMobile()){ measureSheet(); setSheet(sheetOpen ? expandedH() : COLLAPSED); } });
+if (isMobile()){ measureSheet(); setSheet(COLLAPSED); }
+/* Typing into search on a phone lifts the sheet so the results are visible. */
+document.getElementById("q").addEventListener("focus", () => { if (isMobile() && !sheetOpen) openSheet(true); });
 
 /* The panel. Until a review exists the member grid would be one card saying
    "0 reviews", which reads as unfinished, so only the invitation is shown. */
@@ -1226,5 +1418,26 @@ if (anyReviews) Object.entries(REVIEWERS).forEach(([handle, r]) => {
 });
 
 document.getElementById("traps").innerHTML = trapText(berlinNow());
+
+/* The cover figures are computed from the venues, so they cannot drift. */
+(() => {
+  /* "Park Inn Alexanderplatz \u2014 Gezer Spa" becomes "Park Inn" in a tile this narrow. */
+  const short = n => { const s = n.split(" \u2014 ")[0]; return s.length > 16 ? s.split(" ").slice(0, 2).join(" ") : s; };
+  const priced = V.filter(v => v.price != null && v.pricing !== "group");
+  const cheap = priced.reduce((a, b) => b.price < a.price ? b : a);
+  const [eur, cents] = money(cheap.price).split(".");
+  document.getElementById("stat-cheap").innerHTML = `\u20ac${eur}${cents ? `<small>.${cents}</small>` : ""}`;
+  document.getElementById("stat-cheap-s").textContent = short(cheap.name);
+  document.getElementById("stat-usc").textContent = V.filter(v => v.uscTiers.length).length;
+  let hot = 0, at = [];
+  V.forEach(v => (v.sauna || "").replace(/(\d{2,3})\s*\u00b0C/g, (_, t) => {
+    t = +t;
+    if (t > hot){ hot = t; at = [v]; } else if (t === hot && !at.includes(v)) at.push(v);
+  }));
+  if (hot){
+    document.getElementById("stat-hot").textContent = `${hot}\u00b0C`;
+    document.getElementById("stat-hot-s").textContent = at.length > 1 ? `at ${at.length} places` : short(at[0].name);
+  }
+})();
 run();
 </script>

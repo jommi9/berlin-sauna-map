@@ -1,6 +1,6 @@
 # Berlin Sauna Map
 
-Twenty Berlin saunas and spas drawn as an open-world game atlas.
+Twenty Berlin saunas and spas on one map, designed like a phone app: a map with the list in a sheet, a lowercase voice, and a Finn's notes on the löyly.
 
 **Live: https://jommi9.github.io/berlin-sauna-map/**
 
@@ -28,7 +28,7 @@ no build server.
 | `index.html` | The built page (~400 KB). This is what gets published, and what a static host serves at the site root. Its photos are served as files from `src/img/card/`, and it carries the canonical link, Open Graph tags and JSON-LD that the Artifact build leaves out. |
 | `artifact.html` | The same page as one self-contained fragment with the photos inlined (~900 KB), for publishing as an Artifact. |
 | `og.png` | The 1200x630 share image named in the Open Graph tags. Regenerate it by hand if the hero or the map changes. |
-| `src/tpl2.html` | **Current design.** Template with `/*__GEO__*/` and `/*__VENUES__*/` placeholders. Edit look and feel here. |
+| `src/tpl2.html` | **Current design.** Template with `/*__GEO__*/` and `/*__VENUES__*/` placeholders. Edit look and feel here; the colour tokens sit at the top of its `<style>`, light first with a dark set. |
 | `src/tpl.html` | The previous, quieter atlas design, kept as a fallback. |
 | `src/build_venues.py` | **The source of truth.** Every venue fact, the löyly/score tables, the fast picks, the "two traps" box, the last-checked date, plus map projection. Edit content here; everything else is generated from it. |
 | `src/declutter.py` | Nudges overlapping blips apart (currently ≤ 90 m displacement; a hairline tick shows the true spot when moved). |
