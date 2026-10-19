@@ -49,7 +49,9 @@ if OUT.endswith('artifact.html'):
 else:
     head, sep, body = doc.partition('</style>')
     assert sep, "template must contain a </style> to split on"
-    SITE = 'https://jommi9.github.io/berlin-sauna-map/'
+    # The public address. GitHub Pages builds and serves the page; jommi.fi/sauna/ is the same
+    # page passed through the jommi.fi Worker, and it is the one links and search should use.
+    SITE = 'https://jommi.fi/sauna/'
     DESC = f"{meta['count']} Berlin saunas and spas, priced and plotted on one map, with a Finn's notes on the loyly."
     # The app icon from the header, as the tab icon: steam rising off the stones.
     icon = ('data:image/svg+xml,' +
