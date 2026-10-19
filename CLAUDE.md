@@ -95,10 +95,15 @@ viewport meta is missing and everything measured after that is meaningless.
 
 ## Design
 
-The page is built like a places app. On a computer it is a split view, the list
-in a sidebar beside the map; on a phone the map fills a framed screen and the
-list, search and filters ride up over it as a sheet. Rules that keep it
+The page is built like a places app. Search and filters are one row above
+everything; under it, on a computer, the list sits in a sidebar beside the map,
+and on a phone the map fills a framed screen with the list riding up over it as
+a sheet that collapses to its handle and the place count. Rules that keep it
 coherent:
+
+- Corners are small and few: 4 to 6 px on surfaces (`--r-*`), 2 to 3 px on tags,
+  photos flush to their card's edges. Full rounding is kept for things that are
+  round by meaning: dots, the slider knob, the app icon.
 
 - Every colour is a token at the top of `tpl2.html`'s `<style>`: light values on
   `:root`, the same names redefined for dark mode. A component never uses a

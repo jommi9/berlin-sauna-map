@@ -55,7 +55,7 @@
   --font:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
   --font-display:-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
   --font-num:ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  --r-xl:24px; --r-lg:18px; --r:14px; --r-sm:10px;
+  --r-xl:6px; --r-lg:6px; --r:4px; --r-sm:4px;
   --gutter-l:max(16px, env(safe-area-inset-left, 0px));
   --gutter-r:max(16px, env(safe-area-inset-right, 0px));
   --ease:cubic-bezier(.32,.72,0,1);
@@ -129,13 +129,13 @@ button{font:inherit; color:inherit}
 .collage{position:relative; height:260px}
 .snap{
   position:absolute; width:58%; aspect-ratio:4/3; padding:5px; border:0; margin:0;
-  border-radius:20px; background:var(--surface); box-shadow:var(--shadow-lift);
+  border-radius:var(--r-sm); background:var(--surface); box-shadow:var(--shadow-lift);
   cursor:pointer; transition:transform .4s var(--ease), box-shadow .4s var(--ease);
 }
-.snap img{display:block; width:100%; height:100%; object-fit:cover; border-radius:15px}
+.snap img{display:block; width:100%; height:100%; object-fit:cover; border-radius:2px}
 .snap .tag{
   position:absolute; left:13px; bottom:13px; max-width:calc(100% - 26px); padding:4px 10px;
-  border-radius:999px; background:var(--glass); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+  border-radius:2px; background:var(--glass); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
   color:var(--label); font:600 12.5px/1.3 var(--font); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .snap:nth-child(1){left:0; top:34px; transform:rotate(-7deg)}
@@ -144,7 +144,7 @@ button{font:inherit; color:inherit}
 .snap:hover, .snap:focus-visible{transform:rotate(0) translateY(-4px) scale(1.03); z-index:3}
 .brand{display:flex; gap:16px; align-items:center}
 .appicon{
-  width:62px; height:62px; flex:none; border-radius:15px;
+  width:62px; height:62px; flex:none; border-radius:13px;
   box-shadow:0 1px 2px rgba(60,30,10,.12), 0 8px 20px rgba(180,83,42,.24);
 }
 .eyebrow{margin:0 0 3px; font:600 13px/1.2 var(--font); color:var(--label-2)}
@@ -177,8 +177,7 @@ button{font:inherit; color:inherit}
 }
 @media (max-width:560px){
   .collage{height:min(42vw, 176px); margin:2px 2px 0}
-  .snap{width:54%; padding:4px; border-radius:16px}
-  .snap img{border-radius:12px}
+  .snap{width:54%; padding:4px}
   .snap .tag{left:9px; bottom:9px; font-size:11.5px; padding:3px 8px}
   .snap .tag .pr{display:none}
   /* each photo is 54% wide at 4:3, so these tops keep all three inside the strip */
@@ -188,7 +187,7 @@ button{font:inherit; color:inherit}
 }
 @media (max-width:560px){
   .top{gap:16px}
-  .appicon{width:54px; height:54px; border-radius:13px}
+  .appicon{width:54px; height:54px; border-radius:11px}
   .lede{font-size:15px; margin-top:12px}
   .stats > div{padding:11px 10px 10px}
   .stats dt{font-size:11.5px}
@@ -216,9 +215,9 @@ svg.map{display:block; width:100%; height:100%; touch-action:none; cursor:grab}
 svg.map.dragging{cursor:grabbing}
 .peek, .grab{display:none}
 
-/* search and filters */
-.bar{display:flex; flex-direction:column; gap:12px; padding-bottom:14px}
-.find{position:relative; display:block}
+/* search and filters: one row above the list and the map */
+.bar{display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; padding-bottom:16px}
+.find{position:relative; display:block; flex:0 0 300px}
 .find input{
   width:100%; height:40px; border:0; border-radius:var(--r-sm);
   background:var(--fill); color:var(--label); font:400 16px var(--font);
@@ -229,12 +228,12 @@ svg.map.dragging{cursor:grabbing}
 .find input:focus{outline:none; background:var(--surface); box-shadow:0 0 0 3px var(--tint-soft), inset 0 0 0 1px var(--tint)}
 .find input::-webkit-search-cancel-button{opacity:.5}
 .find svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--label-3); pointer-events:none}
-.filters{display:flex; flex-wrap:wrap; gap:8px 6px; align-items:center}
+.filters{display:flex; flex-wrap:wrap; gap:8px 6px; align-items:center; flex:1 1 560px; min-width:0}
 .grp{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
 .grp + .grp{margin-left:4px}
 .lbl{font:500 12.5px var(--font); color:var(--label-2); margin-right:2px}
 .chip{
-  height:32px; padding:0 13px; border:0; border-radius:999px; cursor:pointer;
+  height:32px; padding:0 12px; border:0; border-radius:var(--r-sm); cursor:pointer;
   background:var(--surface); box-shadow:inset 0 0 0 1px var(--sep);
   color:var(--label); font:500 14px/32px var(--font); white-space:nowrap;
   transition:background .15s, color .15s, box-shadow .15s, transform .1s;
@@ -242,7 +241,7 @@ svg.map.dragging{cursor:grabbing}
 .chip:hover{background:var(--surface-2)}
 .chip:active{transform:scale(.96)}
 .chip[aria-pressed="true"]{background:var(--tint); color:var(--on-tint); box-shadow:none}
-.slide{display:flex; align-items:center; gap:10px; flex:1 1 230px; min-width:0}
+.slide{display:flex; align-items:center; gap:10px; flex:1 1 230px; max-width:320px; min-width:0}
 .slide output{
   min-width:46px; text-align:right; font:600 14px var(--font-num);
   font-variant-numeric:tabular-nums; color:var(--label);
@@ -266,7 +265,7 @@ svg.map.dragging{cursor:grabbing}
   box-shadow:0 0 0 .5px rgba(0,0,0,.06), 0 3px 8px rgba(0,0,0,.18);
 }
 .clear{
-  border:0; background:none; padding:6px 2px; cursor:pointer;
+  margin-left:auto; border:0; background:none; padding:6px 2px; cursor:pointer;
   color:var(--tint); font:500 15px var(--font);
 }
 .clear:hover{opacity:.75}
@@ -284,18 +283,18 @@ svg.map.dragging{cursor:grabbing}
 
 /* venue card */
 .card{
-  position:relative; background:var(--surface); border-radius:var(--r-lg); padding:12px 14px 14px;
+  position:relative; overflow:hidden; background:var(--surface); border-radius:var(--r-lg); padding:12px 14px 14px;
   box-shadow:var(--shadow); cursor:pointer; flex:none;
   transition:box-shadow .2s var(--ease); scroll-margin-top:6px;
 }
 .card:hover{box-shadow:var(--shadow-lift)}
 .card.on{box-shadow:0 0 0 2px var(--tint), var(--shadow-lift)}
 .card:focus-visible{outline-offset:3px; border-radius:var(--r-lg)}
-.shot{margin:-2px -4px 12px; position:relative; border-radius:var(--r); overflow:hidden; background:var(--land)}
-.shot img, .shot svg{display:block; width:100%; max-width:100%; height:auto; aspect-ratio:16/9; object-fit:cover}
+.shot{margin:-12px -14px 12px; position:relative; overflow:hidden; background:var(--land)}
+.shot img, .shot svg{display:block; width:100%; max-width:100%; height:auto; aspect-ratio:2.2/1; object-fit:cover}
 .shot figcaption{
   position:absolute; left:8px; bottom:8px; max-width:calc(100% - 16px);
-  padding:3px 9px; border-radius:999px; background:rgba(0,0,0,.42);
+  padding:3px 8px; border-radius:2px; background:rgba(0,0,0,.45);
   -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
   color:#FFFFFF; font:500 11px/1.4 var(--font);
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
@@ -308,7 +307,7 @@ svg.map.dragging{cursor:grabbing}
 .cmeta{margin:2px 0 0; font:400 13px/1.35 var(--font); color:var(--label-2)}
 .fin{
   flex:none; display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 9px 0 7px;
-  border-radius:8px; background:var(--flag); color:#FFFFFF;
+  border-radius:3px; background:var(--flag); color:#FFFFFF;
   font:600 14px var(--font-num); font-variant-numeric:tabular-nums;
 }
 .fin i{font-style:normal; font-size:11px; opacity:.72}
@@ -316,7 +315,7 @@ svg.map.dragging{cursor:grabbing}
 .fin .flagi{display:block; border-radius:2px; box-shadow:0 0 0 .5px rgba(0,0,0,.12)}
 .tags{display:flex; flex-wrap:wrap; gap:6px; margin:11px 0 0}
 .status, .price, .pick-tag{
-  display:inline-flex; align-items:center; height:24px; padding:0 10px; border-radius:999px;
+  display:inline-flex; align-items:center; height:24px; padding:0 9px; border-radius:3px;
   font:600 12.5px var(--font); white-space:nowrap;
 }
 .status::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor; margin-right:6px}
@@ -331,9 +330,9 @@ svg.map.dragging{cursor:grabbing}
 .rows dd{min-width:0; overflow-wrap:anywhere}
 .rows dd b{font-weight:600}
 .tiers{display:flex; flex-wrap:wrap; gap:4px; margin-top:6px}
-.tier{padding:0 7px; border-radius:6px; font:600 11.5px/21px var(--font); color:var(--tint); background:var(--tint-soft)}
+.tier{padding:0 7px; border-radius:3px; font:600 11.5px/21px var(--font); color:var(--tint); background:var(--tint-soft)}
 .tier.off{color:var(--label-3); background:transparent; box-shadow:inset 0 0 0 1px var(--sep); text-decoration:line-through}
-.ly{display:inline-block; padding:1px 8px; border-radius:6px; font:600 12.5px/1.6 var(--font)}
+.ly{display:inline-block; padding:1px 8px; border-radius:3px; font:600 12.5px/1.6 var(--font)}
 .ly-staff{color:var(--ember); background:var(--ember-soft)}
 .ly-self{color:var(--tint); background:var(--tint-soft)}
 .ly-machine{color:var(--label-2); background:var(--fill)}
@@ -358,7 +357,7 @@ svg.map.dragging{cursor:grabbing}
 .acts{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px}
 .btn{
   display:inline-flex; align-items:center; justify-content:center; height:36px; padding:0 16px;
-  border-radius:999px; background:var(--tint-soft); color:var(--tint);
+  border-radius:var(--r-sm); background:var(--tint-soft); color:var(--tint);
   font:600 14.5px var(--font); white-space:nowrap; transition:filter .15s, transform .1s;
 }
 .btn:hover{text-decoration:none; filter:brightness(1.06)}
@@ -401,7 +400,7 @@ svg .usc{fill:var(--tint); stroke:var(--pin-ring); stroke-width:1.7}
 .zoom, .key, .peek, .listcol{--blur:blur(22px) saturate(1.7)}
 .zoom{
   position:absolute; top:12px; right:12px; display:flex; flex-direction:column;
-  border-radius:12px; overflow:hidden; background:var(--glass);
+  border-radius:var(--r-sm); overflow:hidden; background:var(--glass);
   -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur); box-shadow:var(--shadow);
 }
 .zoom button{
@@ -414,12 +413,12 @@ svg .usc{fill:var(--tint); stroke:var(--pin-ring); stroke-width:1.7}
 .key{
   position:absolute; left:12px; bottom:12px; max-width:calc(100% - 24px);
   display:flex; flex-wrap:wrap; gap:6px 16px; align-items:center; padding:9px 14px;
-  border-radius:12px; background:var(--glass); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur);
+  border-radius:var(--r-sm); background:var(--glass); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur);
   box-shadow:var(--shadow); font:500 12px var(--font); color:var(--label-2);
 }
 .key .ki{display:inline-flex; align-items:center; gap:6px; white-space:nowrap}
 .ramp{display:inline-flex; gap:2px}
-.ramp i{width:13px; height:13px; border-radius:4px; display:block}
+.ramp i{width:13px; height:13px; border-radius:2px; display:block}
 
 /* ---------------- sections below the map ---------------- */
 .sec{margin-top:44px}
@@ -429,7 +428,7 @@ svg .usc{fill:var(--tint); stroke:var(--pin-ring); stroke-width:1.7}
 /* ten picks: five across fills two rows exactly */
 @media (min-width:1100px){ #picks{grid-template-columns:repeat(5, minmax(0,1fr))} }
 .pk{
-  display:flex; flex-direction:column; gap:6px; text-align:left; border:0; margin:0;
+  display:flex; flex-direction:column; gap:6px; text-align:left; border:0; margin:0; overflow:hidden;
   background:var(--surface); border-radius:var(--r-lg); padding:14px 16px 15px;
   box-shadow:var(--shadow); color:var(--label);
 }
@@ -437,7 +436,7 @@ button.pk{cursor:pointer; transition:box-shadow .2s var(--ease), transform .2s v
 button.pk:hover{box-shadow:var(--shadow-lift); transform:translateY(-1px)}
 button.pk:active{transform:scale(.98)}
 .pk .k{font:600 12.5px/1.3 var(--font); color:var(--ember)}
-.pk .ph{display:block; margin:-6px -8px 6px; border-radius:12px; overflow:hidden; background:var(--land); aspect-ratio:4/3}
+.pk .ph{display:block; margin:-14px -16px 8px; overflow:hidden; background:var(--land); aspect-ratio:4/3}
 .pk .ph img, .pk .ph svg{display:block; width:100%; height:100%; object-fit:cover}
 .pick-tag .av{
   display:inline-grid; place-items:center; width:16px; height:16px; margin:0 6px 0 -5px; border-radius:50%;
@@ -465,7 +464,7 @@ button.pk:active{transform:scale(.98)}
   display:flex; align-items:center; gap:14px; margin-top:32px; padding-top:22px;
   border-top:1px solid var(--sep); color:var(--label-2); font-size:13px;
 }
-.sign .appicon{width:36px; height:36px; border-radius:9px; box-shadow:none}
+.sign .appicon{width:36px; height:36px; border-radius:8px; box-shadow:none}
 .sign b{display:block; color:var(--label); font:600 17px/1.2 var(--font-display); letter-spacing:-.012em}
 
 /* ---------------- phone and small tablet: map first, list as a sheet ---------------- */
@@ -478,9 +477,9 @@ button.pk:active{transform:scale(.98)}
   .mapcol .inner{border-radius:0; box-shadow:none}
   .key{display:none}
   .listcol{
-    position:absolute; left:0; right:0; bottom:0; z-index:6; height:var(--sheet, 132px);
+    position:absolute; left:0; right:0; bottom:0; z-index:6; height:var(--sheet, 72px);
     background:var(--glass); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur);
-    border-radius:16px 16px 0 0; box-shadow:0 -1px 0 var(--sep), 0 -12px 32px var(--sheet-shadow);
+    border-radius:var(--r-lg) var(--r-lg) 0 0; box-shadow:0 -1px 0 var(--sep), 0 -12px 32px var(--sheet-shadow);
     overflow:hidden; transition:height .34s var(--ease);
   }
   .grab{
@@ -488,10 +487,11 @@ button.pk:active{transform:scale(.98)}
     background:none; border:0; cursor:grab; touch-action:none;
   }
   .grab-bar{width:36px; height:5px; border-radius:3px; background:var(--fill-2)}
-  .bar{padding:0 12px 12px; gap:10px; flex:none}
-  .find input{height:38px; background:var(--fill)}
+  .bar{flex-direction:column; flex-wrap:nowrap; align-items:stretch; gap:10px; padding-bottom:12px}
+  .find{flex:none}
   .filters{
-    flex-wrap:nowrap; overflow-x:auto; margin-right:-12px; padding-right:28px;
+    flex:none; flex-wrap:nowrap; overflow-x:auto;
+    margin-right:calc(-1 * var(--gutter-r)); padding-right:calc(var(--gutter-r) + 20px);
     scrollbar-width:none; -webkit-overflow-scrolling:touch;
     -webkit-mask-image:linear-gradient(90deg, #000 calc(100% - 30px), transparent);
     mask-image:linear-gradient(90deg, #000 calc(100% - 30px), transparent);
@@ -499,17 +499,17 @@ button.pk:active{transform:scale(.98)}
   .filters::-webkit-scrollbar{display:none}
   .grp{flex-wrap:nowrap; flex:none}
   .slide{flex:0 0 210px}
-  .clear{flex:none}
-  .lhead{display:none; flex:none; padding:0 16px 8px}
-  .listcol.open .lhead{display:flex}
+  .clear{flex:none; margin-left:0}
+  .lhead{flex:none; padding:0 16px 10px}
+  .listcol .shot img, .listcol .shot svg{aspect-ratio:2.8/1}
   .cards{margin:0; padding:2px 12px 20px}
   .peek{
     display:flex; gap:12px; position:absolute; z-index:5; left:10px; right:10px;
-    bottom:calc(var(--sheet, 132px) + 10px); padding:10px; border-radius:18px;
+    bottom:calc(var(--sheet, 72px) + 10px); padding:10px; border-radius:var(--r-lg);
     background:var(--glass); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur);
     box-shadow:var(--shadow-lift); cursor:pointer; transition:bottom .34s var(--ease);
   }
-  .peek-thumb{width:72px; height:58px; border-radius:12px; overflow:hidden; flex:none; background:var(--land)}
+  .peek-thumb{width:72px; height:58px; border-radius:2px; overflow:hidden; flex:none; background:var(--land)}
   .peek-thumb img, .peek-thumb svg{width:100%; height:100%; object-fit:cover; display:block}
   .peek-body{min-width:0; flex:1 1 auto; padding-right:30px}
   .peek-name{margin:2px 0 0; font:600 16px/1.2 var(--font-display); letter-spacing:-.012em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
@@ -564,47 +564,48 @@ button.pk:active{transform:scale(.98)}
     <div class="collage" id="collage"></div>
   </header>
 
+    <div class="bar" id="bar">
+      <label class="find">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+        <input type="search" id="q" placeholder="search saunas" aria-label="Search saunas" autocomplete="off">
+      </label>
+      <div class="filters">
+        <div class="grp" id="g-open" role="group" aria-label="Filter by opening hours">
+          <button class="chip" data-v="open" aria-pressed="false">open now</button>
+        </div>
+        <div class="grp" id="g-access" role="group" aria-label="Filter by access">
+          <button class="chip" data-v="cash" aria-pressed="false">day ticket</button>
+          <button class="chip" data-v="usc" aria-pressed="false">on USC</button>
+        </div>
+        <div class="grp" id="g-kind" role="group" aria-label="Filter by venue type">
+          <button class="chip" data-v="sauna" aria-pressed="false">not a hotel</button>
+          <button class="chip" data-v="hotel" aria-pressed="false">hotel spa</button>
+          <button class="chip" data-v="pool" aria-pressed="false">pool or plunge</button>
+          <button class="chip" data-v="aufguss" aria-pressed="false">aufguss</button>
+          <button class="chip" data-v="ownloyly" aria-pressed="false">throw your own</button>
+          <button class="chip" data-v="group" aria-pressed="false">group hire</button>
+        </div>
+        <div class="grp" id="g-usc" role="group" aria-label="Filter by Urban Sports Club tier">
+          <span class="lbl">USC tier</span>
+          <button class="chip" data-v="Classic" aria-pressed="false">Classic</button>
+          <button class="chip" data-v="Premium" aria-pressed="false">Premium</button>
+          <button class="chip" data-v="Max" aria-pressed="false">Max</button>
+        </div>
+        <label class="slide">
+          <span class="lbl">up to</span>
+          <input type="range" id="pmax" min="12" max="90" step="1" value="90" aria-label="Maximum price">
+          <output id="pout" for="pmax">Any</output>
+        </label>
+        <button class="clear" id="clear" type="button">reset</button>
+      </div>
+    </div>
+
   <div class="split">
     <div class="listcol">
       <button class="grab" id="grab" aria-expanded="false" aria-controls="cards">
         <span class="grab-bar" aria-hidden="true"></span>
         <span class="grab-label sr" id="grab-label">20 venues</span>
       </button>
-      <div class="bar" id="bar">
-        <label class="find">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
-          <input type="search" id="q" placeholder="search saunas, districts, features" aria-label="Search saunas" autocomplete="off">
-        </label>
-        <div class="filters">
-          <div class="grp" id="g-open" role="group" aria-label="Filter by opening hours">
-            <button class="chip" data-v="open" aria-pressed="false">open now</button>
-          </div>
-          <div class="grp" id="g-access" role="group" aria-label="Filter by access">
-            <button class="chip" data-v="cash" aria-pressed="false">day ticket</button>
-            <button class="chip" data-v="usc" aria-pressed="false">on USC</button>
-          </div>
-          <div class="grp" id="g-kind" role="group" aria-label="Filter by venue type">
-            <button class="chip" data-v="sauna" aria-pressed="false">not a hotel</button>
-            <button class="chip" data-v="hotel" aria-pressed="false">hotel spa</button>
-            <button class="chip" data-v="pool" aria-pressed="false">pool or plunge</button>
-            <button class="chip" data-v="aufguss" aria-pressed="false">aufguss</button>
-            <button class="chip" data-v="ownloyly" aria-pressed="false">throw your own</button>
-            <button class="chip" data-v="group" aria-pressed="false">group hire</button>
-          </div>
-          <div class="grp" id="g-usc" role="group" aria-label="Filter by Urban Sports Club tier">
-            <span class="lbl">USC tier</span>
-            <button class="chip" data-v="Classic" aria-pressed="false">Classic</button>
-            <button class="chip" data-v="Premium" aria-pressed="false">Premium</button>
-            <button class="chip" data-v="Max" aria-pressed="false">Max</button>
-          </div>
-          <label class="slide">
-            <span class="lbl">up to</span>
-            <input type="range" id="pmax" min="12" max="90" step="1" value="90" aria-label="Maximum price">
-            <output id="pout" for="pmax">Any</output>
-          </label>
-          <button class="clear" id="clear" type="button">reset</button>
-        </div>
-      </div>
       <div class="lhead">
         <h2 id="l-title">all 20 places</h2>
         <span class="c" id="l-note">in pick order</span>
@@ -636,7 +637,7 @@ button.pk:active{transform:scale(.98)}
           <span class="ki">&euro;12.50 <span class="ramp" aria-hidden="true"><i style="background:var(--b1)"></i><i style="background:var(--b2)"></i><i style="background:var(--b3)"></i><i style="background:var(--b4)"></i></span> &euro;90</span>
           <span class="ki"><svg width="12" height="12" viewBox="-6 -6 12 12" aria-hidden="true"><circle class="usc" r="4.4"/></svg>on USC</span>
           <span class="ki"><svg width="15" height="15" viewBox="-13 -13 26 26" aria-hidden="true"><circle class="b" r="11" fill="var(--b3)"/></svg>priced per booking</span>
-          <span class="ki"><svg width="15" height="15" viewBox="-13 -13 26 26" aria-hidden="true"><rect class="b" x="-11" y="-11" width="22" height="22" rx="7" fill="var(--b0)"/></svg>price unclear</span>
+          <span class="ki"><svg width="15" height="15" viewBox="-13 -13 26 26" aria-hidden="true"><rect class="b" x="-11" y="-11" width="22" height="22" rx="4.5" fill="var(--b0)"/></svg>price unclear</span>
         </div>
       </div>
     </div>
@@ -808,7 +809,7 @@ const STEAM = "M-4.4,5 q-2.1,-2.5 0,-5 q2.1,-2.5 0,-5 M0,6.2 q-2.3,-3.1 0,-6.2 q
 function pin(v, usc){
   const shape = v.pricing === "group"
     ? `<circle class="b" cx="0" cy="0" r="11.5" fill="${heat(v.price)}"></circle>`
-    : `<rect class="b" x="-11" y="-11" width="22" height="22" rx="7" fill="${heat(v.price)}"></rect>`;
+    : `<rect class="b" x="-11" y="-11" width="22" height="22" rx="4.5" fill="${heat(v.price)}"></rect>`;
   return shape + `<path class="g${v.price == null ? " unk" : ""}" d="${STEAM}"></path>` +
     (usc && v.usc === "yes" ? `<circle class="usc" cx="9.6" cy="-9.6" r="4"></circle>` : "");
 }
@@ -1020,28 +1021,35 @@ document.getElementById("z-in").addEventListener("click", () => zoomAt(1 / 1.5, 
 document.getElementById("z-out").addEventListener("click", () => zoomAt(1.5, view[0] + view[2] / 2, view[1] + view[3] / 2));
 document.getElementById("z-fit").addEventListener("click", resetView);
 /* The picked or hovered place lifts off the map as a photo bubble with its name
-   in a pill, drawn in pin units so it keeps one size on screen at any zoom.
-   Near the top edge it hangs below the pin instead. */
+   in a pill on the bubble's outer edge, drawn in pin units so it keeps one size
+   on screen at any zoom. Near the top edge it hangs below the pin instead. */
 function showName(id){
   nameTag.innerHTML = "";
   if (id == null) return;
   const v = V.find(x => x.id === id), q = POS.get(id) || v, im = v.img ? IMG[v.img] : null;
-  const top = (view || VB)[1], up = q.py - 100 * PS > top, k = up ? -1 : 1;
+  const top = (view || VB)[1], up = q.py - 112 * PS > top, k = up ? -1 : 1;
   const cy = k * 59;                                   // centre of the photo
   nameTag.setAttribute("transform", `translate(${q.px.toFixed(1)} ${q.py.toFixed(1)}) scale(${PS.toFixed(3)})`);
   nameTag.innerHTML =
     `<path class="co-frame" d="M-7,${k * 27.5} L0,${k * 17} L7,${k * 27.5} Z"></path>` +
-    `<rect class="co-frame" x="-33" y="${cy - 33}" width="66" height="66" rx="17"></rect>` +
+    `<g class="co-ph"><rect class="co-frame" x="-33" y="${cy - 33}" width="66" height="66" rx="6"></rect>` +
     (im
-      ? `<clipPath id="co-clip"><rect x="-29" y="${cy - 29}" width="58" height="58" rx="13"></rect></clipPath>` +
+      ? `<clipPath id="co-clip"><rect x="-29" y="${cy - 29}" width="58" height="58" rx="3"></rect></clipPath>` +
         `<image href="${im.src}" x="-29" y="${cy - 29}" width="58" height="58" preserveAspectRatio="xMidYMid slice" clip-path="url(#co-clip)"></image>`
-      : `<rect x="-29" y="${cy - 29}" width="58" height="58" rx="13" fill="${heat(v.price)}"></rect>` +
-        `<g transform="translate(0 ${cy}) scale(2.3)"><path class="g${v.price == null ? " unk" : ""}" d="${STEAM}" style="stroke-width:1.3"></path></g>`) +
-    `<g class="co-name"><rect class="co-frame"></rect><text x="0" y="${-k * 31}" dy=".34em">${v.name.split(" \u2014 ")[0]}</text></g>`;
+      : `<rect x="-29" y="${cy - 29}" width="58" height="58" rx="3" fill="${heat(v.price)}"></rect>` +
+        `<g transform="translate(0 ${cy}) scale(2.3)"><path class="g${v.price == null ? " unk" : ""}" d="${STEAM}" style="stroke-width:1.3"></path></g>`) + `</g>` +
+    `<g class="co-name"><rect class="co-frame"></rect><text x="0" y="${cy + k * 35}" dy=".34em">${v.name.split(" \u2014 ")[0]}</text></g>`;
   const t = nameTag.querySelector("text"), bb = t.getBBox(), r = nameTag.querySelector(".co-name rect");
   r.setAttribute("x", (bb.x - 9).toFixed(1)); r.setAttribute("y", (bb.y - 4).toFixed(1));
   r.setAttribute("width", (bb.width + 18).toFixed(1)); r.setAttribute("height", (bb.height + 8).toFixed(1));
-  r.setAttribute("rx", ((bb.height + 8) / 2).toFixed(1));
+  r.setAttribute("rx", "4");
+  /* Near the frame's edge, slide the photo and the name inward; the pointer
+     stays on the pin. */
+  const [L, , W] = view || VB, R = L + W;
+  const inward = (x0, x1) => { const a = q.px + x0 * PS, b = q.px + x1 * PS;
+    return a < L ? (L - a) / PS + 6 : b > R ? (R - b) / PS - 6 : 0; };
+  nameTag.querySelector(".co-name").setAttribute("transform", `translate(${inward(bb.x - 9, bb.x + bb.width + 9).toFixed(1)} 0)`);
+  nameTag.querySelector(".co-ph").setAttribute("transform", `translate(${inward(-33, 33).toFixed(1)} 0)`);
 }
 
 /* ---------- state ---------- */
@@ -1286,13 +1294,13 @@ V.filter(v => v.img).forEach(v => {
 const listcol = document.querySelector(".listcol");
 const peekEl = document.getElementById("peek"), grab = document.getElementById("grab");
 const grabLabel = document.getElementById("grab-label");
-let COLLAPSED = 132;
-const expandedH = () => Math.round(document.querySelector(".split").clientHeight * 0.86);
+let COLLAPSED = 72;
+const expandedH = () => Math.round(document.querySelector(".split").clientHeight * 0.92);
 const isMobile = () => matchMedia("(max-width:1000px)").matches;
-/* Collapsed, the sheet shows its grabber, the search field and one row of
-   filters, so searching is always in reach over the map, the way Maps does it. */
-const barEl = document.getElementById("bar");
-function measureSheet(){ COLLAPSED = Math.round(grab.offsetHeight + barEl.offsetHeight + 2); }
+/* Collapsed, the sheet shows only its grabber and the place count, so the map
+   keeps the screen; search and filters sit in their own row above the map. */
+const sheetHead = document.querySelector(".listcol .lhead");
+function measureSheet(){ COLLAPSED = Math.round(grab.offsetHeight + sheetHead.offsetHeight + 2); }
 let sheetOpen = false;
 
 function setSheet(px){ document.documentElement.style.setProperty("--sheet", px + "px"); }
@@ -1301,10 +1309,13 @@ function openSheet(on){
   listcol.classList.toggle("open", on);
   grab.setAttribute("aria-expanded", String(on));
   setSheet(on ? expandedH() : COLLAPSED);
+  /* The open sheet already shows the picked card, so the peek card steps aside
+     and comes back when the sheet is lowered. */
+  if (on) peekEl.hidden = true; else showPeek(sel);
 }
 function showPeek(id){
   if (!isMobile()) return;
-  if (id == null){ peekEl.hidden = true; return; }
+  if (id == null || sheetOpen){ peekEl.hidden = true; return; }
   const v = V.find(x => x.id === id), im = v.img ? IMG[v.img] : null;
   document.getElementById("peek-name").textContent = v.name;
   document.getElementById("peek-meta").textContent = `${v.kind} \u00b7 ${v.district}`;
