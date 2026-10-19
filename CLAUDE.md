@@ -147,7 +147,8 @@ python3 build_venues.py && python3 declutter.py && python3 embed_images.py \
 ```
 
 Then republish `index.html` to the existing artifact URL, and push (GitHub Pages
-serves it at https://jommi9.github.io/berlin-sauna-map/).
+serves it at https://jommi9.github.io/berlin-sauna-map/, and the jommi.fi Worker passes
+https://jommi.fi/sauna/ through to it, which is the address canonical and share links use).
 
 ## Reviews come in through GitHub issues, never by hand
 
