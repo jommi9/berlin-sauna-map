@@ -2,10 +2,10 @@
 
 Twenty Berlin saunas and spas on one map, designed like a phone app: a map with the list in a sheet, a lowercase voice, and a Finn's notes on the löyly.
 
-**Live: https://jommi.fi/sauna/**
+**Live: https://jommi.fi/sauna/berlin/**
 
 GitHub Pages builds and serves it at https://jommi9.github.io/berlin-sauna-map/; the jommi.fi
-Worker (repo `jommi9/jommi-fi`) passes `/sauna/` through to that, so there is one copy and the
+Worker (repo `jommi9/jommi-fi`) passes `/sauna/berlin/` through to that, so there is one copy and the
 weekly self-update reaches both addresses. Canonical and share links point at jommi.fi.
 
 Also published as a private Claude Artifact:
