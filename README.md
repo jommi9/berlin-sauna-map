@@ -103,7 +103,12 @@ expires rather than at the next build.
 
 ## Reviews and scores
 
-Reviews arrive as GitHub issues, never as edits. The forms are in
+On jommi.fi, people sign in with X to save spots, log visits and climb the leaderboard,
+and apply to join the review panel; the editor approves them on the page, and their
+reviews are served live by the jommi.fi Worker (`jommi9/jommi-fi`, `worker/sauna-api.js`).
+None of that is in this repo, and none of it shows on a copy served anywhere else.
+
+Reviews baked into the build arrive as GitHub issues, never as edits. The forms are in
 `.github/ISSUE_TEMPLATE/`; applying the `approved` label fires
 `.github/workflows/ingest-reviews.yml`, which validates (venue must exist as the map
 spells it, handle must already be approved, rating 1–5, real date, 40 characters
@@ -116,9 +121,10 @@ Three separate judgements, deliberately kept apart:
 - **Löyly** — who throws the water: someone else (`staff`, an Aufguss), you (`self`),
   or a machine that doses aroma and nobody throws (`machine`). Derived from the
   `aufguss` kind the venues confirmed by email, so there is no second table to drift.
-- **Finnish score** — one Finn's rating of the place *as a sauna* out of 10: heat,
-  löyly, whether you may throw water. Not the spa around it. `None` shows as `FIN –`,
-  never a zero. Opinions, so `selfupdate.py` must never touch them.
+- **Finnish score** — one Finn's rating of the place *as a sauna* in stars out of 5,
+  halves allowed: heat, löyly, whether you may throw water. Not the spa around it. A
+  venue without one shows no score, never a zero. Opinions, so `selfupdate.py` must
+  never touch them.
 - **Aufguss rating** — only rendered where `loyly == "staff"`, because rating the
   Aufguss at a self-serve sauna would be scoring something that does not happen there.
 

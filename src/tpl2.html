@@ -199,7 +199,8 @@ button{font:inherit; color:inherit}
 .card:not(.on) .shot{position:absolute; left:12px; top:12px; width:64px; height:64px; margin:0; border-radius:var(--r-sm)}
 .card:not(.on) .shot img, .card:not(.on) .shot svg{aspect-ratio:1; height:100%}
 .card:not(.on) .shot figcaption, .card:not(.on) .ic,
-.card:not(.on) .rows, .card:not(.on) .alert, .card:not(.on) .revs, .card:not(.on) .acts{display:none}
+.card:not(.on) .rows, .card:not(.on) .alert, .card:not(.on) .revs, .card:not(.on) .acts,
+.card:not(.on) .mine{display:none}
 .card:not(.on) .tags{margin-top:8px}
 .card:not(.on) .cname{font-size:16px}
 /* on a narrow phone a row keeps only the flag; the word comes back when it opens */
@@ -223,6 +224,7 @@ svg.map.dragging{cursor:grabbing}
 
 /* search and filters: one row above the list and the map */
 .bar{display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; padding-bottom:16px}
+.findrow{display:flex; align-items:center; gap:8px; flex:0 0 auto}
 .find{position:relative; display:block; flex:0 0 300px}
 .find input{
   width:100%; height:40px; border:0; border-radius:var(--r-sm);
@@ -461,6 +463,106 @@ button.pk:active{transform:scale(.98)}
 .note p{margin:0; color:var(--label-2); font-size:14.5px; line-height:1.55; max-width:60ch}
 .note strong{color:var(--label); font-weight:600}
 .joinline{display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0}
+
+/* ---------------- the social layer: X sign-in, saved, visits, board, panel ----------------
+   All of it stays hidden until /sauna/api/me says it is switched on, so a copy of the page
+   anywhere else shows none of it. */
+button.btn{border:0; cursor:pointer}
+.btn.quiet{background:var(--fill); color:var(--label)}
+.btn.on{background:var(--ember-soft); color:var(--ember)}
+.btn:disabled{opacity:.5; cursor:default}
+.xg{flex:none}
+.acct{position:relative; flex:none}
+.acct-b{
+  display:inline-flex; align-items:center; gap:8px; height:40px; padding:0 14px; border:0; cursor:pointer;
+  border-radius:var(--r-sm); background:var(--label); color:var(--bg); font:600 14px var(--font); white-space:nowrap;
+}
+.acct-b.me{padding:0 10px 0 4px; background:var(--fill); color:var(--label)}
+.av{
+  display:inline-grid; place-items:center; flex:none; width:32px; height:32px; border-radius:50%; overflow:hidden;
+  background:var(--fill-2); color:var(--label-2); font:700 13px/1 var(--font); object-fit:cover;
+}
+.av.s{width:24px; height:24px; font-size:11px}
+.acct-m{
+  position:absolute; top:calc(100% + 6px); left:0; z-index:30; width:270px; padding:14px;
+  background:var(--surface); border-radius:var(--r-lg); box-shadow:var(--shadow-lift);
+  display:flex; flex-direction:column; gap:10px; font-size:14px;
+}
+.acct-m .who{display:flex; align-items:center; gap:10px; min-width:0}
+.acct-m .who b{display:block; font:600 15px/1.2 var(--font-display)}
+.acct-m .who span{color:var(--label-2); font-size:13px}
+.acct-m .tally{margin:0; color:var(--label-2); font-variant-numeric:tabular-nums}
+.acct-m .tally b{color:var(--ember); font:600 15px var(--font-num)}
+.acct-m a, .acct-m button.link{
+  padding:0; border:0; background:none; color:var(--tint); font:500 14px var(--font); text-align:left; cursor:pointer;
+}
+.acct-m label{display:flex; align-items:center; gap:8px; color:var(--label-2)}
+.acct-m hr{width:100%; margin:0; border:0; border-top:1px solid var(--sep)}
+.tag-me{color:var(--ember); background:var(--ember-soft)}
+.mine{margin-top:14px; display:flex; flex-direction:column; gap:8px}
+.mine .row{display:flex; flex-wrap:wrap; align-items:center; gap:8px}
+.mine .hint{margin:0; font-size:13px; color:var(--label-2)}
+.mine input[type=date]{
+  height:36px; padding:0 8px; border:0; border-radius:var(--r-sm); background:var(--fill);
+  color:var(--label); font:500 14px var(--font);
+}
+.days{display:flex; flex-wrap:wrap; gap:6px}
+.day{
+  display:inline-flex; align-items:center; gap:4px; height:26px; padding:0 4px 0 8px; border:0; cursor:pointer;
+  border-radius:var(--r-sm); background:var(--fill); color:var(--label-2); font:500 12.5px var(--font); font-variant-numeric:tabular-nums;
+}
+.day i{font-style:normal; color:var(--label-3); padding:0 3px}
+.day:hover i{color:var(--red)}
+.wr{display:flex; flex-direction:column; gap:8px; padding:12px; border-radius:var(--r-sm); background:var(--surface-2)}
+.stars{display:flex; gap:2px}
+.stars button{
+  width:34px; height:34px; padding:0; border:0; background:none; cursor:pointer;
+  color:var(--fill-2); font:400 24px/1 var(--font);
+}
+.stars button.lit{color:var(--ember)}
+.wr textarea, .join textarea{
+  width:100%; min-height:88px; padding:10px 12px; border:0; border-radius:var(--r-sm); resize:vertical;
+  background:var(--surface); box-shadow:inset 0 0 0 1px var(--sep); color:var(--label); font:400 15px/1.5 var(--font);
+}
+.wr textarea:focus, .join textarea:focus{outline:none; box-shadow:0 0 0 3px var(--tint-soft), inset 0 0 0 1px var(--tint)}
+.err{margin:0; color:var(--red); font-size:13px}
+.rev footer .av{margin-right:2px}
+.rev footer a{color:var(--label); font-weight:600}
+.boards{display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:12px}
+.board{background:var(--surface); border-radius:var(--r-lg); padding:14px 16px 10px; box-shadow:var(--shadow); min-width:0}
+.board h3{margin:0 0 6px; font:600 15.5px/1.3 var(--font-display)}
+.lb{list-style:none; margin:0; padding:0; counter-reset:lb}
+.lb li{
+  display:flex; align-items:center; gap:10px; min-height:48px; padding:6px 0; counter-increment:lb;
+  border-top:1px solid var(--sep);
+}
+.lb li:first-child{border-top:0}
+.lb li::before{
+  content:counter(lb); width:22px; flex:none; text-align:right;
+  font:600 14px var(--font-num); color:var(--label-3); font-variant-numeric:tabular-nums;
+}
+.lb li.you{background:var(--tint-soft); margin:0 -8px; padding:6px 8px; border-radius:var(--r-sm)}
+.lb .nm{flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.lb .nm small{display:block; color:var(--label-2); font-size:12.5px}
+.lb .nm a{color:var(--label); font-weight:600}
+.lb .n{flex:none; text-align:right; font:500 13px var(--font); color:var(--label-2); font-variant-numeric:tabular-nums}
+.lb .n b{font:600 16px var(--font-num); color:var(--ember)}
+.lb .n small{display:block; font:500 12px var(--font); color:var(--label-2)}
+.lb button.nm{padding:0; border:0; background:none; text-align:left; font:600 14.5px var(--font); color:var(--tint); cursor:pointer}
+.lb .empty{color:var(--label-2); font-size:14px}
+.lb .empty::before{content:none}
+.join{margin-top:16px; display:flex; flex-direction:column; gap:10px; max-width:560px}
+.join p{margin:0; color:var(--label-2)}
+.queue{display:flex; flex-direction:column; gap:10px}
+.queue .q{background:var(--surface); border-radius:var(--r-lg); padding:12px 14px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:8px}
+.queue .q .who{display:flex; align-items:center; gap:10px}
+.queue .q p{margin:0; color:var(--label); font-size:14px}
+.panel-grid .pk .av{margin-bottom:2px}
+.toast{
+  position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom, 0px)); z-index:50; transform:translateX(-50%);
+  max-width:calc(100vw - 32px); padding:10px 16px; border-radius:var(--r); background:var(--label); color:var(--bg);
+  font:500 14px var(--font); box-shadow:var(--shadow-lift);
+}
 .credits{margin-top:44px; padding-top:22px; border-top:1px solid var(--sep)}
 .credits h3{margin:0 0 6px; font:600 13px var(--font); color:var(--label-2)}
 .cnote{margin:0 0 12px; font-size:13.5px; color:var(--label-2); max-width:72ch; line-height:1.55}
@@ -498,7 +600,11 @@ button.pk:active{transform:scale(.98)}
   }
   .grab-bar{width:36px; height:5px; border-radius:3px; background:var(--fill-2)}
   .bar{flex-direction:column; flex-wrap:nowrap; align-items:stretch; gap:10px; padding-bottom:12px}
-  .find{flex:none}
+  .findrow{flex:none}
+  .find{flex:1 1 auto}
+  .acct-m{left:auto; right:0}
+  .acct-b.me{padding:0 4px}
+  .acct-b.me > span:not(.av){display:none}
   .filters{
     flex:none; flex-wrap:nowrap; overflow-x:auto;
     margin-right:calc(-1 * var(--gutter-r)); padding-right:calc(var(--gutter-r) + 20px);
@@ -573,11 +679,19 @@ button.pk:active{transform:scale(.98)}
   </header>
 
     <div class="bar" id="bar">
-      <label class="find">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
-        <input type="search" id="q" placeholder="search saunas" aria-label="Search saunas" autocomplete="off">
-      </label>
+      <div class="findrow">
+        <label class="find">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+          <input type="search" id="q" placeholder="search saunas" aria-label="Search saunas" autocomplete="off">
+        </label>
+        <div class="acct" id="acct" hidden></div>
+      </div>
       <div class="filters">
+        <div class="grp" id="g-mine" role="group" aria-label="Your saunas" hidden>
+          <button class="chip" data-v="saved" aria-pressed="false">saved</button>
+          <button class="chip" data-v="been" aria-pressed="false">been</button>
+          <button class="chip" data-v="notyet" aria-pressed="false">not yet</button>
+        </div>
         <div class="grp" id="g-open" role="group" aria-label="Filter by opening hours">
           <button class="chip" data-v="open" aria-pressed="false">open now</button>
         </div>
@@ -657,6 +771,15 @@ button.pk:active{transform:scale(.98)}
     <div class="pgrid scroll" id="picks"></div>
   </section>
 
+  <section class="sec" id="board" aria-labelledby="h-board" hidden>
+    <h2 class="sec-h" id="h-board">leaderboard</h2>
+    <p class="sec-sub">Who has sat in the most of Berlin&rsquo;s saunas, and where everyone goes. Log a visit from a sauna&rsquo;s card once you&rsquo;re signed in with X; it counts each sauna once however often you go.</p>
+    <div class="boards">
+      <div class="board"><h3>most saunas</h3><ol class="lb" id="lb-people"></ol></div>
+      <div class="board"><h3>most visited</h3><ol class="lb" id="lb-venues"></ol></div>
+    </div>
+  </section>
+
   <section class="sec" aria-labelledby="h-info">
     <h2 class="sec-h" id="h-info">before you go</h2>
     <div class="info" style="margin-top:16px">
@@ -683,7 +806,8 @@ button.pk:active{transform:scale(.98)}
     <h2 class="sec-h" id="h-panel">the panel</h2>
     <p class="sec-sub">Reviews come from a small panel rather than the open internet, so a review means something. Anyone who uses Berlin&rsquo;s saunas can ask to join.</p>
     <div class="pgrid panel-grid" id="panel"></div>
-    <p class="joinline">
+    <div class="join" id="join" hidden></div>
+    <p class="joinline" id="joinline">
       <a class="btn primary" href="https://github.com/jommi9/berlin-sauna-map/issues/new?template=reviewer-application.yml" target="_blank" rel="noopener noreferrer">apply to review</a>
       <a class="btn" href="https://github.com/jommi9/berlin-sauna-map/issues/new?template=review.yml" target="_blank" rel="noopener noreferrer">post a review</a>
     </p>
@@ -1064,7 +1188,9 @@ function showName(id){
 let sel = null;
 /* Chips within a group are OR; the groups are ANDed together, so
    "Cash + Open now" and "Not a hotel + Pool" both behave as you'd expect. */
-const F = { q: "", access: new Set(), kind: new Set(), usc: new Set(), openNow: false, pmax: 90 };
+const F = { q: "", access: new Set(), kind: new Set(), usc: new Set(), mine: new Set(), openNow: false, pmax: 90 };
+/* What the signed-in person has saved and been to (the social layer at the end fills it). */
+const ME = { saved: new Set(), been: new Set() };
 const TEST = {
   cash: v => v.price != null,
   usc:  v => v.uscTiers.length > 0,
@@ -1075,10 +1201,13 @@ const TEST = {
   group: v => v.pricing === "group",
   aufguss:  v => v.loyly === "staff",
   ownloyly: v => v.loyly === "self",
+  saved:  v => ME.saved.has(v.name),
+  been:   v => ME.been.has(v.name),
+  notyet: v => !ME.been.has(v.name),
 };
 function ok(v){
   if (F.openNow && openState(v, berlinNow()) !== "open") return false;
-  for (const g of ["access", "kind"])
+  for (const g of ["access", "kind", "mine"])
     if (F[g].size && ![...F[g]].some(k => TEST[k](v))) return false;
   if (F.usc.size && ![...F.usc].some(t => v.uscTiers.includes(t))) return false;
   if (F.pmax < 90 && (v.price == null || v.price > F.pmax)) return false;
@@ -1165,18 +1294,20 @@ V.forEach(v => {
       <dt>best for</dt><dd>${v.bestFor}</dd>
     </dl>
     ${v.flag ? `<p class="alert"><b>heads up</b>${v.flag}</p>` : ""}
-    ${v.reviews.length ? `<div class="revs"><p class="revs-h">Reviews <span class="score">${v.rating}<em>/5</em></span></p>${v.reviews.map(r => `
+    ${v.reviews.length ? `<div class="revs"><p class="revs-h">reviews <span class="score">${v.rating}<em>/5</em></span></p>${v.reviews.map(r => `
       <blockquote class="rev">
         <p class="rev-t">${r.text}</p>
         <footer><span class="rev-w">${r.by}</span> <span class="rev-m">${"\u2605".repeat(r.rating)}${"\u2606".repeat(5 - r.rating)} \u00b7 visited ${r.visited}</span></footer>
       </blockquote>`).join("")}</div>` : ""}
+    <div class="revs" data-live hidden></div>
+    <div class="mine" data-mine hidden></div>
     <div class="acts">
       <a class="btn primary" href="${v.url}" target="_blank" rel="noopener noreferrer">hours &amp; booking</a>
       ${im ? "" : `<a class="btn" href="${v.url}" target="_blank" rel="noopener noreferrer">their photos</a>`}
     </div>`;
   cards.appendChild(li); cardOf.set(v.id, li);
-  li.addEventListener("click", e => { if (!e.target.closest("a")) choose(v.id, false); });
-  li.addEventListener("keydown", e => { if (e.key === "Enter" && !e.target.closest("a")) choose(v.id, false); });
+  li.addEventListener("click", e => { if (!e.target.closest("a, [data-mine], [data-live]")) choose(v.id, false); });
+  li.addEventListener("keydown", e => { if (e.key === "Enter" && !e.target.closest("a, [data-mine], [data-live]")) choose(v.id, false); });
   li.addEventListener("mouseenter", () => peek(v.id, true));
   li.addEventListener("mouseleave", () => peek(v.id, false));
 });
@@ -1249,7 +1380,7 @@ document.getElementById("g-open").addEventListener("click", e => {
   b.setAttribute("aria-pressed", String(F.openNow));
   run();
 });
-[["g-access", "access"], ["g-kind", "kind"], ["g-usc", "usc"]].forEach(([id, key]) => {
+[["g-access", "access"], ["g-kind", "kind"], ["g-usc", "usc"], ["g-mine", "mine"]].forEach(([id, key]) => {
   document.getElementById(id).addEventListener("click", e => {
     const b = e.target.closest(".chip"); if (!b) return;
     const v = b.dataset.v, on = !F[key].has(v);
@@ -1268,7 +1399,7 @@ pmax.addEventListener("input", e => {
   run();
 });
 document.getElementById("clear").addEventListener("click", () => {
-  F.q = ""; F.access.clear(); F.kind.clear(); F.usc.clear(); F.openNow = false; F.pmax = 90;
+  F.q = ""; F.access.clear(); F.kind.clear(); F.usc.clear(); F.mine.clear(); F.openNow = false; F.pmax = 90;
   document.getElementById("q").value = ""; pmax.value = 90; pout.textContent = "Any"; setPct();
   document.querySelectorAll(".grp .chip").forEach(c => c.setAttribute("aria-pressed", "false"));
   if (sel != null) choose(sel, false);
@@ -1442,4 +1573,332 @@ document.getElementById("traps").innerHTML = trapText(berlinNow());
   }
 })();
 run();
+/* ---------- the social layer ----------
+   Sign in with X, saved spots, logged visits, the leaderboard and the review panel. It lives in
+   the jommi.fi Worker under /sauna/api/ (repo jommi9/jommi-fi, worker/sauna-api.js), on the same
+   origin as the map, so it only exists where the map is served from jommi.fi. Anywhere else (the
+   github.io copy, the artifact) nothing here shows. Everything people type is escaped with esc(). */
+const API = "/sauna/api";
+const SOC = { on: false, me: null, visits: [], mine: new Map(), pub: null, admin: null };
+const esc = t => String(t ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const XG = `<svg class="xg" width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`;
+const avatar = (p, small) => p.avatar
+  ? `<img class="av${small ? " s" : ""}" src="${esc(p.avatar)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.removeAttribute('src')">`
+  : `<span class="av${small ? " s" : ""}" aria-hidden="true">${esc((p.name || p.handle || "?")[0])}</span>`;
+const xLink = (p, text) => `<a href="https://x.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many || one + "s"}`;
+const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Berlin" }).format(new Date());
+const dayText = d => new Date(d + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short",
+  year: d.slice(0, 4) === today().slice(0, 4) ? undefined : "numeric", timeZone: "UTC" }).toLowerCase();
+const byName = new Map(V.map(v => [v.name, v]));
+const canReview = () => SOC.me && (SOC.me.role === "reviewer" || SOC.me.role === "editor");
+
+async function api(path, body){
+  const r = await fetch(API + path, body === undefined ? { credentials: "same-origin" }
+    : { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || "something went wrong");
+  return data;
+}
+const signIn = () => { location.href = `${API}/auth/start?back=${encodeURIComponent(location.pathname)}`; };
+let toastEl = null, toastT = 0;
+function toast(text){
+  if (!toastEl){ toastEl = document.createElement("div"); toastEl.className = "toast"; toastEl.setAttribute("role", "status"); document.body.appendChild(toastEl); }
+  toastEl.textContent = text; toastEl.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(() => { toastEl.hidden = true; }, 3200);
+}
+
+function setMe(r){
+  SOC.me = r.me;
+  SOC.visits = r.visits || [];
+  SOC.mine = new Map((r.reviews || []).map(x => [x.venue, x]));
+  ME.saved = new Set(r.saved || []);
+  ME.been = new Set(SOC.visits.map(x => x.venue));
+}
+async function loadPublic(fresh){
+  try { SOC.pub = await api("/public" + (fresh ? "?t=" + Date.now() : "")); } catch { SOC.pub = null; }
+  drawBoard(); drawPanel(); V.forEach(drawLive);
+}
+async function loadAdmin(){
+  if (SOC.me?.role !== "editor") return;
+  try { SOC.admin = await api("/admin"); } catch { SOC.admin = null; }
+  drawJoin(); drawAcct();
+}
+
+/* the account button beside search, and its menu */
+const acct = document.getElementById("acct");
+function drawAcct(){
+  acct.hidden = !SOC.on;
+  if (!SOC.on) return;
+  const me = SOC.me;
+  if (!me){
+    acct.innerHTML = `<button class="acct-b" type="button">${XG}sign in</button>`;
+    acct.firstChild.addEventListener("click", signIn);
+    return;
+  }
+  const waiting = SOC.admin ? SOC.admin.applications.length : 0;
+  const role = { member: "apply to review", applied: "review application sent", reviewer: "you're on the review panel",
+    editor: waiting ? `review applications (${waiting})` : "the review panel" }[me.role];
+  const open = acct.querySelector(".acct-m") && !acct.querySelector(".acct-m").hidden;
+  acct.innerHTML = `
+    <button class="acct-b me" type="button" aria-expanded="${open}" aria-haspopup="true" aria-label="Your account">${avatar(me, true)}<span>@${esc(me.handle)}</span></button>
+    <div class="acct-m" ${open ? "" : "hidden"}>
+      <div class="who">${avatar(me)}<div><b>${esc(me.name)}</b><span>@${esc(me.handle)}</span></div></div>
+      <p class="tally"><b>${ME.been.size}</b> of ${V.length} saunas &middot; ${plural(SOC.visits.length, "visit")} &middot; ${ME.saved.size} saved</p>
+      <button class="link" type="button" data-go="board">leaderboard</button>
+      ${role ? `<button class="link" type="button" data-go="h-panel">${role}</button>` : ""}
+      <label><input type="checkbox" data-show ${me.hidden ? "" : "checked"}> show me on the leaderboard</label>
+      <hr>
+      <button class="link" type="button" data-out>sign out</button>
+    </div>`;
+}
+acct.addEventListener("click", async e => {
+  const menu = acct.querySelector(".acct-m"), b = acct.querySelector(".acct-b.me");
+  if (!menu) return;
+  if (e.target.closest(".acct-b")){ menu.hidden = !menu.hidden; b.setAttribute("aria-expanded", String(!menu.hidden)); return; }
+  const go = e.target.closest("[data-go]");
+  if (go){ menu.hidden = true; document.getElementById(go.dataset.go).scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+  if (e.target.closest("[data-out]")){
+    await fetch(API + "/auth/logout", { method: "POST", credentials: "same-origin" }).catch(() => {});
+    setMe({ me: null }); SOC.admin = null; F.mine.clear();
+    document.querySelectorAll("#g-mine .chip").forEach(c => c.setAttribute("aria-pressed", "false"));
+    drawAll(); toast("signed out");
+  }
+});
+acct.addEventListener("change", async e => {
+  if (!e.target.matches("[data-show]")) return;
+  try { const r = await api("/me", { hidden: !e.target.checked }); SOC.me.hidden = r.hidden; loadPublic(true); }
+  catch (err) { e.target.checked = !e.target.checked; toast(err.message); }
+});
+document.addEventListener("click", e => {
+  const menu = acct.querySelector(".acct-m");
+  if (menu && !menu.hidden && !acct.contains(e.target)){ menu.hidden = true; acct.querySelector(".acct-b").setAttribute("aria-expanded", "false"); }
+});
+document.addEventListener("keydown", e => {
+  const menu = acct.querySelector(".acct-m");
+  if (e.key === "Escape" && menu && !menu.hidden){ menu.hidden = true; acct.querySelector(".acct-b").focus(); }
+});
+
+/* on a card: saved and been on the compact row; save, log a visit and review on the open card */
+function drawTags(v){
+  const tags = cardOf.get(v.id).querySelector(".tags");
+  let t = tags.querySelector("[data-me]");
+  const bits = SOC.me ? [ME.saved.has(v.name) ? "★ saved" : "", ME.been.has(v.name) ? "✓ been" : ""].filter(Boolean) : [];
+  if (!bits.length){ if (t) t.remove(); return; }
+  if (!t){ t = document.createElement("span"); t.className = "tag-me"; t.dataset.me = ""; tags.appendChild(t); }
+  t.textContent = bits.join(" · ");
+}
+function drawMine(v){
+  const box = cardOf.get(v.id).querySelector("[data-mine]");
+  box.hidden = !SOC.on;
+  if (!SOC.on) return;
+  if (!SOC.me){
+    box.innerHTML = `<div class="row"><button class="btn quiet" type="button" data-sign>${XG}&nbsp;sign in to save and log visits</button></div>`;
+    return;
+  }
+  const t = today(), days = SOC.visits.filter(x => x.venue === v.name).map(x => x.day).sort().reverse();
+  const saved = ME.saved.has(v.name), been = days.includes(t), mine = SOC.mine.get(v.name);
+  box.innerHTML = `
+    <div class="row">
+      <button class="btn ${saved ? "on" : "quiet"}" type="button" data-save aria-pressed="${saved}">${saved ? "★ saved" : "☆ save"}</button>
+      <button class="btn ${been ? "on" : "quiet"}" type="button" data-today aria-pressed="${been}">${been ? "✓ been today" : "been here today"}</button>
+      <button class="btn quiet" type="button" data-other aria-expanded="false">another day</button>
+      ${canReview() ? `<button class="btn quiet" type="button" data-write>${mine ? "edit your review" : "write a review"}</button>` : ""}
+    </div>
+    <div class="row" data-pick hidden>
+      <input type="date" min="2000-01-01" max="${t}" value="${t}" aria-label="Day of the visit">
+      <button class="btn quiet" type="button" data-log>log visit</button>
+    </div>
+    ${days.length ? `<p class="hint">you've been here ${days.length === 1 ? "once" : days.length + " times"}. tap a day to take it back.</p>
+    <div class="days">${days.map(d => `<button class="day" type="button" data-day="${d}" aria-label="Remove the visit on ${dayText(d)}">${dayText(d)}<i aria-hidden="true">×</i></button>`).join("")}</div>` : ""}
+    <div data-wr></div>`;
+}
+function drawWriter(v){
+  const box = cardOf.get(v.id).querySelector("[data-wr]"), mine = SOC.mine.get(v.name);
+  let rating = mine ? mine.rating : 0;
+  box.innerHTML = `
+    <div class="wr">
+      <div class="stars" role="radiogroup" aria-label="Your rating">${[1, 2, 3, 4, 5].map(i =>
+        `<button type="button" role="radio" data-star="${i}" aria-label="${plural(i, "star")}">★</button>`).join("")}</div>
+      <textarea maxlength="800" placeholder="the heat, the löyly, the crowd, when to go"></textarea>
+      <p class="err" hidden></p>
+      <div class="row">
+        <button class="btn primary" type="button" data-post>${mine ? "save review" : "post review"}</button>
+        <button class="btn quiet" type="button" data-cancel>cancel</button>
+        ${mine ? `<button class="btn quiet" type="button" data-del>delete</button>` : ""}
+      </div>
+    </div>`;
+  const ta = box.querySelector("textarea"); ta.value = mine ? mine.text : "";
+  const light = () => box.querySelectorAll("[data-star]").forEach(b => {
+    b.classList.toggle("lit", +b.dataset.star <= rating); b.setAttribute("aria-checked", String(+b.dataset.star === rating));
+  });
+  light();
+  box.querySelector(".stars").addEventListener("click", e => { const b = e.target.closest("[data-star]"); if (b){ rating = +b.dataset.star; light(); } });
+  box.querySelector("[data-post]").addEventListener("click", async e => {
+    const err = box.querySelector(".err");
+    if (!rating){ err.textContent = "pick a rating"; err.hidden = false; return; }
+    e.target.disabled = true;
+    try {
+      const r = await api("/review", { venue: v.name, rating, text: ta.value });
+      SOC.mine.set(v.name, r); drawMine(v); toast("review posted"); loadPublic(true);
+    } catch (x) { err.textContent = x.message; err.hidden = false; e.target.disabled = false; }
+  });
+  box.querySelector("[data-cancel]").addEventListener("click", () => { box.innerHTML = ""; });
+  box.querySelector("[data-del]")?.addEventListener("click", async () => {
+    try { await api("/review", { venue: v.name, remove: true }); SOC.mine.delete(v.name); drawMine(v); toast("review deleted"); loadPublic(true); }
+    catch (x) { toast(x.message); }
+  });
+  ta.focus();
+}
+function drawLive(v){
+  const box = cardOf.get(v.id).querySelector("[data-live]");
+  const list = SOC.on && SOC.pub ? SOC.pub.reviews.filter(r => r.venue === v.name) : [];
+  box.hidden = !list.length;
+  if (!list.length){ box.innerHTML = ""; return; }
+  const avg = Math.round(list.reduce((a, r) => a + r.rating, 0) / list.length * 10) / 10;
+  box.innerHTML = `<p class="revs-h">reviews <span class="score">${avg}<em>/5</em></span></p>` + list.map(r => `
+    <blockquote class="rev">
+      <p class="rev-t">${esc(r.text)}</p>
+      <footer>${avatar(r, true)}<span class="rev-w">${xLink(r, esc(r.name))}</span>
+        <span class="rev-m">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)} · ${dayText(r.day)}</span></footer>
+    </blockquote>`).join("");
+}
+async function logVisit(v, day, on){
+  try {
+    await api("/visit", { venue: v.name, day, on });
+    if (on){ if (!SOC.visits.some(x => x.venue === v.name && x.day === day)) SOC.visits.push({ venue: v.name, day }); }
+    else SOC.visits = SOC.visits.filter(x => !(x.venue === v.name && x.day === day));
+    ME.been = new Set(SOC.visits.map(x => x.venue));
+    drawMine(v); drawTags(v); drawAcct(); loadPublic(true);
+    if (F.mine.size) run();
+  } catch (x) { toast(x.message); }
+}
+cards.addEventListener("click", async e => {
+  const box = e.target.closest("[data-mine]"); if (!box) return;
+  const v = V.find(x => cardOf.get(x.id).contains(box));
+  if (e.target.closest("[data-sign]")) return signIn();
+  if (e.target.closest("[data-save]")){
+    const on = !ME.saved.has(v.name);
+    try {
+      await api("/saved", { venue: v.name, on });
+      on ? ME.saved.add(v.name) : ME.saved.delete(v.name);
+      drawMine(v); drawTags(v); drawAcct(); if (F.mine.size) run();
+    } catch (x) { toast(x.message); }
+    return;
+  }
+  if (e.target.closest("[data-today]")){ const t = today(); return logVisit(v, t, !SOC.visits.some(x => x.venue === v.name && x.day === t)); }
+  if (e.target.closest("[data-other]")){
+    const pick = box.querySelector("[data-pick]"), b = e.target.closest("[data-other]");
+    pick.hidden = !pick.hidden; b.setAttribute("aria-expanded", String(!pick.hidden));
+    return;
+  }
+  if (e.target.closest("[data-log]")){ const d = box.querySelector("[data-pick] input").value; if (d) logVisit(v, d, true); return; }
+  const day = e.target.closest("[data-day]"); if (day) return logVisit(v, day.dataset.day, false);
+  if (e.target.closest("[data-write]")) drawWriter(v);
+});
+
+/* the leaderboard */
+function drawBoard(){
+  const sec = document.getElementById("board");
+  sec.hidden = !SOC.on || !SOC.pub;
+  if (sec.hidden) return;
+  const me = SOC.me, b = SOC.pub;
+  document.getElementById("lb-people").innerHTML = b.people.length ? b.people.map(p => `
+    <li${me && p.handle === me.handle ? ' class="you"' : ""}>${avatar(p)}
+      <span class="nm">${xLink(p, esc(p.name))}<small>@${esc(p.handle)}</small></span>
+      <span class="n"><b>${p.saunas}</b> ${p.saunas === 1 ? "sauna" : "saunas"}<small>${plural(p.visits, "visit")}</small></span></li>`).join("")
+    : `<li class="empty">nobody has logged a visit yet.</li>`;
+  const vs = b.venues.filter(x => byName.has(x.venue));
+  document.getElementById("lb-venues").innerHTML = vs.length ? vs.map(x => `
+    <li><button class="nm" type="button" data-id="${byName.get(x.venue).id}">${esc(x.venue)}</button>
+      <span class="n"><b>${x.visits}</b> ${x.visits === 1 ? "visit" : "visits"}<small>${plural(x.people, "person", "people")}</small></span></li>`).join("")
+    : `<li class="empty">no visits logged yet.</li>`;
+}
+document.getElementById("lb-venues").addEventListener("click", e => {
+  const b = e.target.closest("[data-id]"); if (!b) return;
+  const id = +b.dataset.id;
+  document.querySelector(".split").scrollIntoView({ behavior: "smooth", block: "start" });
+  if (sel !== id) choose(id, true);
+});
+
+/* the panel: who is on it, and how to join it, all through X */
+function drawPanel(){
+  if (!SOC.on || !SOC.pub) return;
+  const list = SOC.pub.panel;
+  panel.hidden = !list.length;
+  panel.innerHTML = list.map(p => `
+    <div class="pk">${avatar(p)}
+      <span class="k">${p.editor ? "editor" : "reviewer"}</span>
+      <span class="v">${esc(p.name)}</span><span class="who">${xLink(p, "@" + esc(p.handle))}</span>
+      <span class="p">${plural(p.reviews, "review")}</span></div>`).join("");
+}
+const join = document.getElementById("join");
+function drawJoin(){
+  document.getElementById("joinline").hidden = SOC.on;
+  join.hidden = !SOC.on;
+  if (!SOC.on) return;
+  const me = SOC.me;
+  if (!me){
+    join.innerHTML = `<p>Sign in with X to ask to join. The editor reads every application.</p>
+      <div><button class="btn primary" type="button" data-sign>${XG}&nbsp;sign in to apply</button></div>`;
+    return;
+  }
+  if (me.role === "member"){
+    join.innerHTML = `<p>Tell the editor which saunas you go to, how often, and what you look for in one. The answer shows up here.</p>
+      <textarea maxlength="500" aria-label="Your application" placeholder="I go to …"></textarea><p class="err" hidden></p>
+      <div><button class="btn primary" type="button" data-apply>apply to review</button></div>`;
+    return;
+  }
+  if (me.role === "applied"){ join.innerHTML = `<p>Your application is with the editor. Once you're on the panel, each sauna's card gets a <b>write a review</b> button.</p>`; return; }
+  if (me.role === "rejected"){ join.innerHTML = `<p>Your application wasn't taken up this time.</p>`; return; }
+  if (me.role === "reviewer"){ join.innerHTML = `<p>You're on the panel. Open a sauna's card to write a review.</p>`; return; }
+  /* the editor: applications waiting, then everyone on the panel */
+  const a = SOC.admin;
+  if (!a){ join.innerHTML = `<p>Loading applications…</p>`; return; }
+  join.innerHTML = `<p><b>applications</b></p>` + (a.applications.length ? `<div class="queue">${a.applications.map(x => `
+      <div class="q"><div class="who">${avatar(x)}<span>${xLink(x, esc(x.name))} <span class="rev-m">@${esc(x.handle)} · ${dayText(x.day)}</span></span></div>
+        <p>${esc(x.note)}</p>
+        <div class="mine"><div class="row"><button class="btn primary" type="button" data-verdict="approve" data-h="${esc(x.handle)}">approve</button>
+        <button class="btn quiet" type="button" data-verdict="reject" data-h="${esc(x.handle)}">reject</button></div></div></div>`).join("")}</div>`
+      : `<p>No applications waiting.</p>`)
+    + (a.panel.length ? `<p><b>on the panel</b></p><div class="queue">${a.panel.map(x => `
+      <div class="q"><div class="who">${avatar(x)}<span>${xLink(x, esc(x.name))} <span class="rev-m">@${esc(x.handle)}</span></span></div>
+        <div class="mine"><div class="row"><button class="btn quiet" type="button" data-verdict="revoke" data-h="${esc(x.handle)}">take off the panel</button></div></div></div>`).join("")}</div>` : "");
+}
+join.addEventListener("click", async e => {
+  if (e.target.closest("[data-sign]")) return signIn();
+  if (e.target.closest("[data-apply]")){
+    const err = join.querySelector(".err");
+    try { const r = await api("/apply", { note: join.querySelector("textarea").value }); SOC.me.role = r.role; drawJoin(); drawAcct(); }
+    catch (x) { err.textContent = x.message; err.hidden = false; }
+    return;
+  }
+  const b = e.target.closest("[data-verdict]"); if (!b) return;
+  b.disabled = true;
+  try { await api("/admin", { handle: b.dataset.h, verdict: b.dataset.verdict }); await loadAdmin(); loadPublic(true); }
+  catch (x) { toast(x.message); b.disabled = false; }
+});
+
+function drawAll(){
+  document.getElementById("g-mine").hidden = !SOC.me;
+  drawAcct(); drawJoin(); drawBoard(); drawPanel();
+  V.forEach(v => { drawMine(v); drawTags(v); drawLive(v); });
+  run();
+}
+/* The Worker answers on: false until sign-in is set up; a copy of the page off jommi.fi has no
+   /sauna/ path and never asks. */
+if (location.pathname.startsWith("/sauna/")) (async () => {
+  let r;
+  try { r = await api("/me"); } catch { return; }
+  if (!r.on) return;
+  SOC.on = true; setMe(r);
+  const said = new URLSearchParams(location.search).get("x");
+  if (said){
+    toast({ connected: SOC.me ? `signed in as @${SOC.me.handle}` : "signed in", cancelled: "sign-in cancelled",
+      unavailable: "sign-in isn't available right now" }[said] || "sign-in failed. try again.");
+    const u = new URL(location.href); u.searchParams.delete("x"); history.replaceState(null, "", u.pathname + u.search + u.hash);
+  }
+  drawAll();
+  loadPublic(); loadAdmin();
+})();
 </script>
