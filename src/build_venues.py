@@ -241,9 +241,6 @@ LOYLY_TEXT = {
 #     nothing rather than showing a zero. These are one person's opinion and
 #     nobody else's, so they are only ever filled in by hand, never by
 #     selfupdate.py.
-#
-#     The rule: nothing gets 5 stars unless you may throw your own water AND
-#     the stove burns wood. The build refuses a 5 that breaks it.
 FINNISH = {
  "Finnland Zentrum": 4.5,
  "Vabali": 4,
@@ -251,9 +248,6 @@ FINNISH = {
  "KIEZ SAUNA Friedrichshain": 3.5,
 }
 
-# --- Saunas whose stove is wood-fired, confirmed at the source. None of the
-#     listed venues is; this is what a 5-star Finnish score needs.
-WOOD_FIRED = set()
 
 # --- For staff-run Aufguss only: how good the Aufguss itself is, out of 10.
 #     Meaningless where you throw your own, so it is only shown for "staff".
@@ -333,12 +327,9 @@ for i, row in enumerate(V):
     d["loylyText"] = LOYLY_TEXT[d["loyly"]]
     d["style"] = style_of(d["name"], d["loyly"])
     d["finnish"] = FINNISH.get(d["name"])
-    d["woodFired"] = d["name"] in WOOD_FIRED
     if d["finnish"] is not None:
         assert d["finnish"] * 2 == int(d["finnish"] * 2) and 0 <= d["finnish"] <= 5, \
             f"{d['name']}: a Finnish score is 0-5 stars in halves, got {d['finnish']}"
-        assert d["finnish"] < 5 or (d["loyly"] == "self" and d["woodFired"]), \
-            f"{d['name']}: 5 stars needs throw-your-own loyly and a wood-fired stove"
     # An Aufguss score on a sauna where you throw your own would be rating
     # something that does not happen there.
     d["aufgussScore"] = AUFGUSS_SCORE.get(d["name"]) if d["loyly"] == "staff" else None
@@ -358,7 +349,7 @@ for i, row in enumerate(V):
     d["id"] = i
     venues.append(d)
 _names = {v["name"] for v in venues}
-for _n in list(FINNISH) + list(AUFGUSS_SCORE) + list(WOOD_FIRED) + list(BANYA):
+for _n in list(FINNISH) + list(AUFGUSS_SCORE) + list(BANYA):
     assert _n in _names, f"{_n!r} is scored or tagged but is not a venue name"
 json.dump(venues, open('venues.json','w'), separators=(',',':'), ensure_ascii=False)
 json.dump({"picks": [list(p) for p in PICKS], "practical": PRACTICAL, "lastChecked": LAST_CHECKED,

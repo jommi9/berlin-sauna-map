@@ -230,7 +230,7 @@ For a normal sauna session rather than a luxury spa day, **KIEZ SAUNA, Saunabad,
 - **LIQUIDROM** is on Urban Sports Club, but USC entry does not include the sauna — you still pay the supplement.
 - **Stadtbad Neukölln**’s sauna is women-only on Mondays, and it closes for a summer break most years.
 ## Scores
-**Finnish score** rates each place as a sauna in stars out of 5 — heat, löyly, and whether you are allowed to throw water — judged by a Finn, not by the spa around it. Nothing gets 5 stars unless you may throw your own water and the stove burns wood. Finnland Zentrum 4.5★, Vabali 4★, Olivin 4★, KIEZ SAUNA Friedrichshain 3.5★.
+**Finnish score** rates each place as a sauna in stars out of 5 — heat, löyly, and whether you are allowed to throw water — judged by a Finn, not by the spa around it. Finnland Zentrum 4.5★, Vabali 4★, Olivin 4★, KIEZ SAUNA Friedrichshain 3.5★.
 **Aufguss rating** applies only where someone throws for you; it is meaningless where you pour your own. Vabali 10/10.
 Of the 20 venues, 7 run a staff Aufguss, 5 let you throw your own, 3 only dose aroma automatically, and the rest have not said.
 ## Reviews
