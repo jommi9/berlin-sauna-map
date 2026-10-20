@@ -151,7 +151,30 @@ serves it at https://jommi9.github.io/berlin-sauna-map/, and the jommi.fi Worker
 https://jommi.fi/sauna/berlin/ through to it, which is the address canonical and share links use;
 jommi.fi/sauna/ is the hub of all the sauna maps, and the eyebrow links up to it).
 
-## Reviews come in through GitHub issues, never by hand
+## The social layer lives on jommi.fi, behind X
+
+Signing in, saved spots, logged visits, the leaderboard and the review panel are not in
+this repo's data. They are an API in the jommi.fi Worker (repo `jommi9/jommi-fi`,
+`worker/sauna-api.js`, under `/sauna/api/`) with its own D1 database, on the same origin
+as the map so a session cookie works. The page asks `/sauna/api/me` on load and shows
+none of it unless the answer is `on: true`, and only asks at all under a `/sauna/` path,
+so the github.io copy and the artifact have no sign-in, no board and the GitHub review
+links instead. The code is the last block of `tpl2.html`'s script ("the social layer").
+
+- Sign-in goes through the shared `accounts` Worker (game `sauna`), the one Termination
+  uses; nothing here sees an X token. `SAUNA_SIGNIN` in jommi-fi's `wrangler.jsonc` is the
+  switch.
+- A visit is a person's own word. The board counts distinct saunas, one visit per sauna per
+  day, so it is slow to pad and not proof of anything.
+- Becoming a reviewer is an application read by the editor (`SAUNA_ADMINS`, an X handle),
+  who approves it on the map's panel section. Reviews from the panel are served live by the
+  API and render under each card's "reviews"; they never enter `reviews.json`.
+- Everything people type is escaped with `esc()` before it touches `innerHTML`. Keep it so.
+
+## Reviews baked into the build come through GitHub issues, never by hand
+
+This is the older path, and the only one a copy without the API can show. On jommi.fi the
+panel above replaces it.
 
 Two files hold the whole model: `src/reviewers.json` (approved handles) and
 `src/reviews.json` (a flat list, each keyed to a venue `name` and a `reviewer`
