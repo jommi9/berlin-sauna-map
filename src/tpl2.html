@@ -322,7 +322,7 @@ svg.map.dragging{cursor:grabbing}
 .fin.st-none, .fin.st-unknown{color:var(--label-2)}
 .fin.st-unknown{background:transparent; box-shadow:inset 0 0 0 1px var(--sep)}
 .fin .sc{margin-left:2px; padding-left:7px; border-left:1px solid var(--sep); font:600 13px var(--font-num); font-variant-numeric:tabular-nums}
-.fin .sc i{font-style:normal; font-size:10.5px; color:var(--label-3)}
+.fin .sc i{font-style:normal; font-size:11px; margin-left:2px; color:var(--ember)}
 .tags{display:flex; flex-wrap:wrap; gap:6px; margin:11px 0 0}
 .status, .price, .pick-tag{
   display:inline-flex; align-items:center; height:24px; padding:0 9px; border-radius:3px;
@@ -1113,8 +1113,9 @@ const STYLE = {
 };
 function styleBadge(v){
   const s = STYLE[v.style] || STYLE.unknown;
-  const score = v.finnish == null ? "" : `<span class="sc">${v.finnish}<i>/10</i></span>`;
-  return `<span class="fin st-${v.style}" title="${s.title}${v.finnish == null ? "" : `. Finnish score ${v.finnish}/10.`}">${s.icon}<span class="lb">${s.label}</span>${score}</span>`;
+  /* the score is stars out of 5, in halves: shown as the number and one star */
+  const score = v.finnish == null ? "" : `<span class="sc">${v.finnish}<i>\u2605</i></span>`;
+  return `<span class="fin st-${v.style}" title="${s.title}${v.finnish == null ? "" : `. A Finn's score: ${v.finnish} of 5 stars as a sauna.`}">${s.icon}<span class="lb">${s.label}</span>${score}</span>`;
 }
 V.forEach(v => {
   const li = document.createElement("li");
