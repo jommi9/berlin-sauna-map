@@ -41,7 +41,7 @@ V = [
  ["The Westin Grand — Gezer Spa",52.51587,13.38860,"Hotel spa","Mitte",15,"€15 / 2h · €20 / 4h · €25 day card (Stadtgäste)","yes","Classic 4×/mo · Premium & Max 8×/mo · max 2h",
   "Only the Sanarium is open, 60–65°C — two saunas still under repair","Check current spa setup","Currently shown around 14:00–22:00; verify before going","Central USC alternative",None,"Confirmed by Gezer Spa on 3 September 2026. No completion date for the two saunas under repair. The Urban Sports Club listing still shows the old closure banner — ignore it.",
   "https://urbansportsclub.com/en/venues/gezer-spa-fitness?view=new"],
- ["sly Berlin",52.50999,13.40558,"Hotel spa","Mitte",None,"Hotel guests only — no public access","no","No current USC listing",
+ ["sly Berlin",52.52492,13.44815,"Hotel spa","Friedrichshain",None,"Hotel guests only — no public access","no","No current USC listing",
   "KLAFS panoramic rooftop sauna, steam bath, roof terrace, tea, towels and bathrobes","No pool","About 06:00–23:00; hotel pages differ","Top-tier sauna, but you cannot get in",None,"Confirmed by sly Berlin on 2 September 2026: because of the spa's size it is open to hotel guests only. There is no public day pass.",
   "https://www.sly-berlin.com/en/spa-and-gym"],
  ["KIEZ SAUNA Friedrichshain",52.51545,13.44865,"Standalone sauna","Friedrichshain",22,"€22 / 4h","no","Not on Urban Sports Club",
@@ -233,16 +233,27 @@ LOYLY_TEXT = {
 }
 
 
-# --- The Finnish score: how good it is AS A SAUNA, out of 10, judged by a Finn
-#     (jommi9). Not comfort, not the spa around it - heat, loyly, and whether
-#     you are allowed to throw water at all.
+# --- The Finnish score: how good it is AS A SAUNA, in stars out of 5 (halves
+#     allowed), judged by a Finn (jommi9). Not comfort, not the spa around it -
+#     heat, loyly, and whether you are allowed to throw water at all.
 #
-#     None means NOT SCORED YET, and the site says so rather than showing a
-#     zero. These are one person's opinion and nobody else's, so they are only
-#     ever filled in by hand, never by selfupdate.py.
+#     A place missing from the table is NOT SCORED YET, and the site says
+#     nothing rather than showing a zero. These are one person's opinion and
+#     nobody else's, so they are only ever filled in by hand, never by
+#     selfupdate.py.
+#
+#     The rule: nothing gets 5 stars unless you may throw your own water AND
+#     the stove burns wood. The build refuses a 5 that breaks it.
 FINNISH = {
- "Vabali": None,
+ "Finnland Zentrum": 4.5,
+ "Vabali": 4,
+ "Olivin": 4,
+ "KIEZ SAUNA Friedrichshain": 3.5,
 }
+
+# --- Saunas whose stove is wood-fired, confirmed at the source. None of the
+#     listed venues is; this is what a 5-star Finnish score needs.
+WOOD_FIRED = set()
 
 # --- For staff-run Aufguss only: how good the Aufguss itself is, out of 10.
 #     Meaningless where you throw your own, so it is only shown for "staff".
@@ -322,6 +333,12 @@ for i, row in enumerate(V):
     d["loylyText"] = LOYLY_TEXT[d["loyly"]]
     d["style"] = style_of(d["name"], d["loyly"])
     d["finnish"] = FINNISH.get(d["name"])
+    d["woodFired"] = d["name"] in WOOD_FIRED
+    if d["finnish"] is not None:
+        assert d["finnish"] * 2 == int(d["finnish"] * 2) and 0 <= d["finnish"] <= 5, \
+            f"{d['name']}: a Finnish score is 0-5 stars in halves, got {d['finnish']}"
+        assert d["finnish"] < 5 or (d["loyly"] == "self" and d["woodFired"]), \
+            f"{d['name']}: 5 stars needs throw-your-own loyly and a wood-fired stove"
     # An Aufguss score on a sauna where you throw your own would be rating
     # something that does not happen there.
     d["aufgussScore"] = AUFGUSS_SCORE.get(d["name"]) if d["loyly"] == "staff" else None
@@ -340,6 +357,9 @@ for i, row in enumerate(V):
         d["hours"] = f"Sauna closed until {until.day} {until:%B %Y}"
     d["id"] = i
     venues.append(d)
+_names = {v["name"] for v in venues}
+for _n in list(FINNISH) + list(AUFGUSS_SCORE) + list(WOOD_FIRED) + list(BANYA):
+    assert _n in _names, f"{_n!r} is scored or tagged but is not a venue name"
 json.dump(venues, open('venues.json','w'), separators=(',',':'), ensure_ascii=False)
 json.dump({"picks": [list(p) for p in PICKS], "practical": PRACTICAL, "lastChecked": LAST_CHECKED,
            "lastCheckedStamp": LAST_CHECKED_STAMP, "traps": [list(t) for t in TRAPS],

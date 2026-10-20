@@ -225,10 +225,14 @@ machine dosing it with nobody allowed to throw is **no löyly** (a fake sauna by
 Finnish standards). A **banya** throws its own like a Finnish sauna, which the
 löyly cannot tell apart, so banyas are named in `BANYA`; none is listed yet.
 
-**`FINNISH`** is one Finn's score out of 10 of the place *as a sauna* — heat,
-löyly, and whether you may throw water — not of the spa around it. `None` means
-not scored yet and the card shows `FIN –`, never a zero. These are opinions, so
-they are only ever written by hand: `selfupdate.py` must never touch them.
+**`FINNISH`** is one Finn's score of the place *as a sauna*, in stars out of 5
+(halves allowed) — heat, löyly, and whether you may throw water — not of the spa
+around it. A venue missing from the table is not scored yet and its card shows
+no score, never a zero; a scored card shows it on the flag badge ("4.5★").
+Nothing gets 5 stars unless you may throw your own water **and** the stove burns
+wood (`WOOD_FIRED`, empty until one is confirmed at the source); the build
+refuses a 5 that breaks the rule. These are opinions, so they are only ever
+written by hand: `selfupdate.py` must never touch them.
 
 **`AUFGUSS_SCORE`** only renders where `loyly == "staff"`. Rating the Aufguss
 at a self-serve sauna would be scoring something that does not happen there,
