@@ -229,10 +229,8 @@ löyly cannot tell apart, so banyas are named in `BANYA`; none is listed yet.
 (halves allowed) — heat, löyly, and whether you may throw water — not of the spa
 around it. A venue missing from the table is not scored yet and its card shows
 no score, never a zero; a scored card shows it on the flag badge ("4.5★").
-Nothing gets 5 stars unless you may throw your own water **and** the stove burns
-wood (`WOOD_FIRED`, empty until one is confirmed at the source); the build
-refuses a 5 that breaks the rule. These are opinions, so they are only ever
-written by hand: `selfupdate.py` must never touch them.
+These are opinions, so they are only ever written by hand: `selfupdate.py` must
+never touch them, and nothing in the build second-guesses them.
 
 **`AUFGUSS_SCORE`** only renders where `loyly == "staff"`. Rating the Aufguss
 at a self-serve sauna would be scoring something that does not happen there,

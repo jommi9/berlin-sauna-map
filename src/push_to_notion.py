@@ -116,7 +116,6 @@ scored = [v for v in V if v.get("finnish") is not None]
 au = [v for v in V if v.get("aufgussScore") is not None]
 out.append("**Finnish score** rates each place as a sauna in stars out of 5 \u2014 heat, l\u00f6yly, and "
            "whether you are allowed to throw water \u2014 judged by a Finn, not by the spa around it. "
-           "Nothing gets 5 stars unless you may throw your own water and the stove burns wood. "
            + (", ".join(f"{v['name']} {v['finnish']:g}\u2605" for v in sorted(scored, key=lambda v: -v['finnish'])) + "."
               if scored else "Nothing scored yet."))
 out.append("**Aufguss rating** applies only where someone throws for you; it is meaningless "
