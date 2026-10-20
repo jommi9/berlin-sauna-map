@@ -1,6 +1,6 @@
 # Berlin Sauna Map
 
-Twenty Berlin saunas and spas on one map, designed like a phone app: a map with the list in a sheet, a lowercase voice, and a Finn's notes on the löyly.
+Twenty-one Berlin saunas and spas on one map, designed like a phone app: a map with the list in a sheet, a lowercase voice, and a Finn's notes on the löyly.
 
 **Live: https://jommi.fi/sauna/berlin/**
 

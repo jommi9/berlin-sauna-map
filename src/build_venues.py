@@ -62,6 +62,12 @@ V = [
  ["ANTI SPA",52.53125,13.40084,"Sauna & cold plunge studio","Mitte",29,"Regular sessions around €29; promos vary","yes","Classic 4×/mo · Premium & Max 8×/mo",
   "Cedar sauna, lounge; swimwear mandatory","Proper cold plunge","Session based","Best USC sauna plus serious cold plunge","Best cold plunge",None,
   "https://www.antispaces.com/spa/welcome-pass"],
+ # Read off fitnesscompany-berlin.de (sauna, Tarife, opening hours) and its Urban Sports Club
+ # listing on 20 Oct 2026. The USC listing does not mention the sauna; a gym check-in includes
+ # it, per a regular's visits. Coordinates: midway between two directory geocodes ~90 m apart.
+ ["Fitness Company Berlin",52.51290,13.44068,"Gym with sauna","Friedrichshain",11,"€11 sauna-only day ticket · €15 day with gym and classes · 10 sauna visits €90 (valid 3 months)","yes","Classic 4×/mo · Premium 8×/mo · Max 1×/day · sauna included with a gym check-in",
+  "90°C dry sauna and a 60°C bio sauna at 50% humidity","No pool",None,"USC sauna by Berghain",None,"The Urban Sports Club listing does not mention the sauna, but a normal gym check-in gets you in.",
+  "https://www.fitnesscompany-berlin.de/sauna.html"],
  ["Stadtbad Neukölln",52.47919,13.43973,"Public bath / sauna","Neukölln",20,"€20 / 3h · €23 day (reduced €16 / €19) · €10 chip deposit, box office only","yes","Included on Max",
   "Finnish sauna, herbal sauna, steam bath, caldarium","Public bath facilities",None,"Excellent value, and the warm-water pool is back",None,"Monday is a women-only sauna day. Entry closes an hour before closing time.",
   "https://www.berlinerbaeder.de/baeder/detail/stadtbad-neukoelln/"],
@@ -85,6 +91,7 @@ IMG = {
 # --- Which Urban Sports Club tiers actually get into the SAUNA (not just the gym).
 #     Liquidrom is deliberately empty: USC access exists but excludes the sauna.
 USC_TIERS = {
+ "Fitness Company Berlin": ["Classic", "Premium", "Max"],
  "Hilton Berlin \u2014 LivingWell": ["Premium", "Max"],
  "Steigenberger \u2014 Sky Spa": ["Premium", "Max"],
  "Park Inn Alexanderplatz \u2014 Gezer Spa": ["Classic", "Premium", "Max"],
@@ -102,6 +109,8 @@ USC_TIERS = {
 D = lambda a, b: [[a, b]] * 7
 WINTER = "10-01", "03-31"
 OPEN = {
+ # Studio hours from its Tarife page; the 90°C sauna runs all opening hours.
+ "Fitness Company Berlin": {"weekly": [[480, 1380], [480, 1320], [480, 1380], [480, 1320], [480, 1320], [585, 1140], [600, 1200]], "src": "venue"},
  "Vabali": {"weekly": D(540, 1440), "src": "venue",
             "seasons": [{"from": WINTER[0], "to": WINTER[1], "weekly": D(480, 1440)}]},
  "KIEZ SAUNA Friedrichshain": {"weekly": D(900, 1440), "src": "venue",
@@ -138,6 +147,7 @@ OPEN = {
 }
 
 HOURS_TEXT = {
+ "Fitness Company Berlin": "Mon & Wed 08:00\u201323:00 \u00b7 Tue, Thu, Fri 08:00\u201322:00 \u00b7 Sat 09:45\u201319:00 \u00b7 Sun 10:00\u201320:00; the 90\u00b0C sauna runs all opening hours, the bio sauna keeps shorter ones",
  "Vabali": "Daily 09:00\u201324:00 (08:00\u201324:00 from 1 Oct to 31 Mar)",
  "KIEZ SAUNA Friedrichshain": "Daily 15:00\u201324:00 (13:00\u201324:00 from 1 Oct to 31 Mar)",
  "Park Inn Alexanderplatz \u2014 Gezer Spa": "Daily 12:00\u201322:00 (12:00\u201318:00 from 1 Oct to 31 Mar)",
@@ -246,6 +256,7 @@ FINNISH = {
  "Vabali": 4,
  "Olivin": 4,
  "KIEZ SAUNA Friedrichshain": 3.5,
+ "Fitness Company Berlin": 3.5,
 }
 
 
