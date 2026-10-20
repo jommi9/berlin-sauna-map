@@ -193,6 +193,16 @@
 <td>**Best USC sauna plus serious cold plunge**</td>
 </tr>
 <tr>
+<td>[Fitness Company Berlin](https://www.fitnesscompany-berlin.de/sauna.html)</td>
+<td>Gym with sauna</td>
+<td>€11 sauna-only day ticket · €15 day with gym and classes · 10 sauna visits €90 (valid 3 months)</td>
+<td>Classic 4×/mo · Premium 8×/mo · Max 1×/day · sauna included with a gym check-in</td>
+<td>**Not known.** 90°C dry sauna and a 60°C bio sauna at 50% humidity</td>
+<td>No pool</td>
+<td>Mon & Wed 08:00–23:00 · Tue, Thu, Fri 08:00–22:00 · Sat 09:45–19:00 · Sun 10:00–20:00; the 90°C sauna runs all opening hours, the bio sauna keeps shorter ones **Heads up:** The Urban Sports Club listing does not mention the sauna, but a normal gym check-in gets you in.</td>
+<td>USC sauna by Berghain</td>
+</tr>
+<tr>
 <td>[Stadtbad Neukölln](https://www.berlinerbaeder.de/baeder/detail/stadtbad-neukoelln/)</td>
 <td>Public bath / sauna</td>
 <td>€20 / 3h · €23 day (reduced €16 / €19) · €10 chip deposit, box office only</td>
@@ -230,8 +240,8 @@ For a normal sauna session rather than a luxury spa day, **KIEZ SAUNA, Saunabad,
 - **LIQUIDROM** is on Urban Sports Club, but USC entry does not include the sauna — you still pay the supplement.
 - **Stadtbad Neukölln**’s sauna is women-only on Mondays, and it closes for a summer break most years.
 ## Scores
-**Finnish score** rates each place as a sauna in stars out of 5 — heat, löyly, and whether you are allowed to throw water — judged by a Finn, not by the spa around it. Finnland Zentrum 4.5★, Vabali 4★, Olivin 4★, KIEZ SAUNA Friedrichshain 3.5★.
+**Finnish score** rates each place as a sauna in stars out of 5 — heat, löyly, and whether you are allowed to throw water — judged by a Finn, not by the spa around it. Finnland Zentrum 4.5★, Vabali 4★, Olivin 4★, KIEZ SAUNA Friedrichshain 3.5★, Fitness Company Berlin 3.5★.
 **Aufguss rating** applies only where someone throws for you; it is meaningless where you pour your own. Vabali 10/10.
-Of the 20 venues, 7 run a staff Aufguss, 5 let you throw your own, 3 only dose aroma automatically, and the rest have not said.
+Of the 21 venues, 7 run a staff Aufguss, 5 let you throw your own, 3 only dose aroma automatically, and the rest have not said.
 ## Reviews
 0 reviews from a panel of 1 (Joakim Isoaho). They are shown on the site, under each venue. To join the panel or post a review, open an issue: `github.com/jommi9/berlin-sauna-map/issues/new/choose`

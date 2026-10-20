@@ -27,7 +27,7 @@ Aggregators are fine for *discovering names to check*. They are never evidence.
 
 ## Auditing what is already listed
 
-`python3 src/verify_venue.py` with no arguments re-checks all 20 venues against their
+`python3 src/verify_venue.py` with no arguments re-checks every listed venue against its
 own sites. Verdicts:
 
 | | Meaning |
