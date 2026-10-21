@@ -162,8 +162,8 @@ so the github.io copy and the artifact have no sign-in, no board and the GitHub 
 links instead. The code is the last block of `tpl2.html`'s script ("the social layer").
 
 - Sign-in goes through the shared `accounts` Worker (game `sauna`), the one Termination
-  uses; nothing here sees an X token. It turns itself on once that Worker lists the game,
-  and `SAUNA_SIGNIN = "off"` in jommi-fi's `wrangler.jsonc` keeps it off.
+  uses; nothing here sees an X token. `SAUNA_SIGNIN` in jommi-fi's `wrangler.jsonc` is the
+  switch.
 - A visit is a person's own word. The board counts distinct saunas, one visit per sauna per
   day, so it is slow to pad and not proof of anything.
 - Becoming a reviewer is an application read by the editor (`SAUNA_ADMINS`, an X handle),
