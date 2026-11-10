@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Spot numbers that appeared at a venue's own site but are missing from our data.
 
+    python3 engine/watch_changes.py <city>
+
 verify_venue.py answers "is this venue still alive". This answers the next
 question: "has the price or the opening time changed since we wrote it down".
 It reports numbers, never prose - a venue rewording its facilities blurb is
@@ -13,8 +15,10 @@ Two extraction traps, both hit for real:
 Deliberately conservative: it flags candidates for a human, it never edits.
 """
 import json, re, sys, time, unicodedata, urllib.request
+import city
+city.enter()
 
-UA = {"User-Agent": "berlin-sauna-map/1.0 (personal project; https://github.com/jommi9/berlin-sauna-map)"}
+UA = city.UA
 EURO = r"€\s?(\d{1,4}(?:[.,]\d{1,2})?)|(?<![:.\d])(\d{1,4}(?:[.,]\d{1,2})?)\s?(?:€|EUR\b)(?!\s?\d)"
 TIME = r"(?<!\d)(\d{1,2})[:.](\d{2})(?!\d)"
 

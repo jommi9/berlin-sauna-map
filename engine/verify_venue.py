@@ -6,12 +6,14 @@ Aggregator "best saunas in Berlin" lists carry venues that closed years ago
 So a candidate is never proposed on listing evidence alone - it has to clear
 this first.
 
-  python3 verify_venue.py                       # audit every venue in venues.json
-  python3 verify_venue.py "Name" <url>          # check one candidate
+  python3 engine/verify_venue.py                    # audit every listed venue, city by city
+  python3 engine/verify_venue.py <city>             # audit one city
+  python3 engine/verify_venue.py "Name" <url>       # check one candidate, for any city
 """
-import json, re, sys, html, time, datetime, urllib.request, urllib.error
+import json, os, re, sys, html, time, datetime, urllib.request, urllib.error
+import city
 
-UA = {"User-Agent": "berlin-sauna-map/1.0 (personal project; https://github.com/jommi9/berlin-sauna-map)"}
+UA = city.UA
 
 DEAD = [r"dauerhaft geschlossen", r"permanently closed", r"insolven", r"betrieb eingestellt",
         r"endgültig geschlossen", r"dauerhaft schlie", r"hat geschlossen und"]
@@ -83,13 +85,18 @@ def line(e):
 if __name__ == "__main__":
     if len(sys.argv) == 3:
         print(json.dumps(check(sys.argv[1], sys.argv[2]), indent=1, ensure_ascii=False))
+    elif len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] not in city.slugs()):
+        raise SystemExit(f'usage: verify_venue.py [<city>] | "Name" <url>   (cities: {", ".join(city.slugs())})')
     else:
-        vs = json.load(open("venues.json", encoding="utf-8"))
-        bad = 0
-        for v in vs:
-            e = check(v["name"], v["url"]); print(line(e))
-            if e["verdict"] in ("LIKELY CLOSED", "UNREACHABLE", "SUSPECT", "PAUSED", "STALE NOTICE"): bad += 1
-            time.sleep(0.7)
-        print(f"\n{len(vs)} venues checked, {bad} need a human look")
+        total = bad = 0
+        for slug in sys.argv[1:] or city.slugs():
+            vs = json.load(open(os.path.join(city.ROOT, slug, "venues.json"), encoding="utf-8"))
+            print(f"== {slug}")
+            for v in vs:
+                e = check(v["name"], v["url"]); print(line(e))
+                if e["verdict"] in ("LIKELY CLOSED", "UNREACHABLE", "SUSPECT", "PAUSED", "STALE NOTICE"): bad += 1
+                time.sleep(0.7)
+            total += len(vs)
+        print(f"\n{total} venues checked, {bad} need a human look")
         # non-zero exit so CI can gate on it
         sys.exit(1 if bad else 0)

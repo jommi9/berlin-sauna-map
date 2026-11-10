@@ -28,21 +28,13 @@ jobs:
 
       - name: Validate and ingest
         id: ingest
-        working-directory: src
         run: |
           set -o pipefail
-          python3 ingest_issue.py "$RUNNER_TEMP/issue.json" 2>&1 | tee "$RUNNER_TEMP/result.txt"
+          python3 engine/ingest_issue.py "$RUNNER_TEMP/issue.json" 2>&1 | tee "$RUNNER_TEMP/result.txt"
 
       - name: Rebuild the site
         if: success()
-        working-directory: src
-        run: |
-          python3 build_venues.py
-          python3 declutter.py
-          python3 embed_images.py
-          python3 assemble.py tpl2.html ../index.html
-          python3 assemble.py tpl2.html ../artifact.html
-          python3 push_to_notion.py
+        run: python3 engine/build.py --notion
 
       - name: Commit and push
         id: push

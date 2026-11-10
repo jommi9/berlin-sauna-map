@@ -1,5 +1,5 @@
 <callout icon="♨️" color="blue_bg">
-	Berlin sauna shortlist combining hotel day spas, Urban Sports Club options, and regular standalone saunas. **Last checked: 8 October 2026.** Cabin temperatures and Aufguss practice were confirmed by the venues themselves by email. Prices, USC limits and opening hours change often, so recheck before making a special trip. **This page is generated from the berlin-sauna-map repository — edits made here are overwritten by the next build.**
+	Berlin sauna shortlist combining hotel day spas, Urban Sports Club options, and regular standalone saunas. **Last checked: 8 October 2026.** Cabin temperatures and Aufguss practice were confirmed by the venues themselves by email. Prices, USC limits and opening hours change often, so recheck before making a special trip. **This page is generated from the sauna-maps repository — edits made here are overwritten by the next build.**
 </callout>
 <table fit-page-width="true" header-row="true">
 <tr>
@@ -244,4 +244,4 @@ For a normal sauna session rather than a luxury spa day, **KIEZ SAUNA, Saunabad,
 **Aufguss rating** applies only where someone throws for you; it is meaningless where you pour your own. Vabali 10/10.
 Of the 21 venues, 7 run a staff Aufguss, 5 let you throw your own, 3 only dose aroma automatically, and the rest have not said.
 ## Reviews
-0 reviews from a panel of 1 (Joakim Isoaho). They are shown on the site, under each venue. To join the panel or post a review, open an issue: `github.com/jommi9/berlin-sauna-map/issues/new/choose`
+0 reviews from a panel of 1 (Joakim Isoaho). They are shown on the site, under each venue. To join the panel or post a review, open an issue: `github.com/jommi9/sauna-maps/issues/new/choose`

@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Render the Notion page from the repo.
+"""Render a city's Notion page from the repo.
+
+    python3 engine/push_to_notion.py <city>
 
 The repo is the source of truth; the Notion page is a generated view of it.
-This writes notion_page.md, which is then applied to the page with
+This writes <city>/notion_page.md, which is then applied to the page with
 notion-update-page (command: replace_content). Do not hand-edit the Notion
 table - the next build overwrites it.
 
@@ -12,6 +14,8 @@ Two Notion quirks are handled here:
   * A cell must not contain a raw newline, or the table row breaks.
 """
 import json, re, sys
+import city
+CITY = city.enter()
 
 V = json.load(open("venues.json", encoding="utf-8"))
 M = json.load(open("meta.json", encoding="utf-8"))
@@ -81,11 +85,10 @@ HEAD = ["Place", "Type", "Cash / separate access", "USC",
 
 out = []
 out.append('<callout icon="♨️" color="blue_bg">')
-out.append(f"\tBerlin sauna shortlist combining hotel day spas, Urban Sports Club options, and "
-           f"regular standalone saunas. **Last checked: {M['lastChecked']}.** Cabin temperatures and "
+out.append(f"\t{CITY['notionIntro']} **Last checked: {M['lastChecked']}.** Cabin temperatures and "
            f"Aufguss practice were confirmed by the venues themselves by email. Prices, USC limits and "
            f"opening hours change often, so recheck before making a special trip. "
-           f"**This page is generated from the berlin-sauna-map repository — edits made here are "
+           f"**This page is generated from the sauna-maps repository — edits made here are "
            f"overwritten by the next build.**")
 out.append("</callout>")
 out.append('<table fit-page-width="true" header-row="true">')
@@ -133,14 +136,14 @@ who = ", ".join(r["name"] for r in M["reviewers"].values())
 out.append(f"{n} review{'' if n == 1 else 's'} from a panel of "
            f"{len(M['reviewers'])} ({who}). They are shown on the site, "
            f"under each venue. To join the panel or post a review, open an issue: "
-           f"`github.com/jommi9/berlin-sauna-map/issues/new/choose`")
+           f"`github.com/{city.REPO}/issues/new/choose`")
 
 doc = "\n".join(out) + "\n"
 open("notion_page.md", "w", encoding="utf-8").write(doc)
 
 rows = doc.count("<tr>") - 1
 bad = [l for l in doc.splitlines() if l.startswith("<td>") and ("\n" in l or l == "<td></td>")]
-print(f"notion_page.md written: {rows} venue rows, {len(doc)} chars")
+print(f"{CITY['slug']}/notion_page.md written: {rows} venue rows, {len(doc)} chars")
 if rows != len(V):
     print(f"  ! expected {len(V)} rows"); sys.exit(1)
 if bad:

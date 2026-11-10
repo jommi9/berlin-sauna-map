@@ -1,4 +1,27 @@
-# Berlin Sauna Map — working notes
+# Sauna Maps — working notes
+
+## One engine, one folder per city
+
+`engine/` is everything the cities share (build scripts, `template.html`, the self-updater,
+the audit scripts) and names no city. A city is a folder at the repo root with a `city.json`;
+`berlin/` is the only one so far. Its facts are `berlin/venues.py`, its settings
+`berlin/city.json`, and its built pages sit beside them, because GitHub Pages serves the folder
+as it is and the jommi.fi Worker passes `/sauna/berlin/` through to it.
+
+- Every engine script takes the city first: `python3 engine/selfupdate.py berlin --dry-run`.
+  `engine/build.py` rebuilds one city or all of them, and `engine/each.py <script>` runs a
+  script over every city for the workflows.
+- A fact about one city never goes in `engine/`. If the template needs to say something that
+  differs by city, it becomes a field in `city.json` and a placeholder (`__CITY__`, `__LEDE__`,
+  `__TZ__`), and `assemble.py` fails the build on a placeholder left unfilled.
+- Two Berlin assumptions are still in the engine on purpose, waiting for a real second city to
+  settle them: Urban Sports Club (a column in every venue row, a filter, a legend dot and a
+  header figure) and euros (price text and the price bands).
+- The social layer on jommi.fi does not know about cities yet. It keys saved spots, visits and
+  reviews by venue name alone, so that has to change before a second city goes live.
+- The repository was `berlin-sauna-map` until November 2026. `check_deployment.py` reads the
+  repository's name from Actions, so the Pages address follows a rename by itself; `REPO` in
+  `engine/city.py` is the one place the name is written down.
 
 ## Data sourcing: primary source first, always
 
@@ -16,7 +39,7 @@ from one afternoon of checking:
 
 The correct order is:
 
-1. Run `python3 src/verify_venue.py "<name>" <official-url>`.
+1. Run `python3 engine/verify_venue.py "<name>" <official-url>`.
 2. Only if it comes back `OK` (live, mentions sauna, publishes prices or hours) is the
    venue a candidate.
 3. Read the prices and hours off the venue's own page — never off the aggregator.
@@ -27,8 +50,8 @@ Aggregators are fine for *discovering names to check*. They are never evidence.
 
 ## Auditing what is already listed
 
-`python3 src/verify_venue.py` with no arguments re-checks every listed venue against its
-own sites. Verdicts:
+`python3 engine/verify_venue.py` with no arguments re-checks every listed venue in every city
+against its own sites (`verify_venue.py berlin` for one city). Verdicts:
 
 | | Meaning |
 |---|---|
@@ -44,12 +67,13 @@ which had expired three months earlier and was still posted.
 
 ## The repo is the source of truth; Notion is generated
 
-Direction of travel was flipped on 3 September 2026. Venue facts live in
-`src/build_venues.py`. The Notion page *Personal Home / Projects / Berlin Sauna
+Direction of travel was flipped on 3 September 2026. Venue facts live in the city's
+`venues.py` (`berlin/venues.py`; until November 2026 they were the top half of
+`build_venues.py`, which is why older notes name that file). The Notion page *Personal Home / Projects / Berlin Sauna
 Guide / Saunas & Spas* is a **generated view** of it — do not hand-edit that
 table, the next push overwrites it. The callout at the top of the page says so.
 
-Why: `build_venues.py` used to be a hand transcription of Notion, and the two
+Why: the venue data used to be a hand transcription of Notion, and the two
 drifted three times in two days (the InterContinental hotel-guest rates, Olivin's
 price ladder, Liquidrom's tiered admission) — each time after a sync that looked
 complete. One direction of travel makes that class of bug impossible, so the
@@ -57,7 +81,7 @@ old `check_notion_sync.py` drift checker is gone with it.
 
 To publish the table after a data change:
 
-    cd src && python3 push_to_notion.py      # writes notion_page.md
+    python3 engine/push_to_notion.py berlin      # writes berlin/notion_page.md
 
 then apply it with `notion-update-page`, command `replace_content`, passing the
 file's contents. Two Notion quirks are handled in the generator and should not be
@@ -67,7 +91,7 @@ so every cell is whitespace-collapsed; and a code span inside a bold run collide
 into `****`, so notes are written as a bold **Heads up:** label followed by
 unbolded text rather than bolding the whole sentence.
 
-`PICKS`, `PRACTICAL`, `TRAPS` and `LAST_CHECKED` are defined once in `build_venues.py` and
+`PICKS`, `PRACTICAL`, `TRAPS` and `LAST_CHECKED` are defined once in the city's `venues.py` and
 injected into both the site template and the Notion page (the traps as a "Two traps"
 list under the table), so the fast-picks list cannot say two different things. The hero stamp ("Last scan dd.mm.yyyy") is derived from
 `LAST_CHECKED`, so bump that one string when you re-verify the venues. A trap is one
@@ -81,11 +105,11 @@ rates reach Notion but not the site.
 
 ## Two build outputs — do not merge them
 
-`index.html` (full document, has the viewport meta) is for GitHub Pages.
+In each city's folder, `index.html` (full document, has the viewport meta) is for GitHub Pages.
 `artifact.html` (bare fragment) is for publishing as an Artifact, which rejects
 `<html>`/`<head>`/`<body>` and supplies its own head. The Artifact also gets the twelve
 photos inlined as data URIs, because it is one file; the website gets them as
-`src/img/card/*.webp`, which halves the page. `og.png` at the repo root is the share
+`img/card/*.webp`, which halves the page. `og.png` in the city's folder is the share
 image the website's Open Graph tags point at. Serving the fragment as a
 website makes phones lay it out at 980 px and shrink to fit — the bug that made the
 site unreadable on mobile while looking fine in scaled screenshots.
@@ -105,7 +129,7 @@ coherent:
   photos flush to their card's edges. Full rounding is kept for things that are
   round by meaning: dots, the slider knob, the app icon.
 
-- Every colour is a token at the top of `tpl2.html`'s `<style>`: light values on
+- Every colour is a token at the top of `engine/template.html`'s `<style>`: light values on
   `:root`, the same names redefined for dark mode. A component never uses a
   literal colour, except over a photo.
 - Two accents only. Lake blue (`--tint`) is anything you can tap; the warm
@@ -131,8 +155,8 @@ coherent:
 
 A `git push` succeeding is not the same as the site updating. On 4 September 2026
 the Pages deploy failed on an OIDC token timeout while the push reported success,
-and the site quietly served stale content. `src/check_deployment.py` hashes the
-live page against `index.html` and also warns when a seasonal hours switch has just
+and the site quietly served stale content. `engine/check_deployment.py <city>` hashes the
+city's live page against its `index.html` and also warns when a seasonal hours switch has just
 passed; it runs in the weekly audit. If it reports a mismatch, re-run the latest
 "pages build and deployment" workflow run — the build almost always succeeded and
 only the deploy step failed.
@@ -140,15 +164,13 @@ only the deploy step failed.
 ## Rebuild
 
 ```
-cd src
-python3 build_venues.py && python3 declutter.py && python3 embed_images.py \
-  && python3 assemble.py tpl2.html ../index.html \
-  && python3 assemble.py tpl2.html ../artifact.html
+python3 engine/build.py berlin        # or no city, for all of them
 ```
 
-Then republish `index.html` to the existing artifact URL, and push (GitHub Pages
-serves it at https://jommi9.github.io/berlin-sauna-map/, and the jommi.fi Worker passes
-https://jommi.fi/sauna/berlin/ through to it, which is the address canonical and share links use;
+That runs `build_venues.py`, `declutter.py`, `embed_images.py` and `assemble.py` for the city,
+in that order. Then republish `berlin/artifact.html` to the existing artifact URL, and push
+(GitHub Pages serves it at https://jommi9.github.io/sauna-maps/berlin/, and the jommi.fi Worker
+passes https://jommi.fi/sauna/berlin/ through to it, which is the address canonical and share links use;
 jommi.fi/sauna/ is the hub of all the sauna maps, and the eyebrow links up to it).
 
 ## The social layer lives on jommi.fi, behind X
@@ -159,7 +181,7 @@ this repo's data. They are an API in the jommi.fi Worker (repo `jommi9/jommi-fi`
 as the map so a session cookie works. The page asks `/sauna/api/me` on load and shows
 none of it unless the answer is `on: true`, and only asks at all under a `/sauna/` path,
 so the github.io copy and the artifact have no sign-in, no board and the GitHub review
-links instead. The code is the last block of `tpl2.html`'s script ("the social layer").
+links instead. The code is the last block of `engine/template.html`'s script ("the social layer").
 
 - Sign-in goes through the shared `accounts` Worker (game `sauna`), the one Termination
   uses; nothing here sees an X token. `SAUNA_SIGNIN` in jommi-fi's `wrangler.jsonc` is the
@@ -176,17 +198,18 @@ links instead. The code is the last block of `tpl2.html`'s script ("the social l
 This is the older path, and the only one a copy without the API can show. On jommi.fi the
 panel above replaces it.
 
-Two files hold the whole model: `src/reviewers.json` (approved handles) and
-`src/reviews.json` (a flat list, each keyed to a venue `name` and a `reviewer`
+Two files hold the whole model: `reviewers.json` at the repo root (approved handles, one panel
+for every city) and the city's `reviews.json` (a flat list, each keyed to a venue `name` and a `reviewer`
 handle). `build_venues.py` joins them onto venues as `reviews` and a rounded
 `rating`; a review whose `reviewer` is not in `reviewers.json` is silently
 dropped, so revoking someone is a one-line delete.
 
 The path in is `.github/ISSUE_TEMPLATE/reviewer-application.yml` and `review.yml`.
 Applying the `approved` label fires `.github/workflows/ingest-reviews.yml`, which
-runs `src/ingest_issue.py` (validates venue name, handle, rating, date, length;
+runs `engine/ingest_issue.py` (finds the city whose map lists the venue; validates venue name,
+handle, rating, date, length;
 strips markup and HTML-escapes, because review text lands in `innerHTML`),
-rebuilds both outputs, commits, then comments on the issue and closes it. A
+rebuilds every city, commits, then comments on the issue and closes it. A
 rejection exits non-zero, comments the reason and leaves the issue open.
 
 Never write review text yourself, not even to test rendering. Build with a
@@ -195,11 +218,11 @@ and rebuild before committing.
 
 ## The map updates itself where it can prove the change
 
-`src/selfupdate.py` re-reads each venue's own page weekly and rewrites
-`build_venues.py` where a claim is provable, then the workflow rebuilds, pushes
+`engine/selfupdate.py <city>` re-reads each venue's own page weekly and rewrites the city's
+`venues.py` where a claim is provable, then the workflow rebuilds, pushes
 and regenerates Notion. Nothing else in the repo is allowed to write venue data.
 
-Proof means an anchor in `src/sources.py` matching one value on the operator's
+Proof means an anchor in the city's `sources.py` matching one value on the operator's
 own page. Repetition is fine — a price in a summary box and again in a table is
 the same claim twice — but two *different* values under one label is not proof
 and is left alone.
@@ -209,10 +232,10 @@ Three refusals, and none of them should be relaxed:
 | | |
 |---|---|
 | a figure moving below half or above double | a misparse fails loudly instead of writing €6 over €22 |
-| more than four changes in one run | five venues do not all reprice on the same Monday; a broken parser looks exactly like that |
+| more than four changes in one city in one run | five venues do not all reprice on the same Monday; a broken parser looks exactly like that |
 | an edit target that is not unique | the same rule CLAUDE.md already imposes by hand |
 
-Only five venues are anchored, and the others were **measured and rejected**,
+In Berlin only five venues are anchored, and the others were **measured and rejected**,
 not forgotten: KIEZ SAUNA, Lützow, Palace, Titanic and ANTI SPA either render
 prices with JavaScript or print bare amounts with no label beside them
 (`€14.50 €14.50 €29 €29`), so no anchor can tell one tariff from another. No
@@ -227,8 +250,8 @@ Stadtbad shortened its 2026 summer break from 31 Oct to 30 Sep without telling
 anyone — that drift is what this is for.
 
 To add a venue to the self-updater: read its page, find a label that sits
-immediately beside the figure, add the anchor to `sources.py`, and check it
-matches exactly once with `python3 selfupdate.py --dry-run`.
+immediately beside the figure, add the anchor to the city's `sources.py`, and check it
+matches exactly once with `python3 engine/selfupdate.py berlin --dry-run`.
 
 ## Löyly, the Finnish score, and the Aufguss rating
 
@@ -242,11 +265,11 @@ pouring your own is *not allowed*. Change the kind in `HEAT` and the löyly
 follows; there is no second dict to keep in step.
 
 **Which sauna culture** a place belongs to is derived from the löyly too
-(`style_of` in `build_venues.py`) and shown as the flag badge on each card:
+(`style_of` in `engine/build_venues.py`) and shown as the flag badge on each card:
 you throw your own is **Finnish**, a sauna master's Aufguss is **German**, a
 machine dosing it with nobody allowed to throw is **no löyly** (a fake sauna by
 Finnish standards). A **banya** throws its own like a Finnish sauna, which the
-löyly cannot tell apart, so banyas are named in `BANYA`; none is listed yet.
+löyly cannot tell apart, so banyas are named in the city's `BANYA`; none is listed yet.
 
 **`FINNISH`** is one Finn's score of the place *as a sauna*, in stars out of 5
 (halves allowed) — heat, löyly, and whether you may throw water — not of the spa
@@ -257,7 +280,7 @@ never touch them, and nothing in the build second-guesses them.
 
 **`AUFGUSS_SCORE`** only renders where `loyly == "staff"`. Rating the Aufguss
 at a self-serve sauna would be scoring something that does not happen there,
-so `build_venues.py` drops it rather than trusting the caller.
+so `engine/build_venues.py` drops it rather than trusting the caller.
 
 The filter chip that used to say "Aufguss" is now two chips, because the two
 are opposites and a Finn is usually looking for one or the other.

@@ -808,8 +808,8 @@ button.btn{border:0; cursor:pointer}
     <div class="pgrid panel-grid" id="panel"></div>
     <div class="join" id="join" hidden></div>
     <p class="joinline" id="joinline">
-      <a class="btn primary" href="https://github.com/jommi9/berlin-sauna-map/issues/new?template=reviewer-application.yml" target="_blank" rel="noopener noreferrer">apply to review</a>
-      <a class="btn" href="https://github.com/jommi9/berlin-sauna-map/issues/new?template=review.yml" target="_blank" rel="noopener noreferrer">post a review</a>
+      <a class="btn primary" href="https://github.com/jommi9/sauna-maps/issues/new?template=reviewer-application.yml" target="_blank" rel="noopener noreferrer">apply to review</a>
+      <a class="btn" href="https://github.com/jommi9/sauna-maps/issues/new?template=review.yml" target="_blank" rel="noopener noreferrer">post a review</a>
     </p>
   </section>
 
@@ -841,7 +841,7 @@ const heat = p => `var(--b${band(p)})`;
 const dollars = p => p == null ? null : "$".repeat(band(p));
 const money = n => n.toFixed(2).replace(/\.00$/, "");   // 24.5 -> "24.50", 22 -> "22"
 
-function berlinNow(){
+function cityNow(){
   const f = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Berlin", weekday: "short",
     hour: "2-digit", minute: "2-digit", hour12: false, year: "numeric", month: "2-digit", day: "2-digit" });
   const p = Object.fromEntries(f.formatToParts(new Date()).map(x => [x.type, x.value]));
@@ -1194,7 +1194,7 @@ const ME = { saved: new Set(), been: new Set() };
 const TEST = {
   cash: v => v.price != null,
   usc:  v => v.uscTiers.length > 0,
-  open: v => openState(v, berlinNow()) === "open",
+  open: v => openState(v, cityNow()) === "open",
   sauna: v => !/^Hotel/.test(v.kind),
   hotel: v => /^Hotel/.test(v.kind),
   pool:  v => !/^(No |Check)/i.test(v.pool),
@@ -1206,7 +1206,7 @@ const TEST = {
   notyet: v => !ME.been.has(v.name),
 };
 function ok(v){
-  if (F.openNow && openState(v, berlinNow()) !== "open") return false;
+  if (F.openNow && openState(v, cityNow()) !== "open") return false;
   for (const g of ["access", "kind", "mine"])
     if (F[g].size && ![...F[g]].some(k => TEST[k](v))) return false;
   if (F.usc.size && ![...F.usc].some(t => v.uscTiers.includes(t))) return false;
@@ -1263,7 +1263,7 @@ V.forEach(v => {
          </svg>
          <figcaption>${v.district} &middot; map &copy; OpenStreetMap</figcaption>
        </figure>`;
-  const st = openState(v, berlinNow());
+  const st = openState(v, cityNow());
   li.innerHTML = `
     ${media}
     <div class="chead">
@@ -1289,7 +1289,7 @@ V.forEach(v => {
         v.aufgussScore != null ? `<span class="augrade">Aufguss ${v.aufgussScore}<i>/10</i></span>` : ""}${
         v.aufgussNote ? `<span class="src2">${v.aufgussNote}</span>` : ""}</dd>
       <dt>water</dt><dd>${v.pool}</dd>
-      <dt>open</dt><dd>${hoursText(v, berlinNow())}${v.open && SRC_NOTE[v.open.src]
+      <dt>open</dt><dd>${hoursText(v, cityNow())}${v.open && SRC_NOTE[v.open.src]
         ? ` <span class="src">${SRC_NOTE[v.open.src]}</span>` : ""}</dd>
       <dt>best for</dt><dd>${v.bestFor}</dd>
     </dl>
@@ -1407,7 +1407,7 @@ document.getElementById("clear").addEventListener("click", () => {
 });
 /* Statuses go stale on a page left open; refresh them on the minute. */
 setInterval(() => {
-  const now = berlinNow();
+  const now = cityNow();
   V.forEach(v => {
     const el2 = cardOf.get(v.id).querySelector("[data-status]"), st = openState(v, now);
     el2.textContent = STATUS_TEXT[st]; el2.className = "status " + STATUS_CLASS[st];
@@ -1550,7 +1550,7 @@ if (anyReviews) Object.entries(REVIEWERS).forEach(([handle, r]) => {
   panel.appendChild(el2);
 });
 
-document.getElementById("traps").innerHTML = trapText(berlinNow());
+document.getElementById("traps").innerHTML = trapText(cityNow());
 
 /* The cover figures are computed from the venues, so they cannot drift. */
 (() => {

@@ -1,8 +1,18 @@
+"""Draw a city's base map: its Overpass dumps and district outlines into geo.json.
+
+    python3 engine/build_geo.py <city>
+
+Needs the raw dumps in the city's folder (water.json, parks.json, roads.json,
+rail.json, fetched with engine/fetch.sh and not committed) and its
+districts.geojson. The frame is the bbox in the city's city.json, as
+[west, south, east, north]; the map is always 1000 units wide.
+"""
 import json, math, sys
+import city
+CITY = city.enter()
 sys.setrecursionlimit(100000)
 
-LON0, LON1 = 13.300, 13.490
-LAT0, LAT1 = 52.462, 52.547
+LON0, LAT0, LON1, LAT1 = CITY["bbox"]
 W = 1000.0
 def dmerc(lat): return math.degrees(math.log(math.tan(math.pi/4 + math.radians(lat)/2)))
 SX = W/(LON1-LON0); DM0, DM1 = dmerc(LAT0), dmerc(LAT1); H = (DM1-DM0)*SX
@@ -40,10 +50,10 @@ out = {"w": round(W,1), "h": round(H,1), "bbox":[LON0,LAT0,LON1,LAT1], "sx": rou
        "districts": [], "water": [], "rivers": [], "parks": [], "roads": {"motorway":[],"primary":[],"secondary":[]}, "rail": []}
 
 # districts -> boundary lines only
-for f in json.load(open('bezirke.geojson'))['features']:
+for f in json.load(open('districts.geojson'))['features']:
     g = f['geometry']; polys = g['coordinates'] if g['type']=='MultiPolygon' else [g['coordinates']]
     ds = [p for poly in polys if (p := mkpath([(c[0],c[1]) for c in poly[0]], 1.3, True))]
-    if ds: out['districts'].append({"n": f['properties'].get('spatial_alias'), "d": " ".join(ds)})
+    if ds: out['districts'].append({"d": " ".join(ds)})
 
 # water
 for e in json.load(open('water.json'))['elements']:

@@ -1,4 +1,10 @@
+"""Nudge pins that would overlap apart, keeping each as close to its true spot as possible.
+
+    python3 engine/declutter.py <city>      (after build_venues.py)
+"""
 import json, math
+import city
+city.enter()
 vs = json.load(open('venues.json'))
 MIN = 27.0          # min centre-to-centre distance (blips are 22 units wide)
 for v in vs: v['px'], v['py'] = v['x'], v['y']

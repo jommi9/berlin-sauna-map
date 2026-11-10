@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Check the published site actually matches the repo, and warn about seasonal switches.
+"""Check a city's published page actually matches the repo, and warn about seasonal switches.
+
+    python3 engine/check_deployment.py <city> [--wait <minutes>]
 
 A `git push` succeeding is not the same as the site updating. On 4 Sep 2026 the
 Pages deploy failed on an OIDC token timeout while the push reported success, so
@@ -9,10 +11,15 @@ Also warns when a seasonal hours switch has just passed, since three venues
 change opening times on 1 October and back on 31 March, and those dates are
 hard-coded from what the venues said months earlier.
 """
-import datetime, hashlib, json, re, sys, time, urllib.request
+import datetime, hashlib, json, os, re, sys, time, urllib.request
+import city
+CITY = city.enter()
 
-SITE = "https://jommi9.github.io/berlin-sauna-map/"
-UA = {"User-Agent": "berlin-sauna-map-selfcheck/1.0"}
+# GitHub Pages serves the repo as it is, so a city's page is at <owner>.github.io/<repo>/<city>/.
+# In Actions the repository names itself, which keeps this right across a rename.
+OWNER, REPO = os.environ.get("GITHUB_REPOSITORY", city.REPO).split("/")
+SITE = f"https://{OWNER}.github.io/{REPO}/{CITY['slug']}/"
+UA = {"User-Agent": "sauna-maps-selfcheck/1.0"}
 problems = []
 
 # Pages takes a minute or two to publish, so when this runs straight after a
@@ -22,7 +29,7 @@ m = re.search(r"--wait[= ](\d+)", " ".join(sys.argv))
 deadline = time.time() + (int(m.group(1)) * 60 if m else 0)
 
 # --- is the live page the page we built?
-local = hashlib.sha256(open("../index.html", "rb").read()).hexdigest()
+local = hashlib.sha256(open("index.html", "rb").read()).hexdigest()
 while True:
     try:
         live_bytes = urllib.request.urlopen(
@@ -30,14 +37,14 @@ while True:
                                    headers=UA), timeout=60).read()
         live = hashlib.sha256(live_bytes).hexdigest()
         if live == local:
-            print(f"ok  live site matches the repo ({local[:12]})")
+            print(f"ok  {SITE} matches the repo ({local[:12]})")
             break
-        err = (f"live site does NOT match the repo\n"
+        err = (f"{SITE} does NOT match the repo\n"
                f"      repo {local[:12]}\n      live {live[:12]}\n"
                f"      A push can succeed while the Pages deploy fails. "
                f"Re-run the latest 'pages build and deployment' run.")
     except Exception as e:
-        err = f"could not fetch the live site: {type(e).__name__} {e}"
+        err = f"could not fetch {SITE}: {type(e).__name__} {e}"
     if time.time() >= deadline:
         problems.append(err)
         break

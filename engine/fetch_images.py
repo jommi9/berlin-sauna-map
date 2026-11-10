@@ -1,20 +1,16 @@
-import json, re, time, urllib.parse, urllib.request, html, os
+"""Read the credits for a city's photos off Wikimedia Commons into img/credits.json.
 
-PICK = {
- "hyatt":"File:2023 Grand Hyatt Hotel Berlin.jpg",
- "hilton":"File:MitteMohrenstraßeHotelHilton.jpg",
- "steigenberger":"File:2023 Steigenberger Hotel Berlin.jpg",
- "derome":"File:Hotel de Rome, Berlin (1X7A5173).jpg",
- "adlon":"File:Adlon Hotel Berlin Germany - 01.jpg",
- "palace":"File:Hotel Palace bei Nacht 20140726 5.jpg",
- "titanic":"File:2023 Hotel Titanic Berlin.jpg",
- "parkinn":"File:Park Inn by Radisson Alexanderplatz - Berlin.jpg",
- "intercon":"File:Berlin Hotel Intercontinental-20241207-RM-104709.jpg",
- "westin":"File:Westin Grand Berlin, 2024 (01).jpg",
- "neukoelln":"File:Stadtbad B-Neukoelln 07-2014.jpg",
- "liquidrom":"File:Tempodrom, Berlín, Alemania, 2016-04-22, DD 01-03 HDR.JPG",
-}
-UA = {"User-Agent":"berlin-sauna-map/1.0 (personal project; https://github.com/jommi9/berlin-sauna-map)"}
+    python3 engine/fetch_images.py <city>
+
+Which Commons file stands behind which photo key is the city's own table,
+COMMONS in its venues.py.
+"""
+import json, re, time, urllib.parse, urllib.request, html, os
+import city
+city.enter()
+from venues import COMMONS as PICK
+
+UA = city.UA
 def strip(h_):
     return re.sub(r'\s+',' ', html.unescape(re.sub(r'<[^>]+>','',h_ or ''))).strip()
 

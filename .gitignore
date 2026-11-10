@@ -1,12 +1,14 @@
 *.pyc
 __pycache__/
-# Raw Overpass dumps - regenerate with src/fetch.sh only if the map bbox changes
-src/roads.json
-src/rail.json
-src/parks.json
-src/water.json
-# Full-size Commons downloads - re-fetch with src/fetch_images.py
-src/img/raw/
-# Derived from src/img/card/*.webp by src/embed_images.py
-src/img/embed.json
-src/contact.html
+# Raw Overpass dumps - regenerate with engine/fetch.sh only if a city's map bbox changes
+/*/roads.json
+/*/rail.json
+/*/parks.json
+/*/water.json
+# Full-size Commons downloads - re-fetch with engine/fetch_images.py <city>
+/*/img/raw/
+# Derived from <city>/img/card/*.webp by engine/embed_images.py
+/*/img/embed.json
+# Where everything lived before the engine/<city> layout. Nothing tracked is left there; an
+# older clone may still hold its untracked raw dumps, which belong in berlin/ now.
+/src/

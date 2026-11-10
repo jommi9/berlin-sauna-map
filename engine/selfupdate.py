@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Re-read what the venues publish, and update build_venues.py where it is proven.
+"""Re-read what a city's venues publish, and update its venues.py where it is proven.
+
+    python3 engine/selfupdate.py <city> [--dry-run]
 
 This is the part that lets the map keep itself current. verify_venue.py asks
 "is this venue alive"; watch_changes.py asks "did something move"; this asks
 "did something move in a way I can prove, and can I therefore fix it myself".
 
-Proof means an anchor from sources.py matching EXACTLY ONCE on the venue's own
+Proof means an anchor from the city's sources.py matching EXACTLY ONCE on the venue's own
 page. Anything less is reported and left alone.
 
 Three guardrails, because an unattended writer that is wrong is worse than one
@@ -25,9 +27,12 @@ Use --dry-run to see what it would do without touching the file.
 """
 import datetime, json, re, sys, unicodedata, urllib.request
 import concurrent.futures as cf
+import city
+CITY = city.enter()
 import sources
 
-UA = {"User-Agent": "berlin-sauna-map/1.0 (personal project; https://github.com/jommi9/berlin-sauna-map)"}
+UA = city.UA
+DATA = "venues.py"          # the city's facts, the only file this script may rewrite
 MAX_CHANGES = 4
 DRY = "--dry-run" in sys.argv
 TODAY = datetime.date.today()
@@ -68,7 +73,7 @@ def amount(s):
     return float(s.replace(",", "."))
 
 def money(f):
-    """Back to the notation build_venues.py uses: 27.5 -> '27.5', 22.0 -> '22'."""
+    """Back to the notation venues.py uses: 27.5 -> '27.5', 22.0 -> '22'."""
     return f"{f:g}"
 
 def label_money(f):
@@ -76,7 +81,7 @@ def label_money(f):
     return f"{f:.2f}" if f % 1 else f"{f:.0f}"
 
 venues = {v["name"]: v for v in json.load(open("venues.json", encoding="utf-8"))}
-src = open("build_venues.py", encoding="utf-8").read()
+src = open(DATA, encoding="utf-8").read()
 changes, problems, notes = [], [], []
 
 def fetch(name):
@@ -183,7 +188,7 @@ if len(changes) > MAX_CHANGES:
 def replace_once(text, old, new, why):
     n = text.count(old)
     if n != 1:
-        raise SystemExit(f"REFUSED: {why}: {old!r} appears {n} times in build_venues.py, "
+        raise SystemExit(f"REFUSED: {why}: {old!r} appears {n} times in {CITY['slug']}/{DATA}, "
                          f"expected exactly once. Nothing written.")
     return text.replace(old, new)
 
@@ -211,6 +216,6 @@ if DRY:
     print(f"\n--dry-run: {len(changes)} change(s) not written")
     sys.exit(0)
 
-open("build_venues.py", "w", encoding="utf-8").write(src)
-print(f"\nwrote {len(changes)} change(s) into build_venues.py, stamped {stamp}")
+open(DATA, "w", encoding="utf-8").write(src)
+print(f"\nwrote {len(changes)} change(s) into {CITY['slug']}/{DATA}, stamped {stamp}")
 sys.exit(1 if problems else 0)

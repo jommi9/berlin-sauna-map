@@ -1,6 +1,11 @@
 """Encode img/card/*.webp into img/embed.json as data URIs, with attribution
-from img/credits.json. Run after fetch_images.py, before assemble.py."""
+from img/credits.json. Run after fetch_images.py, before assemble.py.
+
+    python3 engine/embed_images.py <city>
+"""
 import json, base64, os
+import city
+city.enter()
 c = json.load(open('img/credits.json', encoding='utf-8'))
 emb = {}
 for k, v in c.items():
