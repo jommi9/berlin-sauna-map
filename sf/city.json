@@ -1,0 +1,10 @@
+{
+  "name": "San Francisco",
+  "country": "US",
+  "timezone": "America/Los_Angeles",
+  "bbox": [-122.52, 37.7, -122.355, 37.812],
+  "lede": "A Russian banya and Japanese baths, with more to come.",
+  "notionIntro": "San Francisco sauna shortlist.",
+  "currency": "$",
+  "usc": false
+}

@@ -2,7 +2,7 @@
 
 Public saunas and spas, priced and plotted one city at a time, with a Finn's notes on the löyly. Each city is a map designed like a phone app: the map with the list in a sheet over it, and a lowercase voice.
 
-**Live: https://jommi.fi/sauna/** (the hub) and **https://jommi.fi/sauna/berlin/** (Berlin, twenty-one venues, the only city open so far).
+**Live: https://jommi.fi/sauna/** (the hub) and **https://jommi.fi/sauna/berlin/** (Berlin, twenty-one venues, the only city open so far). Helsinki, New York and San Francisco have first, naive maps in `helsinki/`, `nyc/` and `sf/`, served by GitHub Pages but not yet opened on the hub.
 
 The repository was called `berlin-sauna-map` while Berlin was the only city planned. GitHub
 redirects the old repository address.
@@ -46,7 +46,7 @@ In a city's folder (`berlin/`):
 | File | What it is |
 |---|---|
 | `venues.py` | **The source of truth.** Every venue fact, as tables keyed by venue name: the venue rows, opening hours, cabin temperatures and Aufguss practice, the Finnish scores, the fast picks, the "two traps" box, the last-checked date. Edit content here; everything else is generated from it. |
-| `city.json` | What makes the page this city's: its name, country, timezone, the map's bounding box (`[west, south, east, north]`), the second sentence of the lede, and the opening line of its Notion page. The folder's name is the city's slug and its address under `/sauna/`. |
+| `city.json` | What makes the page this city's: its name, country, timezone, the map's bounding box (`[west, south, east, north]`), the second sentence of the lede, the opening line of its Notion page, its currency sign (`currency`), whether Urban Sports Club exists there (`usc`), and the OSM admin level drawn as district lines (`districtLevel`). The folder's name is the city's slug and its address under `/sauna/`. |
 | `sources.py` | Anchors for `selfupdate.py`: the regexes that pin one figure on a venue's own page to one figure in `venues.py`. |
 | `reviews.json` | Reviews of this city's venues. Written by the ingest workflow, never by hand. |
 | `index.html` | The built page (~400 KB). Its photos are served as files from `img/card/`, and it carries the canonical link, Open Graph tags and JSON-LD that the Artifact build leaves out. |
@@ -73,6 +73,8 @@ In `engine/` (every script takes the city as its first argument, for example `py
 | `assemble.py` | Inlines the JSON and writes the final ASCII-only `index.html` and `artifact.html`. |
 | `push_to_notion.py` | Renders a city's Notion page into `notion_page.md`, ready to apply with `replace_content`. |
 | `fetch.sh` | Overpass fetcher with mirror fallback and retries. Only needed to refresh the cached geodata. |
+| `osm_extract.py` | The same raw dumps cut from an OpenStreetMap `.osm.pbf` extract, for where Overpass cannot be reached (it resets every connection from a cloud session). Also writes the city's district lines, place names for labels, and a list of everything mapped as a sauna or bath, which gives coordinates and is never evidence. |
+| `og.js` | Takes a city's `og.png`: its map with the hero over it as a card, at 1200x630. |
 | `selfupdate.py` | Re-reads each venue's page and rewrites the city's `venues.py` where a claim is provable. The only script allowed to write venue data. |
 | `verify_venue.py` | Checks every venue against its own site: `OK` / `THIN` / `PAUSED` / `STALE NOTICE` / `BLOCKED` / `SUSPECT` / `LIKELY CLOSED` / `UNREACHABLE`. With no argument it audits every city; with a name and a URL it checks one candidate. |
 | `watch_changes.py` | Flags a venue whose own page no longer shows any price we list. Conservative by design — it reports, never edits. |
@@ -105,14 +107,16 @@ the cached OSM files. To refresh those from Overpass, see the queries in `fetch.
 ## Opening a new city
 
 1. Make its folder, named for its slug (`helsinki/`), with a `city.json` like Berlin's.
-2. Draw its base map: fetch the Overpass dumps for its bounding box with `engine/fetch.sh`, add
-   a `districts.geojson`, and run `python3 engine/build_geo.py helsinki`.
+2. Draw its base map: download its extract (`https://download.bbbike.org/osm/bbbike/<Name>/<Name>.osm.pbf`),
+   run `python3 engine/osm_extract.py helsinki <file>` and then `python3 engine/build_geo.py helsinki`.
+   The sea comes from the coastline, and the labels from the extract's suburb names.
 3. Write its `venues.py`, one venue at a time, each checked first with
    `python3 engine/verify_venue.py "<name>" <official-url>` and read off the venue's own page.
    Only `V` and `LAST_CHECKED` are required; leave out any table the city has no use for.
    Add an empty `reviews.json` (`[]`), and a `sources.py` once a venue has a price that can be
    anchored.
-4. `python3 engine/build.py helsinki`, then take its `og.png`.
+4. `python3 engine/build.py helsinki`, then take its `og.png` with `node engine/og.js helsinki`
+   while the repository is served on port 8765.
 5. In `jommi9/jommi-fi`: add the slug to the live cities in `worker/index.js` and
    `worker/sauna-api.js`, add its path to `run_worker_first` in `wrangler.jsonc`, and set it to
    `live` in that repository's city list (`sauna.ts`).
@@ -120,9 +124,8 @@ the cached OSM files. To refresh those from Overpass, see the queries in `fetch.
 The workflows pick a new city up by themselves, because they run over every folder that has a
 `city.json`.
 
-Two parts of the engine still assume Berlin, and each needs a decision that only a real second
-city can settle. Urban Sports Club is a column in every venue row and has its own filter, legend
-dot and header figure in the template. Prices are written and banded in euros.
+A city without Urban Sports Club sets `"usc": false` and the page drops every trace of it; prices
+are written in the city's `currency` and banded with the same numbers everywhere.
 
 ## Keeping itself current
 

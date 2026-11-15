@@ -377,7 +377,11 @@ svg.map.dragging{cursor:grabbing}
 .btn.primary{background:var(--tint); color:var(--on-tint)}
 
 /* map drawing */
-.parks{fill:var(--park)} .water{fill:var(--water)}
+.parks{fill:var(--park)} .water{fill:var(--water)} .sea{fill-rule:evenodd}
+/* A city without Urban Sports Club (city.json "usc": false) drops every trace of it. */
+.no-usc .usc-only{display:none !important} .wrap:not(.no-usc) .no-usc-only{display:none}
+.stats.n3{grid-template-columns:repeat(3, minmax(0,1fr))} .stats.n2{grid-template-columns:repeat(2, minmax(0,1fr))}
+.collage:empty{display:none}
 .river{fill:none; stroke:var(--water); stroke-linecap:round; stroke-linejoin:round}
 .districts{fill:none; stroke:var(--border); stroke-width:1; stroke-dasharray:4 3; opacity:.5}
 .rail{fill:none; stroke:var(--rail); stroke-width:.9; stroke-dasharray:3.4 3.6; opacity:.6}
@@ -652,7 +656,7 @@ button.btn{border:0; cursor:pointer}
 }
 </style>
 
-<div class="wrap">
+<div class="wrap" id="wrap">
   <header class="top">
     <div class="intro">
       <div class="brand">
@@ -671,8 +675,8 @@ button.btn{border:0; cursor:pointer}
       <dl class="stats">
         <div><dt>places</dt><dd><span class="n" id="n-count">__COUNT__</span><span class="s">read at source</span></dd></div>
         <div><dt>cheapest</dt><dd><span class="n" id="stat-cheap">&ndash;</span><span class="s" id="stat-cheap-s">&nbsp;</span></dd></div>
-        <div><dt>on USC</dt><dd><span class="n" id="stat-usc">&ndash;</span><span class="s">Urban Sports Club</span></dd></div>
-        <div><dt>hottest</dt><dd><span class="n" id="stat-hot">&ndash;</span><span class="s" id="stat-hot-s">&nbsp;</span></dd></div>
+        <div class="usc-only"><dt>on USC</dt><dd><span class="n" id="stat-usc">&ndash;</span><span class="s">Urban Sports Club</span></dd></div>
+        <div id="stat-hot-box"><dt>hottest</dt><dd><span class="n" id="stat-hot">&ndash;</span><span class="s" id="stat-hot-s">&nbsp;</span></dd></div>
       </dl>
     </div>
     <div class="collage" id="collage"></div>
@@ -697,7 +701,7 @@ button.btn{border:0; cursor:pointer}
         </div>
         <div class="grp" id="g-access" role="group" aria-label="Filter by access">
           <button class="chip" data-v="cash" aria-pressed="false">day ticket</button>
-          <button class="chip" data-v="usc" aria-pressed="false">on USC</button>
+          <button class="chip usc-only" data-v="usc" aria-pressed="false">on USC</button>
         </div>
         <div class="grp" id="g-kind" role="group" aria-label="Filter by venue type">
           <button class="chip" data-v="sauna" aria-pressed="false">not a hotel</button>
@@ -707,7 +711,7 @@ button.btn{border:0; cursor:pointer}
           <button class="chip" data-v="ownloyly" aria-pressed="false">throw your own</button>
           <button class="chip" data-v="group" aria-pressed="false">group hire</button>
         </div>
-        <div class="grp" id="g-usc" role="group" aria-label="Filter by Urban Sports Club tier">
+        <div class="grp usc-only" id="g-usc" role="group" aria-label="Filter by Urban Sports Club tier">
           <span class="lbl">USC tier</span>
           <button class="chip" data-v="Classic" aria-pressed="false">Classic</button>
           <button class="chip" data-v="Premium" aria-pressed="false">Premium</button>
@@ -756,16 +760,16 @@ button.btn{border:0; cursor:pointer}
           </div>
         </div>
         <div class="key" aria-label="Map key">
-          <span class="ki">&euro;12.50 <span class="ramp" aria-hidden="true"><i style="background:var(--b1)"></i><i style="background:var(--b2)"></i><i style="background:var(--b3)"></i><i style="background:var(--b4)"></i></span> &euro;90</span>
-          <span class="ki"><svg width="12" height="12" viewBox="-6 -6 12 12" aria-hidden="true"><circle class="usc" r="4.4"/></svg>on USC</span>
-          <span class="ki"><svg width="15" height="15" viewBox="-13 -13 26 26" aria-hidden="true"><circle class="b" r="11" fill="var(--b3)"/></svg>priced per booking</span>
+          <span class="ki"><span id="key-lo"></span> <span class="ramp" aria-hidden="true"><i style="background:var(--b1)"></i><i style="background:var(--b2)"></i><i style="background:var(--b3)"></i><i style="background:var(--b4)"></i></span> <span id="key-hi"></span></span>
+          <span class="ki usc-only"><svg width="12" height="12" viewBox="-6 -6 12 12" aria-hidden="true"><circle class="usc" r="4.4"/></svg>on USC</span>
+          <span class="ki" id="key-group"><svg width="15" height="15" viewBox="-13 -13 26 26" aria-hidden="true"><circle class="b" r="11" fill="var(--b3)"/></svg>priced per booking</span>
           <span class="ki"><svg width="15" height="15" viewBox="-13 -13 26 26" aria-hidden="true"><rect class="b" x="-11" y="-11" width="22" height="22" rx="4.5" fill="var(--b0)"/></svg>price unclear</span>
         </div>
       </div>
     </div>
   </div>
 
-  <section class="sec" aria-labelledby="h-picks">
+  <section class="sec" id="sec-picks" aria-labelledby="h-picks">
     <h2 class="sec-h" id="h-picks">fast picks</h2>
     <p class="sec-sub">The one answer for each way you might turn up: cash in hand, a membership card, or two hours to kill.</p>
     <div class="pgrid scroll" id="picks"></div>
@@ -783,17 +787,17 @@ button.btn{border:0; cursor:pointer}
   <section class="sec" aria-labelledby="h-info">
     <h2 class="sec-h" id="h-info">before you go</h2>
     <div class="info" style="margin-top:16px">
-      <article class="note">
+      <article class="note" id="note-practical">
         <h3>benchmarks</h3>
         <p>__PRACTICAL__</p>
       </article>
-      <article class="note">
+      <article class="note" id="note-traps">
         <h3>two traps</h3>
         <p id="traps"></p>
       </article>
       <article class="note">
         <h3>prices change</h3>
-        <p>This is a personal, non-commercial guide with no affiliation to any venue listed. Prices, opening hours and Urban Sports Club terms are recorded as each venue publishes them and <strong>change without notice</strong>, so check with the venue before a special trip. Where a schedule could not be confirmed, the card says so rather than guessing.</p>
+        <p>This is a personal, non-commercial guide with no affiliation to any venue listed. Prices<span class="no-usc-only"> and opening hours</span><span class="usc-only">, opening hours and Urban Sports Club terms</span> are recorded as each venue publishes them and <strong>change without notice</strong>, so check with the venue before a special trip. Where a schedule could not be confirmed, the card says so rather than guessing.</p>
       </article>
       <article class="note">
         <h3>where the data comes from</h3>
@@ -832,6 +836,9 @@ button.btn{border:0; cursor:pointer}
 <script>
 const GEO = /*__GEO__*/;
 const V = /*__VENUES__*/;
+/* From the city's city.json: its currency sign, and whether Urban Sports Club exists there. */
+const CUR = "__CUR__", USC = __USC__;
+if (!USC) document.getElementById("wrap").classList.add("no-usc");
 const IMG = /*__IMAGES__*/;
 const NS = "http://www.w3.org/2000/svg";
 const el = (n, a) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); return e; };
@@ -914,6 +921,7 @@ map.setAttribute("viewBox", `0 0 ${GEO.w} ${GEO.h}`);
 const defs = el("defs"), atlas = el("g", { id: "atlas" });
 const put = (d, cls, w) => { if (!d) return; const a = { d, class: cls }; if (w) a["stroke-width"] = w; atlas.appendChild(el("path", a)); };
 put(GEO.parks, "parks");
+put(GEO.sea, "water sea");
 put(GEO.water, "water");
 put(GEO.river, "river", 3.6); put(GEO.canal, "river", 2.0);
 put(GEO.rail, "rail");
@@ -925,8 +933,9 @@ defs.appendChild(atlas); map.appendChild(defs);
 map.appendChild(el("use", { href: "#atlas" }));
 GEO.labels.forEach(l => { const t = el("text", { x: l.x, y: l.y, class: "dlabel" }); t.textContent = l.t; map.appendChild(t); });
 
-/* scale bar: 1 map unit = 12.88 m at this latitude, so 2 km = 155.3 units */
-const KM = 77.66, sx = 22, sy = GEO.h - 22;
+/* scale bar: GEO.sx map units per degree of longitude, and a degree of longitude is
+   111.32 km times the cosine of the latitude (77.66 units per km in Berlin) */
+const KM = GEO.sx / (111.32 * Math.cos((GEO.bbox[1] + GEO.bbox[3]) / 2 * Math.PI / 180)), sx = 22, sy = GEO.h - 22;
 const sg = el("g", { class: "scalebar" });
 sg.appendChild(el("rect", { x: sx - 9, y: sy - 17, width: KM * 2 + 52, height: 26, rx: 3, fill: "var(--land)", opacity: .82 }));
 sg.appendChild(el("path", { d: `M${sx},${sy - 6} v6 h${KM * 2} v-6 M${sx + KM},${sy} v-4`, fill: "none", stroke: "var(--label-2)", "stroke-width": 1.4 }));
@@ -963,7 +972,14 @@ map.appendChild(nameTag);
    (a phone) a 22-unit blip is 7px - too small to see, let alone tap. So crop
    the frame to where the venues actually are and scale the blips up until they
    are a real touch target. */
-const EXTENT = [164, 57, 658, 569];               // venue bounding box + margin
+/* the venues' bounding box with a 40-unit margin, at least 300 units each way */
+const EXTENT = (() => {
+  const xs = V.map(v => v.x), ys = V.map(v => v.y);
+  let x0 = Math.min(...xs) - 40, x1 = Math.max(...xs) + 40, y0 = Math.min(...ys) - 40, y1 = Math.max(...ys) + 40;
+  if (x1 - x0 < 300){ const c = (x0 + x1) / 2; x0 = c - 150; x1 = c + 150; }
+  if (y1 - y0 < 300){ const c = (y0 + y1) / 2; y0 = c - 150; y1 = c + 150; }
+  return [x0, y0, x1 - x0, y1 - y0];
+})();
 let VB = [0, 0, GEO.w, GEO.h];
 let base = null, view = null, zoomed = false;     // pan/zoom state, initialised by fitMap
 let POS = new Map(V.map(v => [v.id, { px: v.px, py: v.py }]));
@@ -1006,8 +1022,10 @@ function fitMap(){
      framed in the part above it and the frame is then extended under it. */
   const lc = document.querySelector(".listcol");
   const hidden = lc && getComputedStyle(lc).position === "absolute" ? Math.min(lc.offsetHeight, h * 0.4) : 0;
-  VB = small ? frameFor(w, Math.max(h - hidden, 1)) : [0, 0, GEO.w, GEO.h];
-  if (small && hidden) VB[3] = VB[3] * h / (h - hidden);
+  /* A city map much taller or wider than its box is cropped to its venues on any screen. */
+  const crop = small || Math.abs(Math.log((GEO.w / GEO.h) / (w / h))) > 0.45;
+  VB = crop ? frameFor(w, Math.max(h - hidden, 1)) : [0, 0, GEO.w, GEO.h];
+  if (crop && hidden) VB[3] = VB[3] * h / (h - hidden);
   map.setAttribute("viewBox", VB.join(" "));
   map.classList.toggle("small", small);
   base = VB.slice(); view = VB.slice(); zoomed = false;
@@ -1205,6 +1223,11 @@ const TEST = {
   been:   v => ME.been.has(v.name),
   notyet: v => !ME.been.has(v.name),
 };
+/* A chip no venue in this city could ever match (no hotel spas, no group hire) is not offered. */
+document.querySelectorAll('.chip[data-v]').forEach(c => {
+  const t = TEST[c.dataset.v];
+  if (t && !["open", "saved", "been", "notyet", "usc"].includes(c.dataset.v) && !V.some(t)) c.hidden = true;
+});
 function ok(v){
   if (F.openNow && openState(v, cityNow()) !== "open") return false;
   for (const g of ["access", "kind", "mine"])
@@ -1224,7 +1247,8 @@ const CURATOR = (([h, r]) => ({ handle: h, name: r ? r.name : "the editor" }))(
   Object.entries(/*__REVIEWERS__*/).find(([, r]) => r.founder) || []);
 const cards = document.getElementById("cards"), cardOf = new Map();
 const priceShort = v => v.price == null ? "price unclear"
-  : v.pricing === "group" ? `\u20ac${money(v.price)} per booking` : `from \u20ac${money(v.price)}`;
+  : v.price === 0 ? "free"
+  : v.pricing === "group" ? `${CUR}${money(v.price)} per booking` : `from ${CUR}${money(v.price)}`;
 /* Which sauna culture a place belongs to, from who throws the water: the flag
    says it at a glance. Flags keep their own colours in both themes. The Finnish
    score, once given, rides on the same badge. */
@@ -1281,9 +1305,9 @@ V.forEach(v => {
     </div>
     <dl class="rows">
       <dt>entry</dt><dd><b>${v.priceLabel}</b></dd>
-      <dt>USC</dt><dd>${v.uscLabel}
+      ${USC ? `<dt>USC</dt><dd>${v.uscLabel}
         ${v.usc !== "no" ? `<span class="tiers">${["Classic","Premium","Max"]
-          .map(t => `<span class="tier${v.uscTiers.includes(t) ? "" : " off"}">${t}</span>`).join("")}</span>` : ""}</dd>
+          .map(t => `<span class="tier${v.uscTiers.includes(t) ? "" : " off"}">${t}</span>`).join("")}</span>` : ""}</dd>` : ""}
       <dt>heat</dt><dd>${v.sauna}</dd>
       <dt>l\u00f6yly</dt><dd><span class="ly ly-${v.loyly}">${v.loylyText}</span>${
         v.aufgussScore != null ? `<span class="augrade">Aufguss ${v.aufgussScore}<i>/10</i></span>` : ""}${
@@ -1394,7 +1418,7 @@ const setPct = () => pmax.style.setProperty("--pct", ((pmax.value - pmax.min) / 
 setPct();
 pmax.addEventListener("input", e => {
   F.pmax = +e.target.value;
-  pout.textContent = F.pmax >= 90 ? "Any" : "€" + F.pmax;
+  pout.textContent = F.pmax >= 90 ? "Any" : CUR + F.pmax;
   setPct();
   run();
 });
@@ -1417,6 +1441,7 @@ setInterval(() => {
 
 /* ---------- picks ---------- */
 const PICKS = /*__PICKS__*/;
+if (!PICKS.length) document.getElementById("sec-picks").hidden = true;
 const REVIEWERS = /*__REVIEWERS__*/;
 const TRAPS = /*__TRAPS__*/;
 const pg = document.getElementById("picks");
@@ -1434,7 +1459,7 @@ PICKS.forEach(([k, name]) => {
 });
 
 /* The header collage: three places with photographs, each a way into the map. */
-const COVER = ["LIQUIDROM", "Hotel Palace \u2014 Palace Spa", "Stadtbad Neuk\u00f6lln"];
+const COVER = /*__COVER__*/;                      // named in the city's venues.py
 const collage = document.getElementById("collage");
 COVER.map(n => V.find(v => v.name === n)).filter(v => v && v.img).forEach(v => {
   const b = document.createElement("button");
@@ -1490,7 +1515,7 @@ function showPeek(id){
   document.getElementById("peek-meta").textContent = `${v.kind} \u00b7 ${v.district}`;
   document.getElementById("peek-price").textContent =
     v.price == null ? v.priceLabel.split(/[\u2014\u00b7;]/)[0].trim()
-                    : (v.pricing === "group" ? `\u20ac${money(v.price)} per booking` : `from \u20ac${money(v.price)}`);
+                    : priceShort(v);
   const thumb = document.getElementById("peek-thumb");
   thumb.innerHTML = im
     ? `<img src="${im.src}" alt="">`
@@ -1551,15 +1576,25 @@ if (anyReviews) Object.entries(REVIEWERS).forEach(([handle, r]) => {
 });
 
 document.getElementById("traps").innerHTML = trapText(cityNow());
+if (!TRAPS.length) document.getElementById("note-traps").hidden = true;
+if (!document.querySelector("#note-practical p").textContent.trim()) document.getElementById("note-practical").hidden = true;
 
 /* The cover figures are computed from the venues, so they cannot drift. */
 (() => {
   /* "Park Inn Alexanderplatz \u2014 Gezer Spa" becomes "Park Inn" in a tile this narrow. */
   const short = n => { const s = n.split(" \u2014 ")[0]; return s.length > 16 ? s.split(" ").slice(0, 2).join(" ") : s; };
   const priced = V.filter(v => v.price != null && v.pricing !== "group");
+  /* the price key under the map runs from the cheapest entry to the dearest */
+  const pay = priced.filter(v => v.price > 0).map(v => v.price);
+  if (pay.length){
+    document.getElementById("key-lo").textContent = CUR + money(Math.min(...pay));
+    document.getElementById("key-hi").textContent = Math.max(...pay) > Math.min(...pay) ? CUR + money(Math.max(...pay)) : "";
+  }
+  document.getElementById("key-group").hidden = !V.some(v => v.pricing === "group");
+  if (!priced.length) return;
   const cheap = priced.reduce((a, b) => b.price < a.price ? b : a);
   const [eur, cents] = money(cheap.price).split(".");
-  document.getElementById("stat-cheap").innerHTML = `\u20ac${eur}${cents ? `<small>.${cents}</small>` : ""}`;
+  document.getElementById("stat-cheap").innerHTML = cheap.price === 0 ? "free" : `${CUR}${eur}${cents ? `<small>.${cents}</small>` : ""}`;
   document.getElementById("stat-cheap-s").textContent = short(cheap.name);
   document.getElementById("stat-usc").textContent = V.filter(v => v.uscTiers.length).length;
   let hot = 0, at = [];
@@ -1567,6 +1602,9 @@ document.getElementById("traps").innerHTML = trapText(cityNow());
     t = +t;
     if (t > hot){ hot = t; at = [v]; } else if (t === hot && !at.includes(v)) at.push(v);
   }));
+  document.getElementById("stat-hot-box").hidden = !hot;
+  const stats = document.querySelector(".stats"), shown = [...stats.children].filter(d => !d.hidden && getComputedStyle(d).display !== "none").length;
+  stats.classList.toggle("n3", shown === 3); stats.classList.toggle("n2", shown === 2);
   if (hot){
     document.getElementById("stat-hot").textContent = `${hot}\u00b0C`;
     document.getElementById("stat-hot-s").textContent = at.length > 1 ? `at ${at.length} places` : short(at[0].name);

@@ -3,8 +3,8 @@
 ## One engine, one folder per city
 
 `engine/` is everything the cities share (build scripts, `template.html`, the self-updater,
-the audit scripts) and names no city. A city is a folder at the repo root with a `city.json`;
-`berlin/` is the only one so far. Its facts are `berlin/venues.py`, its settings
+the audit scripts) and names no city. A city is a folder at the repo root with a `city.json`:
+`berlin/`, and since 15 November 2026 first, naive maps of `helsinki/`, `nyc/` and `sf/`. Its facts are `berlin/venues.py`, its settings
 `berlin/city.json`, and its built pages sit beside them, because GitHub Pages serves the folder
 as it is and the jommi.fi Worker passes `/sauna/berlin/` through to it.
 
@@ -14,9 +14,18 @@ as it is and the jommi.fi Worker passes `/sauna/berlin/` through to it.
 - A fact about one city never goes in `engine/`. If the template needs to say something that
   differs by city, it becomes a field in `city.json` and a placeholder (`__CITY__`, `__LEDE__`,
   `__TZ__`), and `assemble.py` fails the build on a placeholder left unfilled.
-- Two Berlin assumptions are still in the engine on purpose, waiting for a real second city to
-  settle them: Urban Sports Club (a column in every venue row, a filter, a legend dot and a
-  header figure) and euros (price text and the price bands).
+- `city.json` also says the currency sign (`"currency"`) and whether Urban Sports Club exists
+  there (`"usc"`); without it the page drops the USC chip, figure, legend dot and card row. The
+  price bands are the same numbers in every currency, which is rough but fine for euros and
+  dollars. Filter chips that no venue in a city could match hide themselves.
+- The naive cities were built to the same sourcing rule as Berlin: every venue passed
+  `verify_venue.py`, and every price and hour was read off its own site. Where a site renders
+  prices with a script, or does not say who throws the water, the field is empty rather than
+  guessed. Who throws the water, the Finnish scores, picks and photos are still to do there.
+- Base maps for a new city come from an OpenStreetMap extract, not Overpass, which resets every
+  connection from a cloud session: `engine/osm_extract.py <city> <extract.osm.pbf>` (BBBike has
+  city extracts), then `engine/build_geo.py <city>`. It draws the sea from the coastline, which
+  Berlin never needed. `engine/og.js` takes a city's share image.
 - The social layer on jommi.fi does not know about cities yet. It keys saved spots, visits and
   reviews by venue name alone, so that has to change before a second city goes live.
 - The repository was `berlin-sauna-map` until November 2026. `check_deployment.py` reads the

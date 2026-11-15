@@ -29,7 +29,11 @@ import datetime, json, re, sys, unicodedata, urllib.request
 import concurrent.futures as cf
 import city
 CITY = city.enter()
-import sources
+try:
+    import sources
+except ImportError:                 # a city with nothing anchored yet has nothing to prove
+    print(f"{CITY['slug']}: no sources.py, nothing to re-read")
+    sys.exit(0)
 
 UA = city.UA
 DATA = "venues.py"          # the city's facts, the only file this script may rewrite

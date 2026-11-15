@@ -58,8 +58,11 @@ def assemble(TPL, OUT):
               .replace('__CITY_LC__', text(NAME.lower())).replace('__CITY__', text(NAME))
               .replace('__LEDE__', text(CITY['lede']))
               .replace('__TZ__', CITY['timezone'])
+              .replace('__CUR__', jsesc(CITY.get('currency', '€')))
+              .replace('__USC__', 'true' if CITY.get('usc') else 'false')
+              .replace('/*__COVER__*/', json.dumps(meta['cover'], separators=(',', ':'), ensure_ascii=True))
               .replace('__HUB__', city.HUB).replace('__REPO__', city.REPO))
-    for token in ('__LAST_SCAN__', '__COUNT__', '__PRACTICAL__', '__CITY', '__LEDE__', '__TZ__',
+    for token in ('__LAST_SCAN__', '__COUNT__', '__PRACTICAL__', '__CITY', '__LEDE__', '__TZ__', '__CUR__', '__USC__',
                   '__HUB__', '__REPO__', '/*__'):
         assert token not in doc, f"unfilled placeholder {token}"
     assert doc.isascii(), "non-ascii survived"

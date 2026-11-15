@@ -34,6 +34,7 @@ BANYA = table("BANYA", set())
 FINNISH = table("FINNISH", {})
 AUFGUSS_SCORE = table("AUFGUSS_SCORE", {})
 PICKS = table("PICKS", [])
+COVER = table("COVER", [])      # the header collage: venues named here, those with a photo
 PRACTICAL = table("PRACTICAL", "")
 TRAPS = table("TRAPS", [])
 LAST_CHECKED = data.LAST_CHECKED
@@ -59,8 +60,10 @@ LOYLY_OF = {"scheduled": "staff", "request": "staff", "self": "self",
 #     standards). A banya is the one thing the loyly cannot tell apart, so each
 #     city names its banyas in BANYA.
 def style_of(name, loyly):
+    if name in BANYA:              # a banya is a banya whoever throws the water
+        return "russian"
     if loyly == "self":
-        return "russian" if name in BANYA else "finnish"
+        return "finnish"
     return {"staff": "german", "machine": "none"}.get(loyly, "unknown")
 
 LOYLY_TEXT = {
@@ -128,10 +131,10 @@ for i, row in enumerate(V):
     d["id"] = i
     venues.append(d)
 _names = {v["name"] for v in venues}
-for _n in list(FINNISH) + list(AUFGUSS_SCORE) + list(BANYA):
+for _n in list(FINNISH) + list(AUFGUSS_SCORE) + list(BANYA) + list(COVER) + [p[1] for p in PICKS] + [t[0] for t in TRAPS]:
     assert _n in _names, f"{_n!r} is scored or tagged but is not a venue name"
 json.dump(venues, open('venues.json','w'), separators=(',',':'), ensure_ascii=False)
-json.dump({"picks": [list(p) for p in PICKS], "practical": PRACTICAL, "lastChecked": LAST_CHECKED,
+json.dump({"picks": [list(p) for p in PICKS], "cover": COVER, "practical": PRACTICAL, "lastChecked": LAST_CHECKED,
            "lastCheckedStamp": LAST_CHECKED_STAMP, "traps": [list(t) for t in TRAPS],
            "count": len(venues), "reviewers": REVIEWERS, "loylyText": LOYLY_TEXT},
           open('meta.json','w'), separators=(',',':'), ensure_ascii=False)

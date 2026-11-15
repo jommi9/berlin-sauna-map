@@ -264,6 +264,9 @@ PICKS = [
  ("Best sauna you can't easily book", "sly Berlin"),
 ]
 
+# --- The header collage: these venues, in this order, where they have a photograph.
+COVER = ["LIQUIDROM", "Hotel Palace \u2014 Palace Spa", "Stadtbad Neuk\u00f6lln"]
+
 PRACTICAL = ("For a normal sauna session rather than a luxury spa day, **KIEZ SAUNA, Saunabad, "
              "Olivin and L\u00fctzow** are better benchmarks than most hotel spas. Hotel spas make "
              "more sense when the pool, terrace, relaxation area, or USC access is part of what "

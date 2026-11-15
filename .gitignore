@@ -12,3 +12,7 @@ __pycache__/
 # Where everything lived before the engine/<city> layout. Nothing tracked is left there; an
 # older clone may still hold its untracked raw dumps, which belong in berlin/ now.
 /src/
+# Written by engine/osm_extract.py: the labels are copied into geo.json, the candidates are only
+# a lead for coordinates and never evidence that a venue exists
+/*/places.json
+/*/candidates.json
