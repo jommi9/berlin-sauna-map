@@ -219,6 +219,13 @@ HEAT = {
 HEAT_SOURCE = "confirmed by the venue, email 3 Sep 2026"
 
 
+# --- The cold plunge in °C, where the venue states a figure; the card and the "coldest plunge"
+#     sort use it. A venue missing here has no stated figure, not a warm plunge.
+PLUNGE = {
+ "L\u00fctzow Sauna": 14,
+}
+
+
 # --- Banyas. You throw your own in a banya just as in a Finnish sauna, so the
 #     loyly cannot tell the two apart and a banya has to be named. None of the
 #     listed venues is one yet.

@@ -8,7 +8,7 @@ sauna culture derived from it, and the joins. A table a city has no use for
 (USC_TIERS in a city without Urban Sports Club, say) can simply be left out of
 its venues.py.
 """
-import datetime, json, math, os
+import datetime, json, math, os, re
 import city
 CITY = city.enter()
 import venues as data
@@ -30,6 +30,7 @@ HOURS_TEXT = table("HOURS_TEXT", {})
 GROUP_PRICED = table("GROUP_PRICED", set())
 HEAT = table("HEAT", {})
 HEAT_SOURCE = table("HEAT_SOURCE", None)
+PLUNGE = table("PLUNGE", {})    # cold plunge °C, only where the venue states a figure
 BANYA = table("BANYA", set())
 FINNISH = table("FINNISH", {})
 AUFGUSS_SCORE = table("AUFGUSS_SCORE", {})
@@ -116,6 +117,12 @@ for i, row in enumerate(V):
     # something that does not happen there.
     d["aufgussScore"] = AUFGUSS_SCORE.get(d["name"]) if d["loyly"] == "staff" else None
     d["heatSrc"] = HEAT_SOURCE if t else None
+    # The hottest cabin, as a number: the highest temperature the heat text names (which the
+    # venue stated), so the figure and the prose cannot disagree. °F is converted.
+    temps = [int(n) if u == "C" else round((int(n) - 32) * 5 / 9)
+             for n, u in re.findall(r"(\d{2,3})\s*\u00b0\s*([CF])", d["sauna"] or "")]
+    d["hot"] = max(temps) if temps else None
+    d["plunge"] = PLUNGE.get(d["name"])
     d["reviews"] = reviews_for(d["name"])
     rated = [r["rating"] for r in d["reviews"] if isinstance(r.get("rating"), (int, float))]
     d["rating"] = round(sum(rated) / len(rated), 1) if rated else None
@@ -131,7 +138,7 @@ for i, row in enumerate(V):
     d["id"] = i
     venues.append(d)
 _names = {v["name"] for v in venues}
-for _n in list(FINNISH) + list(AUFGUSS_SCORE) + list(BANYA) + list(COVER) + [p[1] for p in PICKS] + [t[0] for t in TRAPS]:
+for _n in list(FINNISH) + list(AUFGUSS_SCORE) + list(BANYA) + list(PLUNGE) + list(COVER) + [p[1] for p in PICKS] + [t[0] for t in TRAPS]:
     assert _n in _names, f"{_n!r} is scored or tagged but is not a venue name"
 json.dump(venues, open('venues.json','w'), separators=(',',':'), ensure_ascii=False)
 json.dump({"picks": [list(p) for p in PICKS], "cover": COVER, "practical": PRACTICAL, "lastChecked": LAST_CHECKED,

@@ -201,6 +201,13 @@ links instead. The code is the last block of `engine/template.html`'s script ("t
   who approves it on the map's panel section. Reviews from the panel are served live by the
   API and render under each card's "reviews"; they never enter `reviews.json`.
 - Everything people type is escaped with `esc()` before it touches `innerHTML`. Keep it so.
+- A logged visit can carry a line of text and the temperatures the person saw (`POST /visit` with
+  `log`). The page shows them under each card as "from visitors", with which visit it was for
+  that person and the latest reported sauna and plunge figures. **A visitor's number is their
+  word, not a venue fact**: it never goes into `venues.py`, never feeds the row's temperature tag
+  or the sorts, and people who keep off the board are left out of it.
+- The public feed also counts saves per sauna, so each row shows "N saved · N visits" and the
+  list can be sorted by either. Like the rest of the layer, none of this exists off jommi.fi.
 
 ## Reviews baked into the build come through GitHub issues, never by hand
 
@@ -261,6 +268,16 @@ anyone — that drift is what this is for.
 To add a venue to the self-updater: read its page, find a label that sits
 immediately beside the figure, add the anchor to the city's `sources.py`, and check it
 matches exactly once with `python3 engine/selfupdate.py berlin --dry-run`.
+
+## Temperatures are numbers, kept in °C
+
+Each venue has `hot`, the hottest cabin, and `plunge`, the cold plunge, shown on its row the
+way Sauna Ikitai shows them ("90° / 14°") and offered as sorts. `hot` is derived at build time
+from the highest temperature the venue's own heat text names, so the number and the prose
+cannot disagree. `plunge` is the city's `PLUNGE` table, filled only where a venue states a
+figure; Lützow's 14°C is the only one in Berlin so far. A city with `"temp": "F"` in its
+`city.json` shows both in Fahrenheit, and visitors type theirs in Fahrenheit there too, but
+everything is stored in °C.
 
 ## Löyly, the Finnish score, and the Aufguss rating
 

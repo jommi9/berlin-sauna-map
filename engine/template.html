@@ -326,7 +326,7 @@ svg.map.dragging{cursor:grabbing}
 .fin .sc{margin-left:2px; padding-left:7px; border-left:1px solid var(--sep); font:600 13px var(--font-num); font-variant-numeric:tabular-nums}
 .fin .sc i{font-style:normal; font-size:11px; margin-left:2px; color:var(--ember)}
 .tags{display:flex; flex-wrap:wrap; gap:6px; margin:11px 0 0}
-.status, .price, .pick-tag{
+.status, .price, .pick-tag, .temp, .count{
   display:inline-flex; align-items:center; height:24px; padding:0 9px; border-radius:3px;
   font:600 12.5px var(--font); white-space:nowrap;
 }
@@ -336,6 +336,13 @@ svg.map.dragging{cursor:grabbing}
 .status.unk{color:var(--label-2); background:var(--fill)}
 .price{color:var(--label); background:var(--fill); font-variant-numeric:tabular-nums}
 .pick-tag{color:var(--ember); background:var(--ember-soft)}
+/* the hottest cabin and the cold plunge, numbers first the way a sauna-goer reads them */
+.temp{color:var(--ember); background:var(--ember-soft); font-variant-numeric:tabular-nums; gap:5px}
+.temp .pl{color:var(--tint)} .temp i{font-style:normal; color:var(--label-3); font-weight:500}
+.count{color:var(--label-2); background:var(--fill); font-weight:500; font-variant-numeric:tabular-nums}
+.sort[hidden]{display:none}
+.sort{font:500 13px var(--font); color:var(--tint); background:none; border:0; padding:2px 0; cursor:pointer; max-width:52%}
+.sort:focus-visible{outline:2px solid var(--tint); outline-offset:2px; border-radius:3px}
 .rows{margin:12px 0 0; display:grid; grid-template-columns:78px minmax(0,1fr); font-size:14px; line-height:1.45}
 .rows dt, .rows dd{margin:0; padding:8px 0; border-top:1px solid var(--sep)}
 .rows dt{color:var(--label-2); font-size:13px; padding-top:9px}
@@ -363,7 +370,7 @@ svg.map.dragging{cursor:grabbing}
 .score{font:600 14px var(--font-num); color:var(--green)}
 .score em{font-style:normal; font-size:11px; color:var(--label-3)}
 .rev{margin:0; padding:10px 12px; border-radius:var(--r-sm); background:var(--surface-2)}
-.rev-t{margin:0; font-size:14px; line-height:1.55}
+.rev-t{margin:0; font-size:14px; line-height:1.55; overflow-wrap:anywhere}
 .rev footer{display:flex; flex-wrap:wrap; gap:4px 8px; margin-top:6px; font-size:12.5px; color:var(--label-2)}
 .rev-w{font-weight:600; color:var(--label)}
 .acts{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px}
@@ -530,6 +537,23 @@ button.btn{border:0; cursor:pointer}
 }
 .wr textarea:focus, .join textarea:focus{outline:none; box-shadow:0 0 0 3px var(--tint-soft), inset 0 0 0 1px var(--tint)}
 .err{margin:0; color:var(--red); font-size:13px}
+/* a visit's log: a line and the temperatures seen */
+.logf{display:flex; flex-direction:column; gap:8px; padding:12px; border-radius:var(--r-sm); background:var(--surface-2)}
+.logf textarea{
+  width:100%; min-height:64px; padding:10px 12px; border:0; border-radius:var(--r-sm); resize:vertical;
+  background:var(--surface); box-shadow:inset 0 0 0 1px var(--sep); color:var(--label); font:400 15px/1.5 var(--font);
+}
+.logf .nums{display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; font-size:13.5px; color:var(--label-2)}
+.logf input[type=number], .logf select{
+  width:74px; height:34px; padding:0 8px; border:0; border-radius:var(--r-sm); background:var(--surface);
+  box-shadow:inset 0 0 0 1px var(--sep); color:var(--label); font:500 15px var(--font); font-variant-numeric:tabular-nums;
+}
+.logf select{width:auto}
+.logf textarea:focus, .logf input:focus, .logf select:focus{outline:none; box-shadow:0 0 0 3px var(--tint-soft), inset 0 0 0 1px var(--tint)}
+.rev-temp{font-variant-numeric:tabular-nums; color:var(--ember); font-weight:600}
+.rev-temp .pl{color:var(--tint)}
+.reported{margin:0; font-size:13.5px; color:var(--label-2)}
+.reported b{font-weight:600; color:var(--ember); font-variant-numeric:tabular-nums} .reported b.pl{color:var(--tint)}
 .rev footer .av{margin-right:2px}
 .rev footer a{color:var(--label); font-weight:600}
 .boards{display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:12px}
@@ -734,7 +758,14 @@ button.btn{border:0; cursor:pointer}
       </button>
       <div class="lhead">
         <h2 id="l-title">all __COUNT__ places</h2>
-        <span class="c" id="l-note">in pick order</span>
+        <select class="sort" id="sort" aria-label="Order the list">
+          <option value="pick">in pick order</option>
+          <option value="hot">hottest sauna first</option>
+          <option value="plunge">coldest plunge first</option>
+          <option value="price">cheapest first</option>
+          <option value="saved">most saved first</option>
+          <option value="visits">most visited first</option>
+        </select>
       </div>
       <ul class="cards" id="cards"></ul>
       <p class="none-msg" id="none" hidden>nothing matches. raise the price limit or clear a filter.</p>
@@ -837,7 +868,10 @@ button.btn{border:0; cursor:pointer}
 const GEO = /*__GEO__*/;
 const V = /*__VENUES__*/;
 /* From the city's city.json: its currency sign, and whether Urban Sports Club exists there. */
-const CUR = "__CUR__", USC = __USC__;
+const CUR = "__CUR__", USC = __USC__, TU = "__TU__";
+/* Temperatures are kept in \u00b0C and shown in the city's own unit. */
+const toUnit = c => TU === "F" ? Math.round(c * 9 / 5 + 32) : Math.round(c * 10) / 10;
+const fmtT = c => c == null ? "" : `${toUnit(c)}\u00b0${TU === "F" ? "F" : ""}`;
 if (!USC) document.getElementById("wrap").classList.add("no-usc");
 const IMG = /*__IMAGES__*/;
 const NS = "http://www.w3.org/2000/svg";
@@ -1301,6 +1335,8 @@ V.forEach(v => {
     <div class="tags">
       <span class="status ${STATUS_CLASS[st]}" data-status>${STATUS_TEXT[st]}</span>
       <span class="price">${priceShort(v)}</span>
+      ${v.hot != null ? `<span class="temp" title="hottest sauna${v.plunge != null ? " / cold plunge" : ""}">${fmtT(v.hot)}${
+        v.plunge != null ? `<i>/</i><span class="pl">${fmtT(v.plunge)}</span>` : ""}</span>` : ""}
       ${v.badge ? `<span class="pick-tag" title="Picked by ${CURATOR.name}"><i class="av" aria-hidden="true">${CURATOR.name[0]}</i>${lower(v.badge)}</span>` : ""}
     </div>
     <dl class="rows">
@@ -1324,14 +1360,15 @@ V.forEach(v => {
         <footer><span class="rev-w">${r.by}</span> <span class="rev-m">${"\u2605".repeat(r.rating)}${"\u2606".repeat(5 - r.rating)} \u00b7 visited ${r.visited}</span></footer>
       </blockquote>`).join("")}</div>` : ""}
     <div class="revs" data-live hidden></div>
+    <div class="revs" data-logs hidden></div>
     <div class="mine" data-mine hidden></div>
     <div class="acts">
       <a class="btn primary" href="${v.url}" target="_blank" rel="noopener noreferrer">hours &amp; booking</a>
       ${im ? "" : `<a class="btn" href="${v.url}" target="_blank" rel="noopener noreferrer">their photos</a>`}
     </div>`;
   cards.appendChild(li); cardOf.set(v.id, li);
-  li.addEventListener("click", e => { if (!e.target.closest("a, [data-mine], [data-live]")) choose(v.id, false); });
-  li.addEventListener("keydown", e => { if (e.key === "Enter" && !e.target.closest("a, [data-mine], [data-live]")) choose(v.id, false); });
+  li.addEventListener("click", e => { if (!e.target.closest("a, [data-mine], [data-live], [data-logs]")) choose(v.id, false); });
+  li.addEventListener("keydown", e => { if (e.key === "Enter" && !e.target.closest("a, [data-mine], [data-live], [data-logs]")) choose(v.id, false); });
   li.addEventListener("mouseenter", () => peek(v.id, true));
   li.addEventListener("mouseleave", () => peek(v.id, false));
 });
@@ -1378,7 +1415,7 @@ cards.addEventListener("scroll", updateMore, { passive: true });
 addEventListener("resize", updateMore);
 
 /* ---------- filtering ---------- */
-const lTitle = document.getElementById("l-title"), lNote = document.getElementById("l-note"),
+const lTitle = document.getElementById("l-title"),
       noneMsg = document.getElementById("none"), nCount = document.getElementById("n-count");
 function run(){
   let n = 0;
@@ -1390,13 +1427,47 @@ function run(){
   if (sel != null && !ok(V.find(v => v.id === sel))) choose(sel, false);
   const filtered = n !== V.length;
   lTitle.textContent = filtered ? `${n} match${n === 1 ? "" : "es"}` : `all ${V.length} places`;
-  lNote.textContent = filtered ? "filtered" : "in pick order";
   nCount.textContent = n;
   noneMsg.hidden = n > 0;
   if (typeof updateMore === "function") updateMore();
   if (typeof grabLabel !== "undefined" && grabLabel)
     grabLabel.textContent = `${n} ${n === 1 ? "venue" : "venues"}`;
 }
+/* ---------- order ----------
+   The list starts in pick order. Another order puts the venues that lack its figure last, still
+   in pick order, and is only offered when at least two venues have the figure to compare. The
+   saved and visited counts come from the social layer (COUNTS), so those two orders appear only
+   where it answers. */
+const COUNTS = new Map();                         // venue name -> { saved, visits }
+const ORDERS = [
+  ["pick", "in pick order", () => 0],
+  ["hot", "hottest sauna first", v => v.hot == null ? null : -v.hot],
+  ["plunge", "coldest plunge first", v => v.plunge == null ? null : v.plunge],
+  ["price", "cheapest first", v => v.price == null || v.pricing === "group" ? null : v.price],
+  ["saved", "most saved first", v => -(COUNTS.get(v.name)?.saved || 0) || null],
+  ["visits", "most visited first", v => -(COUNTS.get(v.name)?.visits || 0) || null],
+];
+const sortEl = document.getElementById("sort");
+let orderBy = "pick";
+function sortCards(){
+  const key = ORDERS.find(o => o[0] === orderBy)[2];
+  [...V].sort((a, b) => {
+    const x = key(a), y = key(b);
+    if (x == null || y == null) return (x == null) - (y == null) || a.id - b.id;
+    return x - y || a.id - b.id;
+  }).forEach(v => cards.appendChild(cardOf.get(v.id)));
+  if (typeof updateMore === "function") updateMore();
+}
+/* Options are rebuilt rather than hidden: Safari ignores hidden on an <option>. */
+function offerOrders(){
+  const usable = ORDERS.filter(([k, , key]) => k === "pick" || V.filter(v => key(v) != null).length >= 2);
+  if (!usable.some(o => o[0] === orderBy)) orderBy = "pick";
+  sortEl.innerHTML = usable.map(([k, label]) => `<option value="${k}"${k === orderBy ? " selected" : ""}>${label}</option>`).join("");
+  sortEl.hidden = usable.length < 2;
+  sortCards();
+}
+sortEl.addEventListener("change", () => { orderBy = sortEl.value; sortCards(); if (sel != null) revealCard(sel); });
+offerOrders();
 document.getElementById("q").addEventListener("input", e => { F.q = e.target.value.trim().toLowerCase(); run(); });
 document.getElementById("g-open").addEventListener("click", e => {
   const b = e.target.closest(".chip"); if (!b) return;
@@ -1598,15 +1669,15 @@ if (!document.querySelector("#note-practical p").textContent.trim()) document.ge
   document.getElementById("stat-cheap-s").textContent = short(cheap.name);
   document.getElementById("stat-usc").textContent = V.filter(v => v.uscTiers.length).length;
   let hot = 0, at = [];
-  V.forEach(v => (v.sauna || "").replace(/(\d{2,3})\s*\u00b0C/g, (_, t) => {
-    t = +t;
-    if (t > hot){ hot = t; at = [v]; } else if (t === hot && !at.includes(v)) at.push(v);
-  }));
+  V.forEach(v => {
+    if (v.hot == null) return;
+    if (v.hot > hot){ hot = v.hot; at = [v]; } else if (v.hot === hot) at.push(v);
+  });
   document.getElementById("stat-hot-box").hidden = !hot;
   const stats = document.querySelector(".stats"), shown = [...stats.children].filter(d => !d.hidden && getComputedStyle(d).display !== "none").length;
   stats.classList.toggle("n3", shown === 3); stats.classList.toggle("n2", shown === 2);
   if (hot){
-    document.getElementById("stat-hot").textContent = `${hot}\u00b0C`;
+    document.getElementById("stat-hot").textContent = TU === "F" ? fmtT(hot) : `${hot}\u00b0C`;
     document.getElementById("stat-hot-s").textContent = at.length > 1 ? `at ${at.length} places` : short(at[0].name);
   }
 })();
@@ -1655,7 +1726,10 @@ function setMe(r){
 }
 async function loadPublic(fresh){
   try { SOC.pub = await api("/public" + (fresh ? "?t=" + Date.now() : "")); } catch { SOC.pub = null; }
-  drawBoard(); drawPanel(); V.forEach(drawLive);
+  COUNTS.clear();
+  (SOC.pub?.venues || []).forEach(x => COUNTS.set(x.venue, { saved: x.saved || 0, visits: x.visits || 0 }));
+  drawBoard(); drawPanel(); V.forEach(v => { drawLive(v); drawCounts(v); drawLogs(v); });
+  offerOrders();
 }
 async function loadAdmin(){
   if (SOC.me?.role !== "editor") return;
@@ -1726,6 +1800,37 @@ function drawTags(v){
   if (!t){ t = document.createElement("span"); t.className = "tag-me"; t.dataset.me = ""; tags.appendChild(t); }
   t.textContent = bits.join(" · ");
 }
+/* How many people saved a sauna and how often it has been visited, on its row. */
+function drawCounts(v){
+  const tags = cardOf.get(v.id).querySelector(".tags");
+  let t = tags.querySelector("[data-count]");
+  const c = COUNTS.get(v.name), bits = c ? [c.saved ? `${c.saved} saved` : "", c.visits ? plural(c.visits, "visit") : ""].filter(Boolean) : [];
+  if (!bits.length){ if (t) t.remove(); return; }
+  if (!t){ t = document.createElement("span"); t.className = "count"; t.dataset.count = ""; tags.appendChild(t); }
+  t.textContent = bits.join(" \u00b7 ");
+}
+const nth = n => n + (n % 100 >= 11 && n % 100 <= 13 ? "th" : ["th", "st", "nd", "rd"][n % 10] || "th");
+const tempsOf = x => x.hot == null && x.plunge == null ? "" : `<span class="rev-temp">${x.hot != null ? fmtT(x.hot) : ""}${
+  x.hot != null && x.plunge != null ? " / " : ""}${x.plunge != null ? `<span class="pl">${fmtT(x.plunge)}</span>` : ""}</span>`;
+/* What visitors wrote and the temperatures they saw. These are people's word, so they stay in
+   their own section and never stand in for the venue's own figures on the row or in the card. */
+function drawLogs(v){
+  const box = cardOf.get(v.id).querySelector("[data-logs]");
+  const list = SOC.on && SOC.pub ? (SOC.pub.logs || []).filter(x => x.venue === v.name) : [];
+  const rep = SOC.on && SOC.pub ? (SOC.pub.reported || {})[v.name] : null;
+  box.hidden = !list.length && !rep;
+  if (box.hidden){ box.innerHTML = ""; return; }
+  const said = rep ? [rep.hot ? `<b>${fmtT(rep.hot.t)}</b> in the sauna on ${dayText(rep.hot.day)}` : "",
+                      rep.plunge ? `<b class="pl">${fmtT(rep.plunge.t)}</b> in the plunge on ${dayText(rep.plunge.day)}` : ""].filter(Boolean) : [];
+  box.innerHTML = `<p class="revs-h">from visitors</p>` +
+    (said.length ? `<p class="reported">latest reported: ${said.join(", ")}</p>` : "") +
+    list.map(x => `
+    <blockquote class="rev">
+      ${x.note ? `<p class="rev-t">${esc(x.note)}</p>` : ""}
+      <footer>${avatar(x, true)}<span class="rev-w">${xLink(x, esc(x.name))}</span>
+        <span class="rev-m">${nth(x.nth)} visit \u00b7 ${dayText(x.day)}</span> ${tempsOf(x)}</footer>
+    </blockquote>`).join("");
+}
 function drawMine(v){
   const box = cardOf.get(v.id).querySelector("[data-mine]");
   box.hidden = !SOC.on;
@@ -1749,7 +1854,46 @@ function drawMine(v){
     </div>
     ${days.length ? `<p class="hint">you've been here ${days.length === 1 ? "once" : days.length + " times"}. tap a day to take it back.</p>
     <div class="days">${days.map(d => `<button class="day" type="button" data-day="${d}" aria-label="Remove the visit on ${dayText(d)}">${dayText(d)}<i aria-hidden="true">×</i></button>`).join("")}</div>` : ""}
+    ${days.length ? logForm(v, days) : ""}
     <div data-wr></div>`;
+}
+/* A note and the temperatures seen, on one of the person's visits: the latest by default. The
+   numbers are typed in the city's unit and sent in \u00b0C. */
+let logDay = new Map();                            // venue name -> the visit being written about
+function logForm(v, days){
+  const day = days.includes(logDay.get(v.name)) ? logDay.get(v.name) : days[0];
+  const x = SOC.visits.find(y => y.venue === v.name && y.day === day) || {};
+  const shown = c => c == null ? "" : toUnit(c);
+  const [hlo, hhi, plo, phi] = TU === "F" ? [104, 266, 32, 86] : [40, 130, 0, 30];
+  return `
+    <div class="logf" data-logf>
+      <div class="nums">
+        <label>visit <select data-lday>${days.map(d => `<option value="${d}"${d === day ? " selected" : ""}>${dayText(d)}</option>`).join("")}</select></label>
+        <label>sauna <input type="number" inputmode="numeric" min="${hlo}" max="${hhi}" step="1" data-lhot value="${shown(x.hot)}"> \u00b0${TU}</label>
+        <label>plunge <input type="number" inputmode="decimal" min="${plo}" max="${phi}" step="0.5" data-lplunge value="${shown(x.plunge)}"> \u00b0${TU}</label>
+      </div>
+      <textarea maxlength="280" placeholder="how was it? a line for the next person (optional)" data-lnote>${esc(x.note || "")}</textarea>
+      <div class="row"><button class="btn quiet" type="button" data-lsave>save note</button><p class="err" data-lerr hidden></p></div>
+    </div>`;
+}
+const fromUnit = (n, whole) => {
+  if (n === "" || n == null) return null;
+  const c = TU === "F" ? (+n - 32) * 5 / 9 : +n;
+  return whole ? Math.round(c) : Math.round(c * 10) / 10;
+};
+async function saveLog(v, box){
+  const f = box.querySelector("[data-logf]"), err = f.querySelector("[data-lerr]");
+  const day = f.querySelector("[data-lday]").value;
+  const log = { note: f.querySelector("[data-lnote]").value,
+                hot: fromUnit(f.querySelector("[data-lhot]").value, true),
+                plunge: fromUnit(f.querySelector("[data-lplunge]").value, false) };
+  try {
+    const r = await api("/visit", { venue: v.name, day, on: true, log });
+    const x = SOC.visits.find(y => y.venue === v.name && y.day === day);
+    if (x) Object.assign(x, { note: r.note, hot: r.hot, plunge: r.plunge });
+    logDay.set(v.name, day);
+    drawMine(v); toast("note saved"); loadPublic(true);
+  } catch (x) { err.textContent = x.message; err.hidden = false; }
 }
 function drawWriter(v){
   const box = cardOf.get(v.id).querySelector("[data-wr]"), mine = SOC.mine.get(v.name);
@@ -1804,13 +1948,18 @@ function drawLive(v){
 async function logVisit(v, day, on){
   try {
     await api("/visit", { venue: v.name, day, on });
-    if (on){ if (!SOC.visits.some(x => x.venue === v.name && x.day === day)) SOC.visits.push({ venue: v.name, day }); }
+    if (on){ if (!SOC.visits.some(x => x.venue === v.name && x.day === day)) SOC.visits.push({ venue: v.name, day }); logDay.set(v.name, day); }
     else SOC.visits = SOC.visits.filter(x => !(x.venue === v.name && x.day === day));
     ME.been = new Set(SOC.visits.map(x => x.venue));
     drawMine(v); drawTags(v); drawAcct(); loadPublic(true);
     if (F.mine.size) run();
   } catch (x) { toast(x.message); }
 }
+cards.addEventListener("change", e => {
+  const pick = e.target.closest("[data-lday]"); if (!pick) return;
+  const v = V.find(x => cardOf.get(x.id).contains(pick));
+  logDay.set(v.name, pick.value); drawMine(v);
+});
 cards.addEventListener("click", async e => {
   const box = e.target.closest("[data-mine]"); if (!box) return;
   const v = V.find(x => cardOf.get(x.id).contains(box));
@@ -1832,6 +1981,7 @@ cards.addEventListener("click", async e => {
   }
   if (e.target.closest("[data-log]")){ const d = box.querySelector("[data-pick] input").value; if (d) logVisit(v, d, true); return; }
   const day = e.target.closest("[data-day]"); if (day) return logVisit(v, day.dataset.day, false);
+  if (e.target.closest("[data-lsave]")) return saveLog(v, box);
   if (e.target.closest("[data-write]")) drawWriter(v);
 });
 
@@ -1846,7 +1996,7 @@ function drawBoard(){
       <span class="nm">${xLink(p, esc(p.name))}<small>@${esc(p.handle)}</small></span>
       <span class="n"><b>${p.saunas}</b> ${p.saunas === 1 ? "sauna" : "saunas"}<small>${plural(p.visits, "visit")}</small></span></li>`).join("")
     : `<li class="empty">nobody has logged a visit yet.</li>`;
-  const vs = b.venues.filter(x => byName.has(x.venue));
+  const vs = b.venues.filter(x => byName.has(x.venue) && x.visits > 0);
   document.getElementById("lb-venues").innerHTML = vs.length ? vs.map(x => `
     <li><button class="nm" type="button" data-id="${byName.get(x.venue).id}">${esc(x.venue)}</button>
       <span class="n"><b>${x.visits}</b> ${x.visits === 1 ? "visit" : "visits"}<small>${plural(x.people, "person", "people")}</small></span></li>`).join("")

@@ -20,7 +20,8 @@ REPO = "jommi9/sauna-maps"
 HUB = "https://jommi.fi/sauna/"
 UA = {"User-Agent": f"sauna-maps/1.0 (personal project; https://github.com/{REPO})"}
 
-# Optional: "currency" (the sign prices are written in, default "€"), "usc" (true where Urban
+# Optional: "currency" (the sign prices are written in, default "€"), "temp" ("F" to show
+# temperatures in Fahrenheit; they are kept in Celsius), "usc" (true where Urban
 # Sports Club exists and the venue rows say who takes it), "districtLevel" (the OSM admin_level
 # osm_extract.py draws as district outlines).
 REQUIRED = ("name", "country", "timezone", "bbox", "lede", "notionIntro")

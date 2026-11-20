@@ -45,7 +45,7 @@ In a city's folder (`berlin/`):
 
 | File | What it is |
 |---|---|
-| `venues.py` | **The source of truth.** Every venue fact, as tables keyed by venue name: the venue rows, opening hours, cabin temperatures and Aufguss practice, the Finnish scores, the fast picks, the "two traps" box, the last-checked date. Edit content here; everything else is generated from it. |
+| `venues.py` | **The source of truth.** Every venue fact, as tables keyed by venue name: the venue rows, opening hours, cabin temperatures and Aufguss practice, stated plunge temperatures (`PLUNGE`), the Finnish scores, the fast picks, the "two traps" box, the last-checked date. Edit content here; everything else is generated from it. |
 | `city.json` | What makes the page this city's: its name, country, timezone, the map's bounding box (`[west, south, east, north]`), the second sentence of the lede, the opening line of its Notion page, its currency sign (`currency`), whether Urban Sports Club exists there (`usc`), and the OSM admin level drawn as district lines (`districtLevel`). The folder's name is the city's slug and its address under `/sauna/`. |
 | `sources.py` | Anchors for `selfupdate.py`: the regexes that pin one figure on a venue's own page to one figure in `venues.py`. |
 | `reviews.json` | Reviews of this city's venues. Written by the ingest workflow, never by hand. |
