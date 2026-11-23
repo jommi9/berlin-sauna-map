@@ -1,0 +1,92 @@
+name: Propose a listing or a city
+
+# A contributor (a GitHub user named in contributors.json) fills in the "Add a sauna" or
+# "Open a new city" form. engine/propose.py checks who sent it and what it says, checks the
+# venue's own site, writes the change and rebuilds; this workflow then opens a pull request.
+# Nothing reaches the site until the owner merges it.
+#
+# The forms are recognised by the title they set, not by a label, so nothing has to be created
+# in the repository's settings first. The issue's text is only ever handled as a file of data.
+#
+# One setting is needed once: Settings > Actions > General > "Allow GitHub Actions to create
+# and approve pull requests". Without it the last step fails and says so on the issue.
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: propose-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  propose:
+    if: startsWith(github.event.issue.title, 'New listing') || startsWith(github.event.issue.title, 'New city')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Tools for drawing a new city's base map
+        if: startsWith(github.event.issue.title, 'New city')
+        run: pip install --quiet protobuf numpy
+
+      - name: Write the issue to a file
+        env:
+          ISSUE: ${{ toJSON(github.event.issue) }}
+        run: printf '%s' "$ISSUE" > "$RUNNER_TEMP/issue.json"
+
+      - name: Check it and write the change
+        id: propose
+        continue-on-error: true
+        run: |
+          set +e
+          python3 engine/propose.py "$RUNNER_TEMP/issue.json" 2>&1 | tee "$RUNNER_TEMP/result.md"
+          code=${PIPESTATUS[0]}
+          echo "code=$code" >> "$GITHUB_OUTPUT"      # 1 refused, 3 not a contributor
+          exit "$code"
+
+      - name: Open or update the pull request
+        id: pr
+        if: steps.propose.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+          AUTHOR: ${{ github.event.issue.user.login }}
+        run: |
+          BRANCH="proposal-$NUMBER"
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add -A
+          git commit -m "Proposal from issue #$NUMBER by @$AUTHOR" -m "Written by engine/propose.py from the issue form. Closes #$NUMBER."
+          git push --force origin "$BRANCH"
+          printf '\n\nCloses #%s.\n' "$NUMBER" >> "$RUNNER_TEMP/result.md"
+          if [ -n "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')" ]; then
+            gh pr edit "$BRANCH" --body-file "$RUNNER_TEMP/result.md"
+          else
+            gh pr create --head "$BRANCH" --title "$(jq -r .title "$RUNNER_TEMP/issue.json" | cut -c1-120)" --body-file "$RUNNER_TEMP/result.md"
+          fi
+          gh pr view "$BRANCH" --json url --jq .url > "$RUNNER_TEMP/pr.txt"
+
+      - name: Say what happened on the issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+        run: |
+          if [ "${{ steps.pr.outcome }}" = "success" ]; then
+            gh issue comment "$NUMBER" --body "Checked and ready for the owner to merge: $(cat "$RUNNER_TEMP/pr.txt")"
+          elif [ "${{ steps.propose.outcome }}" = "success" ]; then
+            gh issue comment "$NUMBER" --body "The proposal passed its checks, but the pull request could not be opened. The repository needs Settings > Actions > General > 'Allow GitHub Actions to create and approve pull requests'."
+          elif [ "${{ steps.propose.outputs.code }}" = "3" ]; then
+            gh issue comment "$NUMBER" --body "$(cat "$RUNNER_TEMP/result.md")"
+          else
+            gh issue comment "$NUMBER" --body "$(printf '%s\n\nEdit the issue to fix it and it is checked again.' "$(cat "$RUNNER_TEMP/result.md" 2>/dev/null | tail -c 3000)")"
+          fi

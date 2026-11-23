@@ -84,6 +84,8 @@ LOYLY_TEXT = {
 #     to the city whose folder its reviews.json sits in.
 REVIEWERS = json.load(open(os.path.join(city.ROOT, 'reviewers.json'), encoding='utf-8'))
 REVIEWS = json.load(open('reviews.json', encoding='utf-8'))
+# The GitHub users who may add listings and cities (engine/propose.py checks the same file).
+CONTRIBUTORS = list(json.load(open(os.path.join(city.ROOT, 'contributors.json'), encoding='utf-8')))
 
 def reviews_for(name):
     rs = [r for r in REVIEWS if r.get("venue") == name and r.get("reviewer") in REVIEWERS]
@@ -143,8 +145,9 @@ for _n in list(FINNISH) + list(AUFGUSS_SCORE) + list(BANYA) + list(PLUNGE) + lis
 json.dump(venues, open('venues.json','w'), separators=(',',':'), ensure_ascii=False)
 json.dump({"picks": [list(p) for p in PICKS], "cover": COVER, "practical": PRACTICAL, "lastChecked": LAST_CHECKED,
            "lastCheckedStamp": LAST_CHECKED_STAMP, "traps": [list(t) for t in TRAPS],
-           "count": len(venues), "reviewers": REVIEWERS, "loylyText": LOYLY_TEXT},
+           "count": len(venues), "reviewers": REVIEWERS, "contributors": CONTRIBUTORS, "loylyText": LOYLY_TEXT},
           open('meta.json','w'), separators=(',',':'), ensure_ascii=False)
 print(len(venues), "venues")
 xs=[v['x'] for v in venues]; ys=[v['y'] for v in venues]
-print("x range", min(xs), max(xs), "| y range", min(ys), max(ys), "| canvas", g['w'], g['h'])
+if venues:                                   # a city just opened has none yet
+    print("x range", min(xs), max(xs), "| y range", min(ys), max(ys), "| canvas", g['w'], g['h'])

@@ -1,0 +1,66 @@
+name: Open a new city
+description: Start a map for a city that has none yet. Contributors only.
+title: "New city: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This draws the city's base map from OpenStreetMap and opens a pull request with an empty
+        map for the owner to merge. Listings are added afterwards, one at a time, with "Add a sauna".
+  - type: input
+    id: name
+    attributes:
+      label: City name
+      placeholder: Tampere
+    validations: { required: true }
+  - type: input
+    id: slug
+    attributes:
+      label: Short name for the address
+      description: Lowercase, no spaces. The map will live at jommi.fi/sauna/<this>/.
+      placeholder: tampere
+    validations: { required: true }
+  - type: input
+    id: country
+    attributes:
+      label: Country code
+      placeholder: FI
+    validations: { required: true }
+  - type: input
+    id: timezone
+    attributes:
+      label: Timezone
+      placeholder: Europe/Helsinki
+    validations: { required: true }
+  - type: input
+    id: frame
+    attributes:
+      label: Map frame
+      description: West, south, east, north, in degrees. Draw a box around where the saunas are on bboxfinder.com and copy its four numbers. Berlin's is 13.30, 52.462, 13.49, 52.547.
+      placeholder: 23.68, 61.47, 23.86, 61.52
+    validations: { required: true }
+  - type: input
+    id: extract
+    attributes:
+      label: OpenStreetMap extract
+      description: BBBike's name for the city, from the list at download.bbbike.org/osm/bbbike/. Only cities on that list can be opened this way.
+      placeholder: Helsinki
+    validations: { required: true }
+  - type: input
+    id: currency
+    attributes:
+      label: Currency sign
+      placeholder: "€"
+    validations: { required: true }
+  - type: dropdown
+    id: temp
+    attributes:
+      label: Temperatures
+      options: ["Celsius", "Fahrenheit"]
+  - type: input
+    id: lede
+    attributes:
+      label: One line about the city's saunas
+      description: Shown under the map's title.
+      placeholder: Lakeside public saunas, most of them wood-heated.
+    validations: { required: true }

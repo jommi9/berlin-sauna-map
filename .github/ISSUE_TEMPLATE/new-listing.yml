@@ -1,0 +1,96 @@
+name: Add a sauna
+description: Propose a new listing for one of the maps. Contributors only; everyone else's becomes a suggestion.
+title: "New listing: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This opens a pull request for the owner to read and merge, if you are on the contributors
+        list. The venue's **own website** is checked first: it has to be live and mention a sauna.
+        Read every price and opening hour off that site, never off a "best saunas" list.
+        Plain text only, and use ' for quotes.
+  - type: input
+    id: city
+    attributes:
+      label: City
+      description: The map it belongs on, by its short name.
+      placeholder: berlin, helsinki, nyc or sf
+    validations: { required: true }
+  - type: input
+    id: name
+    attributes:
+      label: Name
+      description: As the venue writes it.
+    validations: { required: true }
+  - type: input
+    id: url
+    attributes:
+      label: Official website
+      description: The page on the venue's own site that talks about the sauna, ideally with prices or hours.
+      placeholder: https://
+    validations: { required: true }
+  - type: input
+    id: coordinates
+    attributes:
+      label: Coordinates
+      description: Latitude, then longitude. Right-click the building on openstreetmap.org or Google Maps and copy them.
+      placeholder: 60.18651, 24.95734
+    validations: { required: true }
+  - type: input
+    id: kind
+    attributes:
+      label: Kind
+      placeholder: Public sauna, Hotel day spa, Russian banya ...
+    validations: { required: true }
+  - type: input
+    id: district
+    attributes:
+      label: Neighbourhood
+    validations: { required: true }
+  - type: input
+    id: price
+    attributes:
+      label: Cheapest entry
+      description: One number, the cheapest normal adult entry, in the city's currency. Leave empty if their site gives none.
+      placeholder: "18"
+  - type: input
+    id: prices
+    attributes:
+      label: Prices in words
+      description: What is on their price list, briefly.
+      placeholder: €18 · reduced €14 · towel €5
+    validations: { required: true }
+  - type: textarea
+    id: sauna
+    attributes:
+      label: Sauna
+      description: What there is, with temperatures in °C if their site states them (for example "Finnish 90°C, steam 45°C").
+    validations: { required: true }
+  - type: input
+    id: pool
+    attributes:
+      label: Pool or cold water
+      placeholder: No pool; a 12°C plunge
+    validations: { required: true }
+  - type: input
+    id: hours
+    attributes:
+      label: Opening hours
+      placeholder: Tue–Sun 14:00–21:00 · closed Mon
+    validations: { required: true }
+  - type: dropdown
+    id: loyly
+    attributes:
+      label: Who throws the water?
+      options: ["Not known", "I throw my own", "Staff throw it (Aufguss)", "A machine doses it"]
+  - type: input
+    id: bestfor
+    attributes:
+      label: Best for
+      description: One short line.
+    validations: { required: true }
+  - type: input
+    id: flag
+    attributes:
+      label: Heads up
+      description: Anything a first-time visitor has to know (cash only, women only on Mondays, booking required).

@@ -34,7 +34,7 @@ for v in vs:
     off = math.hypot(v['px']-v['x'], v['py']-v['y'])
     v['off'] = round(off,1)
     worst = max(worst, off)
-mind = min(math.hypot(a['px']-b['px'], a['py']-b['py']) for i,a in enumerate(vs) for b in vs[i+1:])
+mind = min((math.hypot(a['px']-b['px'], a['py']-b['py']) for i,a in enumerate(vs) for b in vs[i+1:]), default=0)
 print(f"max displacement {worst:.1f} units (~{worst/1000*100:.1f}% of map width) | min pin gap {mind:.1f}")
 for v in sorted(vs, key=lambda v:-v['off'])[:5]: print(f"  {v['off']:5.1f}  {v['name']}")
 json.dump(vs, open('venues.json','w'), separators=(',',':'), ensure_ascii=False)
