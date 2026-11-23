@@ -287,6 +287,7 @@ svg.map.dragging{cursor:grabbing}
   overflow-y:auto; overscroll-behavior:contain; display:flex; flex-direction:column; gap:12px;
   scrollbar-width:thin; scrollbar-color:var(--fill-2) transparent;
 }
+.cards[hidden]{display:none}
 .none-msg{margin:24px 4px; color:var(--label-2); font-size:15px; text-align:center}
 
 /* venue card */
@@ -485,6 +486,12 @@ button.btn{border:0; cursor:pointer}
 .btn.on{background:var(--ember-soft); color:var(--ember)}
 .btn:disabled{opacity:.5; cursor:default}
 .xg{flex:none}
+.signin{width:min(340px, calc(100vw - 32px)); padding:20px; border:0; border-radius:var(--r-lg, 6px); background:var(--surface); color:var(--label); box-shadow:var(--shadow-lift, var(--shadow))}
+.signin::backdrop{background:rgba(0,0,0,.35)}
+.signin form{display:flex; flex-direction:column; gap:10px; margin:0}
+.signin h3{margin:0; font:600 18px/1.2 var(--font-display)}
+.signin p{margin:0 0 4px; font-size:14px; line-height:1.5; color:var(--label-2)}
+.signin .btn{justify-content:center; height:42px}
 .acct{position:relative; flex:none}
 .acct-b{
   display:inline-flex; align-items:center; gap:8px; height:40px; padding:0 14px; border:0; cursor:pointer;
@@ -810,7 +817,7 @@ button.btn{border:0; cursor:pointer}
 
   <section class="sec" id="board" aria-labelledby="h-board" hidden>
     <h2 class="sec-h" id="h-board">leaderboard</h2>
-    <p class="sec-sub">Who has sat in the most of New York&rsquo;s saunas, and where everyone goes. Log a visit from a sauna&rsquo;s card once you&rsquo;re signed in with X; it counts each sauna once however often you go.</p>
+    <p class="sec-sub">Who has sat in the most of New York&rsquo;s saunas, and where everyone goes. Log a visit from a sauna&rsquo;s card once you&rsquo;re signed in; it counts each sauna once however often you go.</p>
     <div class="boards">
       <div class="board"><h3>most saunas</h3><ol class="lb" id="lb-people"></ol></div>
       <div class="board"><h3>most visited</h3><ol class="lb" id="lb-venues"></ol></div>
@@ -1433,6 +1440,7 @@ function run(){
   lTitle.textContent = filtered ? `${n} match${n === 1 ? "" : "es"}` : `all ${V.length} places`;
   nCount.textContent = n;
   noneMsg.hidden = n > 0;
+  cards.hidden = n === 0;                          // so the message sits where the list would
   if (!V.length) noneMsg.textContent = "no saunas listed here yet. a contributor can add the first one below.";
   if (typeof updateMore === "function") updateMore();
   if (typeof grabLabel !== "undefined" && grabLabel)
@@ -1697,18 +1705,24 @@ if (!document.querySelector("#note-practical p").textContent.trim()) document.ge
 })();
 run();
 /* ---------- the social layer ----------
-   Sign in with X, saved spots, logged visits, the leaderboard and the review panel. It lives in
+   Sign in with X or GitHub, saved spots, logged visits, the leaderboard and the review panel. It lives in
    the jommi.fi Worker under /sauna/api/ (repo jommi9/jommi-fi, worker/sauna-api.js), on the same
    origin as the map, so it only exists where the map is served from jommi.fi. Anywhere else (the
    github.io copy, the artifact) nothing here shows. Everything people type is escaped with esc(). */
 const API = "/sauna/api";
-const SOC = { on: false, me: null, visits: [], mine: new Map(), pub: null, admin: null };
+const SOC = { on: false, providers: null, me: null, visits: [], mine: new Map(), pub: null, admin: null };
 const esc = t => String(t ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const XG = `<svg class="xg" width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`;
 const avatar = (p, small) => p.avatar
   ? `<img class="av${small ? " s" : ""}" src="${esc(p.avatar)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.removeAttribute('src')">`
   : `<span class="av${small ? " s" : ""}" aria-hidden="true">${esc((p.name || p.handle || "?")[0])}</span>`;
-const xLink = (p, text) => `<a href="https://x.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+const GH = `<svg class="xg" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/></svg>`;
+/* A person is a handle and where it is from: @sam on X and @sam on GitHub are two people. */
+const xLink = (p, text) => `<a href="https://${p.via === "github" ? "github.com" : "x.com"}/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+const sameAs = (a, b) => a && b && a.handle === b.handle && (a.via || "x") === (b.via || "x");
+/* The glyph on a sign-in button: X's or GitHub's when only one is offered, none when both are. */
+const signGlyph = () => { const w = ways(); return w.length === 1 ? (w[0] === "github" ? GH : XG) + "&nbsp;" : ""; };
+const ways = () => Object.entries(SOC.providers || { x: true }).filter(([, on]) => on).map(([k]) => k);
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many || one + "s"}`;
 const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York" }).format(new Date());
 const dayText = d => new Date(d + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short",
@@ -1723,7 +1737,25 @@ async function api(path, body){
   if (!r.ok) throw new Error(data.error || "something went wrong");
   return data;
 }
-const signIn = () => { location.href = `${API}/auth/start?back=${encodeURIComponent(location.pathname)}`; };
+const goSignIn = way => { location.href = `${API}/auth/start?back=${encodeURIComponent(location.pathname)}${way === "github" ? "&with=github" : ""}`; };
+/* With one way in, go; with two, ask which. Either account does everything here; the two are
+   separate accounts, so whoever started with one should keep using it. */
+function signIn(){
+  const w = ways();
+  if (w.length < 2) return goSignIn(w[0] || "x");
+  let d = document.getElementById("signin-d");
+  if (!d){
+    d = document.createElement("dialog"); d.id = "signin-d"; d.className = "signin";
+    d.innerHTML = `<form method="dialog"><h3>sign in</h3>
+      <p>Save saunas, log visits and climb the board. Pick one and stick with it: the two are separate accounts here.</p>
+      <button class="btn primary" type="button" data-way="x">${XG}&nbsp;continue with X</button>
+      <button class="btn primary" type="button" data-way="github">${GH}&nbsp;continue with GitHub</button>
+      <button class="btn quiet" value="cancel">not now</button></form>`;
+    d.addEventListener("click", e => { const b = e.target.closest("[data-way]"); if (b) goSignIn(b.dataset.way); else if (e.target === d) d.close(); });
+    document.body.appendChild(d);
+  }
+  d.showModal();
+}
 let toastEl = null, toastT = 0;
 function toast(text){
   if (!toastEl){ toastEl = document.createElement("div"); toastEl.className = "toast"; toastEl.setAttribute("role", "status"); document.body.appendChild(toastEl); }
@@ -1733,6 +1765,7 @@ function toast(text){
 
 function setMe(r){
   SOC.me = r.me;
+  if (r.providers) SOC.providers = r.providers;
   SOC.visits = r.visits || [];
   SOC.mine = new Map((r.reviews || []).map(x => [x.venue, x]));
   ME.saved = new Set(r.saved || []);
@@ -1758,7 +1791,7 @@ function drawAcct(){
   if (!SOC.on) return;
   const me = SOC.me;
   if (!me){
-    acct.innerHTML = `<button class="acct-b" type="button">${XG}sign in</button>`;
+    acct.innerHTML = `<button class="acct-b" type="button">${signGlyph()}sign in</button>`;
     acct.firstChild.addEventListener("click", signIn);
     return;
   }
@@ -1769,10 +1802,12 @@ function drawAcct(){
   acct.innerHTML = `
     <button class="acct-b me" type="button" aria-expanded="${open}" aria-haspopup="true" aria-label="Your account">${avatar(me, true)}<span>@${esc(me.handle)}</span></button>
     <div class="acct-m" ${open ? "" : "hidden"}>
-      <div class="who">${avatar(me)}<div><b>${esc(me.name)}</b><span>@${esc(me.handle)}</span></div></div>
+      <div class="who">${avatar(me)}<div><b>${esc(me.name)}</b><span>@${esc(me.handle)} on ${me.via === "github" ? "GitHub" : "X"}</span></div></div>
       <p class="tally"><b>${ME.been.size}</b> of ${V.length} saunas &middot; ${plural(SOC.visits.length, "visit")} &middot; ${ME.saved.size} saved</p>
       <button class="link" type="button" data-go="board">leaderboard</button>
       ${role ? `<button class="link" type="button" data-go="h-panel">${role}</button>` : ""}
+      ${me.via === "github" && CONTRIBUTORS.some(h => h.toLowerCase() === me.handle.toLowerCase())
+        ? `<a class="link" href="https://github.com/jommi9/sauna-maps/issues/new?template=new-listing.yml" target="_blank" rel="noopener noreferrer">add a sauna (you're a contributor)</a>` : ""}
       <label><input type="checkbox" data-show ${me.hidden ? "" : "checked"}> show me on the leaderboard</label>
       <hr>
       <button class="link" type="button" data-out>sign out</button>
@@ -1850,7 +1885,7 @@ function drawMine(v){
   box.hidden = !SOC.on;
   if (!SOC.on) return;
   if (!SOC.me){
-    box.innerHTML = `<div class="row"><button class="btn quiet" type="button" data-sign>${XG}&nbsp;sign in to save and log visits</button></div>`;
+    box.innerHTML = `<div class="row"><button class="btn quiet" type="button" data-sign>${signGlyph()}sign in to save and log visits</button></div>`;
     return;
   }
   const t = today(), days = SOC.visits.filter(x => x.venue === v.name).map(x => x.day).sort().reverse();
@@ -2006,7 +2041,7 @@ function drawBoard(){
   if (sec.hidden) return;
   const me = SOC.me, b = SOC.pub;
   document.getElementById("lb-people").innerHTML = b.people.length ? b.people.map(p => `
-    <li${me && p.handle === me.handle ? ' class="you"' : ""}>${avatar(p)}
+    <li${sameAs(p, me) ? ' class="you"' : ""}>${avatar(p)}
       <span class="nm">${xLink(p, esc(p.name))}<small>@${esc(p.handle)}</small></span>
       <span class="n"><b>${p.saunas}</b> ${p.saunas === 1 ? "sauna" : "saunas"}<small>${plural(p.visits, "visit")}</small></span></li>`).join("")
     : `<li class="empty">nobody has logged a visit yet.</li>`;
@@ -2041,8 +2076,8 @@ function drawJoin(){
   if (!SOC.on) return;
   const me = SOC.me;
   if (!me){
-    join.innerHTML = `<p>Sign in with X to ask to join. The editor reads every application.</p>
-      <div><button class="btn primary" type="button" data-sign>${XG}&nbsp;sign in to apply</button></div>`;
+    join.innerHTML = `<p>Sign in to ask to join. The editor reads every application.</p>
+      <div><button class="btn primary" type="button" data-sign>${signGlyph()}sign in to apply</button></div>`;
     return;
   }
   if (me.role === "member"){
@@ -2058,14 +2093,14 @@ function drawJoin(){
   const a = SOC.admin;
   if (!a){ join.innerHTML = `<p>Loading applications\u2026</p>`; return; }
   join.innerHTML = `<p><b>applications</b></p>` + (a.applications.length ? `<div class="queue">${a.applications.map(x => `
-      <div class="q"><div class="who">${avatar(x)}<span>${xLink(x, esc(x.name))} <span class="rev-m">@${esc(x.handle)} \u00b7 ${dayText(x.day)}</span></span></div>
+      <div class="q"><div class="who">${avatar(x)}<span>${xLink(x, esc(x.name))} <span class="rev-m">@${esc(x.handle)} on ${x.via === "github" ? "GitHub" : "X"} \u00b7 ${dayText(x.day)}</span></span></div>
         <p>${esc(x.note)}</p>
-        <div class="mine"><div class="row"><button class="btn primary" type="button" data-verdict="approve" data-h="${esc(x.handle)}">approve</button>
-        <button class="btn quiet" type="button" data-verdict="reject" data-h="${esc(x.handle)}">reject</button></div></div></div>`).join("")}</div>`
+        <div class="mine"><div class="row"><button class="btn primary" type="button" data-verdict="approve" data-h="${esc(x.handle)}" data-via="${x.via === "github" ? "github" : "x"}">approve</button>
+        <button class="btn quiet" type="button" data-verdict="reject" data-h="${esc(x.handle)}" data-via="${x.via === "github" ? "github" : "x"}">reject</button></div></div></div>`).join("")}</div>`
       : `<p>No applications waiting.</p>`)
     + (a.panel.length ? `<p><b>on the panel</b></p><div class="queue">${a.panel.map(x => `
       <div class="q"><div class="who">${avatar(x)}<span>${xLink(x, esc(x.name))} <span class="rev-m">@${esc(x.handle)}</span></span></div>
-        <div class="mine"><div class="row"><button class="btn quiet" type="button" data-verdict="revoke" data-h="${esc(x.handle)}">take off the panel</button></div></div></div>`).join("")}</div>` : "");
+        <div class="mine"><div class="row"><button class="btn quiet" type="button" data-verdict="revoke" data-h="${esc(x.handle)}" data-via="${x.via === "github" ? "github" : "x"}">take off the panel</button></div></div></div>`).join("")}</div>` : "");
 }
 join.addEventListener("click", async e => {
   if (e.target.closest("[data-sign]")) return signIn();
@@ -2077,7 +2112,7 @@ join.addEventListener("click", async e => {
   }
   const b = e.target.closest("[data-verdict]"); if (!b) return;
   b.disabled = true;
-  try { await api("/admin", { handle: b.dataset.h, verdict: b.dataset.verdict }); await loadAdmin(); loadPublic(true); }
+  try { await api("/admin", { handle: b.dataset.h, via: b.dataset.via, verdict: b.dataset.verdict }); await loadAdmin(); loadPublic(true); }
   catch (x) { toast(x.message); b.disabled = false; }
 });
 

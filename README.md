@@ -14,6 +14,7 @@ redirects the old repository address.
 | `engine/` | Everything the cities share: the build scripts, the page template, the self-updater and the audit scripts. Nothing in here names a city. |
 | `berlin/` | Everything about Berlin: its facts (`venues.py`), its settings (`city.json`), its base map, its photos, and the pages built from them. A second city is a second folder like it. |
 | `reviewers.json` | The review panel, one list for every city. |
+| `contributors.json` | The GitHub users who may add listings and cities, through the "Add a sauna" and "Open a new city" issue forms. Each proposal becomes a pull request for the owner to merge. |
 | `index.html` | A redirect to the hub, for anyone who lands on the root of the GitHub Pages copy. |
 
 A city's folder is also what gets served. GitHub Pages serves the repository as it is, so
@@ -79,6 +80,7 @@ In `engine/` (every script takes the city as its first argument, for example `py
 | `verify_venue.py` | Checks every venue against its own site: `OK` / `THIN` / `PAUSED` / `STALE NOTICE` / `BLOCKED` / `SUSPECT` / `LIKELY CLOSED` / `UNREACHABLE`. With no argument it audits every city; with a name and a URL it checks one candidate. |
 | `watch_changes.py` | Flags a venue whose own page no longer shows any price we list. Conservative by design — it reports, never edits. |
 | `check_deployment.py` | Hashes a city's live page against its `index.html`, warns on seasonal switches, and chases closures whose date has lapsed. `--wait <min>` to allow for a Pages deploy. |
+| `propose.py` | Turns a contributor's "Add a sauna" or "Open a new city" issue into the change for a pull request: checks the author, the input and the venue's own site, writes the row or draws the new city, rebuilds. |
 | `ingest_issue.py` | Validates an approved reviewer application or review issue and folds it into the JSON. A review goes to the city whose map lists the venue. |
 
 ## Rebuilding after a data edit
@@ -105,6 +107,9 @@ In `engine/` (every script takes the city as its first argument, for example `py
 the cached OSM files. To refresh those from Overpass, see the queries in `fetch.sh`.
 
 ## Opening a new city
+
+A contributor can do steps 1 to 4 from the "Open a new city" issue form, which ends in a pull
+request with an empty map; listings then come one at a time through "Add a sauna". By hand:
 
 1. Make its folder, named for its slug (`helsinki/`), with a `city.json` like Berlin's.
 2. Draw its base map: download its extract (`https://download.bbbike.org/osm/bbbike/<Name>/<Name>.osm.pbf`),

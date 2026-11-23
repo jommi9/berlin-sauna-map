@@ -32,6 +32,29 @@ as it is and the jommi.fi Worker passes `/sauna/berlin/` through to it.
   repository's name from Actions, so the Pages address follows a rename by itself; `REPO` in
   `engine/city.py` is the one place the name is written down.
 
+## Who can add what
+
+Anyone can use the maps: save a sauna, log a visit, apply to review. Adding a listing or a city
+is for the GitHub users named in `contributors.json` (jommi9 and Jaamuru so far), and even they
+only propose:
+
+- The way in is two issue forms, "Add a sauna" and "Open a new city".
+  `.github/workflows/propose.yml` runs `engine/propose.py` on them. It checks the issue's author
+  against `contributors.json`, refuses markup and malformed input, runs `verify_venue.py` on the
+  venue's own site, writes the row into the city's `venues.py` (or draws a new city's base map
+  from a BBBike extract), rebuilds, and opens a pull request. **Nothing reaches the site until
+  the owner merges that pull request.** From anyone else the issue stays open as a suggestion.
+- To add a contributor, add their GitHub login to `contributors.json`. That is the whole grant:
+  they do not need to be a collaborator on the repository, and the page lists them.
+- A row written by the form is marked with a comment naming the issue and the verifier's
+  verdict. THIN and BLOCKED go forward with a warning in the pull request; read the venue's
+  page before merging, as for any venue.
+- The forms are recognised by their title ("New listing: ", "New city: "), not by a label.
+- Form text lands in `innerHTML` unescaped, like all venue data, so `propose.py` refuses
+  `< > " \` and backticks outright. Keep that if the forms gain fields.
+- The workflow needs Settings > Actions > General > "Allow GitHub Actions to create and approve
+  pull requests".
+
 ## Data sourcing: primary source first, always
 
 Never propose or add a venue on the strength of a "best saunas in Berlin" listicle,
@@ -192,9 +215,14 @@ none of it unless the answer is `on: true`, and only asks at all under a `/sauna
 so the github.io copy and the artifact have no sign-in, no board and the GitHub review
 links instead. The code is the last block of `engine/template.html`'s script ("the social layer").
 
-- Sign-in goes through the shared `accounts` Worker (game `sauna`), the one Termination
-  uses; nothing here sees an X token. `SAUNA_SIGNIN` in jommi-fi's `wrangler.jsonc` is the
-  switch.
+- Sign-in goes through the shared `accounts` Worker (site `sauna`), the one Termination
+  uses; nothing here sees a provider's token. `SAUNA_SIGNIN` in jommi-fi's `wrangler.jsonc` is
+  the switch. People sign in with X or GitHub: the page asks which when both are offered
+  (`SOC.providers`, from `/me`). The two are separate accounts, and a person is a handle *and*
+  where it is from (`via`): profile links, the "you" row on the board and the editor's approve
+  buttons all use both, because @sam on X and @sam on GitHub can be two people. Signing in with
+  GitHub is not what lets someone add listings; `contributors.json` is. A signed-in GitHub
+  contributor just gets a shortcut to the form in their menu.
 - A visit is a person's own word. The board counts distinct saunas, one visit per sauna per
   day, so it is slow to pad and not proof of anything.
 - Becoming a reviewer is an application read by the editor (`SAUNA_ADMINS`, an X handle),
