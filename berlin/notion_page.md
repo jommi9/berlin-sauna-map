@@ -1,0 +1,247 @@
+<callout icon="♨️" color="blue_bg">
+	Berlin sauna shortlist combining hotel day spas, Urban Sports Club options, and regular standalone saunas. **Last checked: 8 October 2026.** Cabin temperatures and Aufguss practice were confirmed by the venues themselves by email. Prices, USC limits and opening hours change often, so recheck before making a special trip. **This page is generated from the sauna-maps repository — edits made here are overwritten by the next build.**
+</callout>
+<table fit-page-width="true" header-row="true">
+<tr>
+<td>Place</td>
+<td>Type</td>
+<td>Cash / separate access</td>
+<td>USC</td>
+<td>Sauna and facilities</td>
+<td>Pool / cold</td>
+<td>Hours / status</td>
+<td>Best for</td>
+</tr>
+<tr>
+<td>[Vabali](https://www.vabali.de/berlin/)</td>
+<td>Standalone spa</td>
+<td>€27.50 / 2h · €36.50 / 4h · €51.50 day (weekends & holidays €29.50 / €39.50 / €56.50)</td>
+<td>Not on Urban Sports Club</td>
+<td>**Someone throws for you — Aufguss.** 13 saunas: bio 55°C coolest, Gratensauna 90°C hottest, steam 45°C Aufguss rated 10/10. Aufguss: Plan rewritten daily and posted in-house — birch ceremonies, Asian scent journey, mint, orange peeling *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>4 pools</td>
+<td>Daily 09:00–24:00 (08:00–24:00 from 1 Oct to 31 Mar)</td>
+<td>**Best full sauna day**</td>
+</tr>
+<tr>
+<td>[Grand Hyatt — Club Olympus](https://www.hyatt.com/de-DE/spas/Club-Olympus-Berlin/day-spa)</td>
+<td>Hotel day spa</td>
+<td>Weekday €40 / 2h · €80 day; weekend €50 / 2h · €95 day</td>
+<td>Not on Urban Sports Club</td>
+<td>**Automatic dosing — nobody throws.** Finnish sauna 90°C, steam bath 45°C Aroma: Automatic infusion in the Finnish sauna, four scents to choose from *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>Indoor rooftop pool + cold plunge</td>
+<td>07:00–21:00</td>
+<td>**Best premium hotel sauna**</td>
+</tr>
+<tr>
+<td>[Hilton Berlin — LivingWell](https://urbansportsclub.com/de/venues/hilton-berlin-living-well-health-club?view=new)</td>
+<td>Hotel spa</td>
+<td>€33 / 2.5h · €39 day</td>
+<td>Premium 4×/mo · Max 8×/mo · 2h per visit</td>
+<td>**Automatic dosing — nobody throws.** Mixed sauna area: Finnish 90°C, bio 65°C, steam 48°C Aroma: Press the button for an automatic infusion every 30 min — pouring your own is not allowed *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>14 m heated pool</td>
+<td>07:00–21:00 (hours as published, not re-verified)</td>
+<td>**Best overall USC hotel option**</td>
+</tr>
+<tr>
+<td>[Steigenberger — Sky Spa](https://www.sky-spa-fitnesslounge.de/day-spa/)</td>
+<td>Hotel spa</td>
+<td>€25 / 2h · €40 day</td>
+<td>Premium & Max 4×/mo · reserved 2h slot</td>
+<td>**You throw your own löyly.** 2 Finnish saunas 90°C, bio 60°C, steam 45°C at high humidity Aufguss (self-serve): No staff plan; guests pour their own, preparations provided *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>No major pool focus</td>
+<td>Mon–Fri 14:00–22:00 · Sat 10:00–22:00 · Sun 10:00–18:00 (hours from OpenStreetMap)</td>
+<td>**Best USC option if sauna matters most**</td>
+</tr>
+<tr>
+<td>[Hotel de Rome — De Rome Spa](https://www.visitberlin.de/de/berlins-beste-sauna)</td>
+<td>Hotel day spa</td>
+<td>From about €90 day</td>
+<td>Not on Urban Sports Club</td>
+<td>**Not known.** Finnish sauna, steam room, ice fountain, Kneipp circuit</td>
+<td>20 m pool in a former bank vault</td>
+<td>Sauna roughly 10:00–21:00 (hours as published, not re-verified)</td>
+<td>**Most atmospheric / beautiful**</td>
+</tr>
+<tr>
+<td>[Hotel Adlon Kempinski](https://www.kempinski.com/de/hotel-adlon/luxus-spa/mitgliedschaften/tagespass-und-mitgliedschaften)</td>
+<td>Hotel day spa</td>
+<td>€65 weekday · €85 weekend day pass</td>
+<td>Not on Urban Sports Club</td>
+<td>**Automatic dosing — nobody throws.** Finnish 80–100°C, bio/soft 50–60°C, steam 40–45°C at 98% humidity Aroma: No plan; the cabins release aroma automatically every 20 minutes *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>Pool</td>
+<td>07:00–21:00 (hours as published, not re-verified)</td>
+<td>Luxury hotel experience</td>
+</tr>
+<tr>
+<td>[Hotel Palace — Palace Spa](https://www.palace.de/hotel/palace-spa-fitness)</td>
+<td>Hotel day spa</td>
+<td>About €34–35 / 3h · €39 day</td>
+<td>Not on Urban Sports Club</td>
+<td>**You throw your own löyly.** Finnish 90°C, tepidarium 55°C with colour therapy, ladies' sauna 90°C from 16:30, ice grotto 4°C Aufguss (self-serve): Self-serve buckets: rose, herbal, lemongrass *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>Pool</td>
+<td>Mon–Sat 06:30–22:00 · Sun & holidays 08:00–22:00; mixed sauna from 16:30</td>
+<td>**Best-value cash hotel spa**</td>
+</tr>
+<tr>
+<td>[Titanic Gendarmenmarkt — BeFine](https://www.titanic.com.tr/de/titanic-gendarmenmarkt-berlin/befine-spa/sauna)</td>
+<td>Hotel day spa</td>
+<td>About €35 day</td>
+<td>Not on Urban Sports Club</td>
+<td>**Someone throws for you — Aufguss.** Finnish 90°C, steam 40–50°C, Turkish hammam 40°C Aufguss on request: No fixed plan; ask the team on the day *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>No major pool focus</td>
+<td>Mon–Thu 12:30–21:00 · Fri–Sat 10:00–21:00 · Sun 10:00–18:30</td>
+<td>Hammam plus sauna</td>
+</tr>
+<tr>
+<td>[Park Inn Alexanderplatz — Gezer Spa](https://urbansportsclub.com/de/venues/gezer-spa-fitness-1)</td>
+<td>Hotel spa</td>
+<td>€12.50 / 2h · €17.50 / 4h · €22.50 day card (Stadtgäste)</td>
+<td>Classic 4×/mo · Premium & Max 8×/mo · max 2h</td>
+<td>**You throw your own löyly.** Two Finnish saunas, 70–80°C and 90–100°C Aufguss (self-serve): No plan; pour your own freely *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>No pool</td>
+<td>Daily 12:00–22:00 (12:00–18:00 from 1 Oct to 31 Mar)</td>
+<td>**Best easy / low-friction USC sauna**</td>
+</tr>
+<tr>
+<td>[InterContinental Berlin](https://www.berlin.intercontinental.com/wellness/)</td>
+<td>Hotel day spa</td>
+<td>€60 / 2h · €100 day (day visitors) · hotel guests €10 pool, €20 pool + sauna per day</td>
+<td>Not on Urban Sports Club</td>
+<td>**You throw your own löyly.** Large Finnish 90°C, ladies' sauna 90°C, steam and herbal bath both 45°C; textile optional Aufguss (self-serve): A bucket stands ready in both Finnish saunas; guests pour their own *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>Pool</td>
+<td>Daily 07:00–21:00 (Spa Card); Time Card Mon–Fri 07:00–15:00</td>
+<td>Large conventional hotel spa</td>
+</tr>
+<tr>
+<td>[The Westin Grand — Gezer Spa](https://urbansportsclub.com/en/venues/gezer-spa-fitness?view=new)</td>
+<td>Hotel spa</td>
+<td>€15 / 2h · €20 / 4h · €25 day card (Stadtgäste)</td>
+<td>Classic 4×/mo · Premium & Max 8×/mo · max 2h</td>
+<td>**Not known.** Only the Sanarium is open, 60–65°C — two saunas still under repair *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>Check current spa setup</td>
+<td>Daily 14:00–22:00 — only the Sanarium is running while two saunas are repaired **Heads up:** Confirmed by Gezer Spa on 3 September 2026. No completion date for the two saunas under repair. The Urban Sports Club listing still shows the old closure banner — ignore it.</td>
+<td>Central USC alternative</td>
+</tr>
+<tr>
+<td>[sly Berlin](https://www.sly-berlin.com/en/spa-and-gym)</td>
+<td>Hotel spa</td>
+<td>Hotel guests only — no public access</td>
+<td>No current USC listing</td>
+<td>**Not known.** One electric Finnish sauna, fixed at 80°C *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>No pool</td>
+<td>About 06:00–23:00; hotel pages differ (hours as published, not re-verified) **Heads up:** Confirmed by sly Berlin on 2 September 2026: because of the spa's size it is open to hotel guests only. There is no public day pass.</td>
+<td>Top-tier sauna, but you cannot get in</td>
+</tr>
+<tr>
+<td>[KIEZ SAUNA Friedrichshain](https://www.kiezsauna.de/%C3%B6ffnungszeiten/)</td>
+<td>Standalone sauna</td>
+<td>€22 / 4h</td>
+<td>Not on Urban Sports Club</td>
+<td>**Someone throws for you — Aufguss.** 90°C Finnish, 60°C bio, steam room, hourly Aufguss, terrace</td>
+<td>No pool focus</td>
+<td>Daily 15:00–24:00 (13:00–24:00 from 1 Oct to 31 Mar)</td>
+<td>**Best neighborhood / proper sauna**</td>
+</tr>
+<tr>
+<td>[Olivin](https://olivin-berlin.com/facts/)</td>
+<td>Standalone sauna</td>
+<td>€24 / 4h · reduced €21 · extra hour +€6 · late tariff from 21:30 €22 · happy hour Mon–Fri €20</td>
+<td>Not on Urban Sports Club</td>
+<td>**Someone throws for you — Aufguss.** A single Finnish sauna at 90°C — there are no other cabins Aufguss: On the hour, every hour *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>No pool focus</td>
+<td>Daily 12:00–24:00; in summer (1 Jun–30 Sep) 17:00–24:00, Thu 12:00–24:00</td>
+<td>Quiet, smaller, design-y option</td>
+</tr>
+<tr>
+<td>[LIQUIDROM](https://www.liquidrom-berlin.de/en/info.php)</td>
+<td>Standalone spa</td>
+<td>Short Escape 90 min €22 · Urban Flow 2h €24.50 · Deep Dive 3h €29.50 · +€5 per extra 30 min · sauna add-on +€2.50</td>
+<td>Premium / Max access exists, but USC entry excludes the sauna</td>
+<td>**Someone throws for you — Aufguss.** Hot Room 90°C, Kelo herbal room 80°C, Salt Room 65°C, steam 45°C; 36°C saltwater dome Aufguss: Hourly heat sessions, roughly 10:00–23:00 (to 00:00 Fri–Sat) *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>Saltwater sound pool</td>
+<td>Mon–Thu 10:00–24:00 · Fri–Sun 10:00–01:00 (hours from OpenStreetMap) **Heads up:** USC entry does not include the sauna — you pay the supplement.</td>
+<td>Spa / pool atmosphere rather than pure sauna</td>
+</tr>
+<tr>
+<td>[Saunabad Prenzlauer Berg](https://www.saunabad-berlin.de/)</td>
+<td>Standalone sauna</td>
+<td>€18 / 2.5h · €20 / 4h</td>
+<td>No verified USC access</td>
+<td>**Someone throws for you — Aufguss.** Large 95°C sauna, hourly Aufguss, garden, quiet rooms</td>
+<td>No pool focus</td>
+<td>Mon–Sat 15:00–24:00 · Sun 12:00–24:00 **Heads up:** Cash only, no cards. Their own site served a hosting parking page for a spell in September 2026; it is back as of 8 October with the same prices and hours. Rykestr. 10, tel. 030 44046397.</td>
+<td>**Best cheap traditional sauna**</td>
+</tr>
+<tr>
+<td>[Lützow Sauna](https://www.luetzow-sauna.de/start)</td>
+<td>Standalone sauna</td>
+<td>€24 / 2h · €27 / 3h · €30 day</td>
+<td>No verified USC access</td>
+<td>**Someone throws for you — Aufguss.** 90°C sauna, sanarium, steam bath, hourly Aufguss</td>
+<td>30°C pool and 14°C plunge</td>
+<td>Mon 18:00–23:00 · Wed, Fri–Sun 16:00–23:00 · closed Tue & Thu (hours from OpenStreetMap)</td>
+<td>Excellent classic hot–cold cycles</td>
+</tr>
+<tr>
+<td>[ANTI SPA](https://www.antispaces.com/spa/welcome-pass)</td>
+<td>Sauna & cold plunge studio</td>
+<td>Regular sessions around €29; promos vary</td>
+<td>Classic 4×/mo · Premium & Max 8×/mo</td>
+<td>**Not known.** One sauna at 60°C plus the cold plunge — no Finnish, bio or steam cabin; swimwear mandatory *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>Proper cold plunge</td>
+<td>Open Spa daily 07:00–16:00 for self-guided sauna and cold plunge; guided sessions at other times — timetable on their site and Instagram</td>
+<td>**Best USC sauna plus serious cold plunge**</td>
+</tr>
+<tr>
+<td>[Fitness Company Berlin](https://www.fitnesscompany-berlin.de/sauna.html)</td>
+<td>Gym with sauna</td>
+<td>€11 sauna-only day ticket · €15 day with gym and classes · 10 sauna visits €90 (valid 3 months)</td>
+<td>Classic 4×/mo · Premium 8×/mo · Max 1×/day · sauna included with a gym check-in</td>
+<td>**Not known.** 90°C dry sauna and a 60°C bio sauna at 50% humidity</td>
+<td>No pool</td>
+<td>Mon & Wed 08:00–23:00 · Tue, Thu, Fri 08:00–22:00 · Sat 09:45–19:00 · Sun 10:00–20:00; the 90°C sauna runs all opening hours, the bio sauna keeps shorter ones **Heads up:** The Urban Sports Club listing does not mention the sauna, but a normal gym check-in gets you in.</td>
+<td>USC sauna by Berghain</td>
+</tr>
+<tr>
+<td>[Stadtbad Neukölln](https://www.berlinerbaeder.de/baeder/detail/stadtbad-neukoelln/)</td>
+<td>Public bath / sauna</td>
+<td>€20 / 3h · €23 day (reduced €16 / €19) · €10 chip deposit, box office only</td>
+<td>Included on Max</td>
+<td>**Not known.** Finnish sauna, herbal sauna, steam bath, caldarium</td>
+<td>Public bath facilities</td>
+<td>Sauna Mon 12:00–22:30 (women only) · Tue–Sun 10:00–22:30 · last entry 21:30 **Heads up:** Monday is a women-only sauna day. Entry closes an hour before closing time.</td>
+<td>Excellent value, and the warm-water pool is back</td>
+</tr>
+<tr>
+<td>[Finnland Zentrum](https://www.finnlandzentrum.de/sauna/)</td>
+<td>Private rental sauna</td>
+<td>€40 for up to 4 people (3h) · extra adults €10</td>
+<td>Not mentioned</td>
+<td>**You throw your own löyly.** One sauna, yours alone for the booking Aufguss (self-serve): You are your own saunameister, as in Finland *(confirmed by the venue, email 3 Sep 2026)*</td>
+<td>No pool; cool off by the changing-room windows or in the rear courtyard</td>
+<td>By arrangement — book by phone or email (+49 30 781 81 89) **Heads up:** Booked by email or phone rather than walking in — the €40 covers the whole group for three hours.</td>
+<td>Private group sauna with BYO drinks</td>
+</tr>
+</table>
+## Fast picks
+- **Best overall sauna day:** Vabali
+- **Best proper local sauna:** KIEZ SAUNA Friedrichshain
+- **Best USC hotel experience:** Hilton Berlin — LivingWell
+- **Best USC for sauna quality:** Steigenberger — Sky Spa
+- **Best easy USC option:** Park Inn Alexanderplatz — Gezer Spa
+- **Best USC sauna + cold plunge:** ANTI SPA
+- **Best cash-value hotel spa:** Hotel Palace — Palace Spa
+- **Best premium hotel option:** Grand Hyatt — Club Olympus
+- **Most beautiful:** Hotel de Rome — De Rome Spa
+- **Best sauna you can't easily book:** sly Berlin
+## Practical note
+For a normal sauna session rather than a luxury spa day, **KIEZ SAUNA, Saunabad, Olivin and Lützow** are better benchmarks than most hotel spas. Hotel spas make more sense when the pool, terrace, relaxation area, or USC access is part of what you want.
+## Two traps
+- **LIQUIDROM** is on Urban Sports Club, but USC entry does not include the sauna — you still pay the supplement.
+- **Stadtbad Neukölln**’s sauna is women-only on Mondays, and it closes for a summer break most years.
+## Scores
+**Finnish score** rates each place as a sauna in stars out of 5 — heat, löyly, and whether you are allowed to throw water — judged by a Finn, not by the spa around it. Finnland Zentrum 4.5★, Vabali 4★, Olivin 4★, KIEZ SAUNA Friedrichshain 3.5★, Fitness Company Berlin 3.5★.
+**Aufguss rating** applies only where someone throws for you; it is meaningless where you pour your own. Vabali 10/10.
+Of the 21 venues, 7 run a staff Aufguss, 5 let you throw your own, 3 only dose aroma automatically, and the rest have not said.
+## Reviews
+0 reviews from a panel of 1 (Joakim Isoaho). They are shown on the site, under each venue. To join the panel or post a review, open an issue: `github.com/jommi9/sauna-maps/issues/new/choose`

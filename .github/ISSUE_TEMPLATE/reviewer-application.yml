@@ -25,6 +25,6 @@ body:
   - type: textarea
     id: saunas
     attributes:
-      label: Which Berlin saunas do you actually go to?
+      label: Which saunas do you actually go to, and in which city?
       description: Helps us see you know the city. No wrong answers.
     validations: { required: true }

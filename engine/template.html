@@ -1,0 +1,2141 @@
+<title>__CITY__ Sauna Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+
+<style>
+/* Layout: an iPad-style split view. A sidebar of venue cards sits beside one
+   large map; on a phone the map fills a framed screen and the list rides up
+   over it as a sheet, the way Maps does it. Below sit the picks and the fine
+   print as inset grouped sections.
+   Colour: light first, like a Nordic room in daylight, with a dark set for the
+   evening. One warm colour, the heat of the kiuas stones, marks prices and
+   picks; everything you can tap is lake blue. Type is the system face, so on
+   an iPhone it is San Francisco, with rounded numerals for the figures. */
+:root{
+  --bg:#F2F1EE; --surface:#FFFFFF; --surface-2:#F7F6F3;
+  --fill:rgba(118,112,102,.12); --fill-2:rgba(118,112,102,.24);
+  --label:#151514; --label-2:rgba(38,36,32,.66); --label-3:rgba(38,36,32,.44); --sep:rgba(38,36,32,.11);
+  --tint:#1D5AA6; --tint-soft:rgba(29,90,166,.10); --on-tint:#FFFFFF;
+  --ember:#B94B24; --ember-soft:rgba(191,79,39,.10);
+  --green:#23793B; --green-soft:rgba(35,121,59,.10);
+  --red:#B5352A; --red-soft:rgba(184,54,42,.09);
+  --knob:#FFFFFF;
+  --glass:rgba(250,249,247,.78);
+  --shadow:0 1px 2px rgba(24,20,14,.05), 0 6px 20px rgba(24,20,14,.06);
+  --shadow-lift:0 2px 6px rgba(24,20,14,.08), 0 18px 44px rgba(24,20,14,.13);
+  --sheet-shadow:rgba(24,20,14,.10); --pin-shadow:rgba(24,20,14,.30);
+  --land:#ECE9E2; --park:#D2E0C3; --water:#A9C7DC; --road-case:#DCD6CA; --road:#FFFFFF;
+  --mtw:#F1D18E; --mtw-case:#D8B265; --rail:#B7B1A4; --border:#A39C8F; --dist:#8A8377;
+  --b0:#D9D5CD; --b1:#E2AC45; --b2:#DC8031; --b3:#C9582A; --b4:#983720;
+  --pin-ring:#FFFFFF; --pin-glyph:#FFFFFF; --pin-glyph-0:#857F74;
+  --font:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+  --font-display:-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+  --font-num:ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --r-xl:6px; --r-lg:6px; --r:4px; --r-sm:4px;
+  --gutter-l:max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r:max(16px, env(safe-area-inset-right, 0px));
+  --ease:cubic-bezier(.32,.72,0,1);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0E0F11; --surface:#1A1B1E; --surface-2:#232428;
+  --fill:rgba(150,150,160,.16); --fill-2:rgba(150,150,160,.30);
+  --label:#F2F2EF; --label-2:rgba(236,236,230,.64); --label-3:rgba(236,236,230,.40); --sep:rgba(236,236,230,.10);
+  --tint:#7AAEF2; --tint-soft:rgba(122,174,242,.15); --on-tint:#0B1A2E;
+  --ember:#F08B5F; --ember-soft:rgba(240,139,95,.14);
+  --green:#63C982; --green-soft:rgba(99,201,130,.13);
+  --red:#F2796B; --red-soft:rgba(242,121,107,.13);
+  --knob:#F2F2EF;
+  --glass:rgba(30,31,34,.76);
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.28);
+  --shadow-lift:0 2px 6px rgba(0,0,0,.40), 0 18px 44px rgba(0,0,0,.50);
+  --sheet-shadow:rgba(0,0,0,.40); --pin-shadow:rgba(0,0,0,.55);
+  --land:#1D1E21; --park:#202C24; --water:#1B2F42; --road-case:#2A2B2F; --road:#393B41;
+  --mtw:#6D5933; --mtw-case:#4C3F26; --rail:#47484E; --border:#5D5E64; --dist:#808188;
+  --b0:#4A4A4F; --b1:#E2AC45; --b2:#DC8031; --b3:#C9582A; --b4:#983720;
+  --pin-ring:#F2F2EF; --pin-glyph:#FFFFFF; --pin-glyph-0:#B3B0A8;
+  color-scheme:dark;
+} }
+:root[data-theme="dark"]{
+  --bg:#0E0F11; --surface:#1A1B1E; --surface-2:#232428;
+  --fill:rgba(150,150,160,.16); --fill-2:rgba(150,150,160,.30);
+  --label:#F2F2EF; --label-2:rgba(236,236,230,.64); --label-3:rgba(236,236,230,.40); --sep:rgba(236,236,230,.10);
+  --tint:#7AAEF2; --tint-soft:rgba(122,174,242,.15); --on-tint:#0B1A2E;
+  --ember:#F08B5F; --ember-soft:rgba(240,139,95,.14);
+  --green:#63C982; --green-soft:rgba(99,201,130,.13);
+  --red:#F2796B; --red-soft:rgba(242,121,107,.13);
+  --knob:#F2F2EF;
+  --glass:rgba(30,31,34,.76);
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.28);
+  --shadow-lift:0 2px 6px rgba(0,0,0,.40), 0 18px 44px rgba(0,0,0,.50);
+  --sheet-shadow:rgba(0,0,0,.40); --pin-shadow:rgba(0,0,0,.55);
+  --land:#1D1E21; --park:#202C24; --water:#1B2F42; --road-case:#2A2B2F; --road:#393B41;
+  --mtw:#6D5933; --mtw-case:#4C3F26; --rail:#47484E; --border:#5D5E64; --dist:#808188;
+  --b0:#4A4A4F; --b1:#E2AC45; --b2:#DC8031; --b3:#C9582A; --b4:#983720;
+  --pin-ring:#F2F2EF; --pin-glyph:#FFFFFF; --pin-glyph-0:#B3B0A8;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--label);
+  font:400 15px/1.45 var(--font); letter-spacing:-.006em;
+  -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color:transparent;
+}
+a{color:var(--tint); text-decoration:none}
+a:hover{text-decoration:underline}
+button{font:inherit; color:inherit}
+:focus-visible{outline:2.5px solid var(--tint); outline-offset:2px}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+.wrap{
+  max-width:1400px; margin:0 auto;
+  padding-left:var(--gutter-l); padding-right:var(--gutter-r); padding-block:0 28px;
+}
+
+/* ---------------- header ---------------- */
+.top{
+  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,460px); gap:22px 56px;
+  align-items:center; padding-block:30px 26px;
+}
+.intro{min-width:0}
+.intro .stats{margin-top:22px; max-width:600px}
+/* The collage: three places pinned up like photos on a fridge door, each one
+   a way into the map. */
+.collage{position:relative; height:260px}
+.snap{
+  position:absolute; width:58%; aspect-ratio:4/3; padding:5px; border:0; margin:0;
+  border-radius:var(--r-sm); background:var(--surface); box-shadow:var(--shadow-lift);
+  cursor:pointer; transition:transform .4s var(--ease), box-shadow .4s var(--ease);
+}
+.snap img{display:block; width:100%; height:100%; object-fit:cover; border-radius:2px}
+.snap .tag{
+  position:absolute; left:13px; bottom:13px; max-width:calc(100% - 26px); padding:4px 10px;
+  border-radius:2px; background:var(--glass); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+  color:var(--label); font:600 12.5px/1.3 var(--font); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.snap:nth-child(1){left:0; top:34px; transform:rotate(-7deg)}
+.snap:nth-child(2){left:21%; top:0; transform:rotate(3deg); z-index:2}
+.snap:nth-child(3){right:0; top:70px; transform:rotate(-2.5deg); z-index:1}
+.snap:hover, .snap:focus-visible{transform:rotate(0) translateY(-4px) scale(1.03); z-index:3}
+.brand{display:flex; gap:16px; align-items:center}
+.appicon{
+  width:62px; height:62px; flex:none; border-radius:13px;
+  box-shadow:0 1px 2px rgba(60,30,10,.12), 0 8px 20px rgba(180,83,42,.24);
+}
+.eyebrow{margin:0 0 3px; font:600 13px/1.2 var(--font); color:var(--label-2)}
+.eyebrow time{font-variant-numeric:tabular-nums}
+.eyebrow .crumb{color:var(--label-2)}   /* up to the hub of all the sauna maps */
+.title{
+  margin:0; font:700 clamp(30px, 3.3vw, 40px)/1.04 var(--font-display);
+  letter-spacing:-.028em; text-wrap:balance;
+}
+.lede{margin:14px 0 0; max-width:54ch; color:var(--label-2); font-size:16px; line-height:1.5}
+.stats{
+  display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); margin:0;
+  background:var(--surface); border-radius:var(--r-lg); box-shadow:var(--shadow);
+}
+.stats > div{padding:14px 16px 13px; min-width:0}
+.stats > div + div{border-left:1px solid var(--sep)}
+.stats dt{font:500 12.5px/1.2 var(--font); color:var(--label-2)}
+.stats dd{margin:5px 0 0}
+.stats .n{
+  display:block; font:600 27px/1.05 var(--font-num); letter-spacing:-.01em;
+  font-variant-numeric:tabular-nums;
+}
+.stats .n small{font-size:.58em; font-weight:600; letter-spacing:0}
+.stats .s{
+  display:block; margin-top:4px; font:400 12px/1.3 var(--font); color:var(--label-3);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+@media (max-width:980px){
+  .top{grid-template-columns:minmax(0,1fr); padding-block:22px 18px}
+  .collage{height:min(52vw, 230px); max-width:520px; margin:6px 4px 4px}
+}
+@media (max-width:560px){
+  .collage{height:min(42vw, 176px); margin:2px 2px 0}
+  .snap{width:54%; padding:4px}
+  .snap .tag{left:9px; bottom:9px; font-size:11.5px; padding:3px 8px}
+  .snap .tag .pr{display:none}
+  /* each photo is 54% wide at 4:3, so these tops keep all three inside the strip */
+  .snap:nth-child(1){top:22px}
+  .snap:nth-child(3){top:30px}
+  .collage{margin-bottom:12px}
+}
+@media (max-width:560px){
+  .top{gap:16px}
+  .appicon{width:54px; height:54px; border-radius:11px}
+  .lede{font-size:15px; margin-top:12px}
+  .stats > div{padding:11px 10px 10px}
+  .stats dt{font-size:11.5px}
+  .stats .n{font-size:21px}
+  .stats .s{display:none}
+}
+@media (max-width:360px){
+  .stats > div{padding:10px 7px 9px}
+  .stats .n{font-size:18px}
+}
+
+/* ---------------- split view ---------------- */
+.split{
+  display:grid; grid-template-columns:400px minmax(0,1fr); grid-template-rows:minmax(0,1fr); gap:18px;
+  /* tall enough to use, short enough that the filter row and the whole panel fit one screen */
+  height:min(860px, calc(100dvh - 150px)); min-height:560px;
+}
+.listcol{position:relative; display:flex; flex-direction:column; min-width:0; min-height:0}
+/* The list scrolls inside its column. Places are compact rows until one is
+   picked, so several are always in view; while more lie below, the list fades
+   out at the bottom, and its scrollbar stays visible. */
+.cards.has-more{
+  -webkit-mask-image:linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
+  mask-image:linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
+}
+.cards::-webkit-scrollbar{width:7px}
+.cards::-webkit-scrollbar-track{background:transparent}
+.cards::-webkit-scrollbar-thumb{background:var(--fill-2); border-radius:4px}
+
+/* A place is a compact row until it is picked: thumbnail, name, status. The
+   picked one opens into the full card with its photo and every fact. */
+.card:not(.on){padding:12px 14px 12px 90px; min-height:88px}
+.card:not(.on) .shot{position:absolute; left:12px; top:12px; width:64px; height:64px; margin:0; border-radius:var(--r-sm)}
+.card:not(.on) .shot img, .card:not(.on) .shot svg{aspect-ratio:1; height:100%}
+.card:not(.on) .shot figcaption, .card:not(.on) .ic,
+.card:not(.on) .rows, .card:not(.on) .alert, .card:not(.on) .revs, .card:not(.on) .acts,
+.card:not(.on) .mine{display:none}
+.card:not(.on) .tags{margin-top:8px}
+.card:not(.on) .cname{font-size:16px}
+/* on a narrow phone a row keeps only the flag; the word comes back when it opens */
+@media (max-width:420px){
+  .card:not(.on){padding-left:80px}
+  .card:not(.on) .shot{width:56px; height:56px}
+  .card:not(.on) .fin{padding:0 6px; gap:0}
+  .card:not(.on) .fin .lb{display:none}
+  .card:not(.on) .fin.st-unknown::after{content:"?"; padding:0 3px}
+}
+
+.mapcol{min-width:0; min-height:0}
+.mapcol .inner{
+  position:relative; height:100%; border-radius:var(--r-xl); overflow:hidden;
+  background:var(--land); box-shadow:var(--shadow);
+}
+.mapbox{position:absolute; inset:0}
+svg.map{display:block; width:100%; height:100%; touch-action:none; cursor:grab}
+svg.map.dragging{cursor:grabbing}
+.peek, .grab{display:none}
+
+/* search and filters: one row above the list and the map */
+.bar{display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; padding-bottom:16px}
+.findrow{display:flex; align-items:center; gap:8px; flex:0 0 auto}
+.find{position:relative; display:block; flex:0 0 300px}
+.find input{
+  width:100%; height:40px; border:0; border-radius:var(--r-sm);
+  background:var(--fill); color:var(--label); font:400 16px var(--font);
+  padding:0 12px 0 36px; -webkit-appearance:none; appearance:none;
+  transition:background .15s, box-shadow .15s;
+}
+.find input::placeholder{color:var(--label-3)}
+.find input:focus{outline:none; background:var(--surface); box-shadow:0 0 0 3px var(--tint-soft), inset 0 0 0 1px var(--tint)}
+.find input::-webkit-search-cancel-button{opacity:.5}
+.find svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--label-3); pointer-events:none}
+.filters{display:flex; flex-wrap:wrap; gap:8px 6px; align-items:center; flex:1 1 560px; min-width:0}
+.grp{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+.grp + .grp{margin-left:4px}
+.lbl{font:500 12.5px var(--font); color:var(--label-2); margin-right:2px}
+.chip{
+  height:32px; padding:0 12px; border:0; border-radius:var(--r-sm); cursor:pointer;
+  background:var(--surface); box-shadow:inset 0 0 0 1px var(--sep);
+  color:var(--label); font:500 14px/32px var(--font); white-space:nowrap;
+  transition:background .15s, color .15s, box-shadow .15s, transform .1s;
+}
+.chip:hover{background:var(--surface-2)}
+.chip:active{transform:scale(.96)}
+.chip[aria-pressed="true"]{background:var(--tint); color:var(--on-tint); box-shadow:none}
+.slide{display:flex; align-items:center; gap:10px; flex:1 1 230px; max-width:320px; min-width:0}
+.slide output{
+  min-width:46px; text-align:right; font:600 14px var(--font-num);
+  font-variant-numeric:tabular-nums; color:var(--label);
+}
+.slide input{
+  flex:1 1 auto; min-width:90px; height:28px; margin:0; background:transparent;
+  -webkit-appearance:none; appearance:none; cursor:pointer; --pct:100%;
+}
+.slide input::-webkit-slider-runnable-track{
+  height:4px; border-radius:2px;
+  background:linear-gradient(var(--tint), var(--tint)) 0 0 / var(--pct) 100% no-repeat, var(--fill-2);
+}
+.slide input::-webkit-slider-thumb{
+  -webkit-appearance:none; width:26px; height:26px; margin-top:-11px; border-radius:50%;
+  background:var(--knob); box-shadow:0 0 0 .5px rgba(0,0,0,.06), 0 3px 8px rgba(0,0,0,.18);
+}
+.slide input::-moz-range-track{height:4px; border-radius:2px; background:var(--fill-2)}
+.slide input::-moz-range-progress{height:4px; border-radius:2px; background:var(--tint)}
+.slide input::-moz-range-thumb{
+  width:26px; height:26px; border:0; border-radius:50%; background:var(--knob);
+  box-shadow:0 0 0 .5px rgba(0,0,0,.06), 0 3px 8px rgba(0,0,0,.18);
+}
+.clear{
+  margin-left:auto; border:0; background:none; padding:6px 2px; cursor:pointer;
+  color:var(--tint); font:500 15px var(--font);
+}
+.clear:hover{opacity:.75}
+
+/* list */
+.lhead{display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:2px 4px 10px}
+.lhead h2{margin:0; font:600 17px/1.2 var(--font-display); letter-spacing:-.012em}
+.lhead .c{font:400 13px var(--font); color:var(--label-2)}
+.cards{
+  list-style:none; margin:0 -6px; padding:2px 6px 18px; flex:1 1 auto; min-height:0;
+  overflow-y:auto; overscroll-behavior:contain; display:flex; flex-direction:column; gap:12px;
+  scrollbar-width:thin; scrollbar-color:var(--fill-2) transparent;
+}
+.cards[hidden]{display:none}
+.none-msg{margin:24px 4px; color:var(--label-2); font-size:15px; text-align:center}
+
+/* venue card */
+.card{
+  position:relative; overflow:hidden; background:var(--surface); border-radius:var(--r-lg); padding:12px 14px 14px;
+  box-shadow:var(--shadow); cursor:pointer; flex:none;
+  transition:box-shadow .2s var(--ease); scroll-margin-top:6px;
+}
+.card:hover{box-shadow:var(--shadow-lift)}
+.card.on{box-shadow:0 0 0 2px var(--tint), var(--shadow-lift)}
+.card:focus-visible{outline-offset:3px; border-radius:var(--r-lg)}
+.shot{margin:-12px -14px 12px; position:relative; overflow:hidden; background:var(--land)}
+.shot img, .shot svg{display:block; width:100%; max-width:100%; height:auto; aspect-ratio:2.2/1; object-fit:cover}
+.shot figcaption{
+  position:absolute; left:8px; bottom:8px; max-width:calc(100% - 16px);
+  padding:3px 8px; border-radius:2px; background:rgba(0,0,0,.45);
+  -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+  color:#FFFFFF; font:500 11px/1.4 var(--font);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.shot figcaption a{color:#FFFFFF; text-decoration:underline; text-decoration-color:rgba(255,255,255,.5)}
+.chead{display:flex; align-items:flex-start; gap:10px}
+.ic{flex:none; margin-top:-1px}
+.ct{flex:1 1 auto; min-width:0}
+.cname{margin:0; font:600 17px/1.25 var(--font-display); letter-spacing:-.014em; text-wrap:balance}
+.cmeta{margin:2px 0 0; font:400 13px/1.35 var(--font); color:var(--label-2)}
+/* the sauna-culture badge: flag and name, plus the Finnish score once given */
+.fin{
+  flex:none; display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 8px 0 7px;
+  border-radius:3px; background:var(--fill); color:var(--label);
+  font:600 12.5px var(--font); white-space:nowrap; cursor:help;
+}
+.fin .flagi{display:block; flex:none; border-radius:1.5px; box-shadow:0 0 0 1px var(--sep)}
+.fin .flagi.nodrop{box-shadow:none; color:var(--label-2)}
+.fin.st-none, .fin.st-unknown{color:var(--label-2)}
+.fin.st-unknown{background:transparent; box-shadow:inset 0 0 0 1px var(--sep)}
+.fin .sc{margin-left:2px; padding-left:7px; border-left:1px solid var(--sep); font:600 13px var(--font-num); font-variant-numeric:tabular-nums}
+.fin .sc i{font-style:normal; font-size:11px; margin-left:2px; color:var(--ember)}
+.tags{display:flex; flex-wrap:wrap; gap:6px; margin:11px 0 0}
+.status, .price, .pick-tag, .temp, .count, .tag-me{
+  display:inline-flex; align-items:center; height:24px; padding:0 9px; border-radius:3px;
+  font:600 12.5px var(--font); white-space:nowrap;
+}
+.status::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor; margin-right:6px}
+.status.open{color:var(--green); background:var(--green-soft)}
+.status.shut{color:var(--red); background:var(--red-soft)}
+.status.unk{color:var(--label-2); background:var(--fill)}
+.price{color:var(--label); background:var(--fill); font-variant-numeric:tabular-nums}
+.pick-tag{color:var(--ember); background:var(--ember-soft)}
+/* the hottest cabin and the cold plunge, numbers first the way a sauna-goer reads them */
+.temp{color:var(--ember); background:var(--ember-soft); font-variant-numeric:tabular-nums; gap:5px}
+.temp .pl{color:var(--tint)} .temp i{font-style:normal; color:var(--label-3); font-weight:500}
+.count{color:var(--label-2); background:var(--fill); font-weight:500; font-variant-numeric:tabular-nums}
+.sort[hidden]{display:none}
+.sort{font:500 13px var(--font); color:var(--tint); background:none; border:0; padding:2px 0; cursor:pointer; max-width:52%}
+.sort:focus-visible{outline:2px solid var(--tint); outline-offset:2px; border-radius:3px}
+.rows{margin:12px 0 0; display:grid; grid-template-columns:78px minmax(0,1fr); font-size:14px; line-height:1.45}
+.rows dt, .rows dd{margin:0; padding:8px 0; border-top:1px solid var(--sep)}
+.rows dt{color:var(--label-2); font-size:13px; padding-top:9px}
+.rows dd{min-width:0; overflow-wrap:anywhere}
+.rows dd b{font-weight:600}
+.tiers{display:flex; flex-wrap:wrap; gap:4px; margin-top:6px}
+.tier{padding:0 7px; border-radius:3px; font:600 11.5px/21px var(--font); color:var(--tint); background:var(--tint-soft)}
+.tier.off{color:var(--label-3); background:transparent; box-shadow:inset 0 0 0 1px var(--sep); text-decoration:line-through}
+.ly{display:inline-block; padding:1px 8px; border-radius:3px; font:600 12.5px/1.6 var(--font)}
+.ly-staff{color:var(--ember); background:var(--ember-soft)}
+.ly-self{color:var(--tint); background:var(--tint-soft)}
+.ly-machine{color:var(--label-2); background:var(--fill)}
+.ly-unknown{color:var(--label-3); box-shadow:inset 0 0 0 1px var(--sep)}
+.augrade{margin-left:6px; font:600 13px var(--font-num); color:var(--ember); white-space:nowrap}
+.augrade i{font-style:normal; color:var(--label-3); font-size:11px}
+.src{color:var(--label-3); font-size:12px; white-space:nowrap}
+.src2{display:block; margin-top:4px; color:var(--label-2); font-size:13px}
+.alert{
+  margin:12px 0 0; padding:10px 12px; border-radius:var(--r-sm);
+  background:var(--ember-soft); font-size:13.5px; line-height:1.45;
+}
+.alert b{display:block; margin-bottom:2px; color:var(--ember); font:600 12.5px var(--font)}
+.revs{margin:14px 0 0; display:flex; flex-direction:column; gap:8px}
+.revs-h{margin:0; display:flex; align-items:center; gap:8px; font:600 13px var(--font); color:var(--label-2)}
+.score{font:600 14px var(--font-num); color:var(--green)}
+.score em{font-style:normal; font-size:11px; color:var(--label-3)}
+.rev{margin:0; padding:10px 12px; border-radius:var(--r-sm); background:var(--surface-2)}
+.rev-t{margin:0; font-size:14px; line-height:1.55; overflow-wrap:anywhere}
+.rev footer{display:flex; flex-wrap:wrap; gap:4px 8px; margin-top:6px; font-size:12.5px; color:var(--label-2)}
+.rev-w{font-weight:600; color:var(--label)}
+.acts{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px}
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; height:36px; padding:0 16px;
+  border-radius:var(--r-sm); background:var(--tint-soft); color:var(--tint);
+  font:600 14.5px var(--font); white-space:nowrap; transition:filter .15s, transform .1s;
+}
+.btn:hover{text-decoration:none; filter:brightness(1.06)}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--tint); color:var(--on-tint)}
+
+/* map drawing */
+.parks{fill:var(--park)} .water{fill:var(--water)} .sea{fill-rule:evenodd}
+/* A city without Urban Sports Club (city.json "usc": false) drops every trace of it. */
+.no-usc .usc-only{display:none !important} .wrap:not(.no-usc) .no-usc-only{display:none}
+.stats.n3{grid-template-columns:repeat(3, minmax(0,1fr))} .stats.n2{grid-template-columns:repeat(2, minmax(0,1fr))}
+.collage:empty{display:none}
+.river{fill:none; stroke:var(--water); stroke-linecap:round; stroke-linejoin:round}
+.districts{fill:none; stroke:var(--border); stroke-width:1; stroke-dasharray:4 3; opacity:.5}
+.rail{fill:none; stroke:var(--rail); stroke-width:.9; stroke-dasharray:3.4 3.6; opacity:.6}
+.rcase, .mcase, .rfill, .mfill{fill:none; stroke-linecap:round; stroke-linejoin:round}
+.rcase{stroke:var(--road-case)} .rfill{stroke:var(--road)}
+.mcase{stroke:var(--mtw-case)} .mfill{stroke:var(--mtw)}
+.dlabel{
+  font:600 10.5px var(--font); letter-spacing:.16em; text-transform:uppercase; fill:var(--dist);
+  text-anchor:middle; paint-order:stroke; stroke:var(--land); stroke-width:3.5; stroke-linejoin:round;
+  pointer-events:none; user-select:none;
+}
+.scale{font:600 10px var(--font); letter-spacing:.06em; fill:var(--label-2)}
+svg.map.tiny .dlabel, svg.map.tiny .scalebar{display:none}
+svg .b{stroke:var(--pin-ring); stroke-width:2}
+svg .g{fill:none; stroke:var(--pin-glyph); stroke-width:1.9; stroke-linecap:round}
+svg .g.unk{stroke:var(--pin-glyph-0)}
+svg .usc{fill:var(--tint); stroke:var(--pin-ring); stroke-width:1.7}
+.blip{cursor:pointer; filter:drop-shadow(0 1px 1.5px var(--pin-shadow))}
+.blip .halo{fill:var(--tint); opacity:0; transition:opacity .2s}
+.blip.on .halo{opacity:.2}
+.blip.on .b{stroke:var(--tint); stroke-width:2.6}
+.blip.dim{opacity:.25}
+.blip.gone{display:none}
+.blip:focus{outline:none}
+.blip:focus-visible .halo{opacity:.3}
+.tick{stroke:var(--label-3)}
+.callout{pointer-events:none; filter:drop-shadow(0 4px 10px var(--pin-shadow))}
+.co-frame{fill:var(--surface)}
+.co-name text{font:600 15px var(--font); letter-spacing:-.01em; fill:var(--label); text-anchor:middle}
+
+/* floating map controls, in the frosted material Maps uses */
+.zoom, .key, .peek, .listcol{--blur:blur(22px) saturate(1.7)}
+.zoom{
+  position:absolute; top:12px; right:12px; display:flex; flex-direction:column;
+  border-radius:var(--r-sm); overflow:hidden; background:var(--glass);
+  -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur); box-shadow:var(--shadow);
+}
+.zoom button{
+  width:42px; height:42px; border:0; padding:0; background:transparent; cursor:pointer;
+  color:var(--label); font:400 22px/1 var(--font); display:grid; place-items:center;
+}
+.zoom button + button{border-top:1px solid var(--sep)}
+.zoom button:hover{background:var(--fill)}
+.zoom button#z-fit{font:600 12px var(--font)}
+.key{
+  position:absolute; left:12px; bottom:12px; max-width:calc(100% - 24px);
+  display:flex; flex-wrap:wrap; gap:6px 16px; align-items:center; padding:9px 14px;
+  border-radius:var(--r-sm); background:var(--glass); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur);
+  box-shadow:var(--shadow); font:500 12px var(--font); color:var(--label-2);
+}
+.key .ki{display:inline-flex; align-items:center; gap:6px; white-space:nowrap}
+.ramp{display:inline-flex; gap:2px}
+.ramp i{width:13px; height:13px; border-radius:2px; display:block}
+
+/* ---------------- sections below the map ---------------- */
+.sec{margin-top:44px}
+.sec-h{margin:0; font:700 22px/1.2 var(--font-display); letter-spacing:-.022em; text-wrap:balance}
+.sec-sub{margin:5px 0 16px; color:var(--label-2); max-width:62ch}
+.pgrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:12px}
+/* ten picks: five across fills two rows exactly */
+@media (min-width:1100px){ #picks{grid-template-columns:repeat(5, minmax(0,1fr))} }
+.pk{
+  display:flex; flex-direction:column; gap:6px; text-align:left; border:0; margin:0; overflow:hidden;
+  background:var(--surface); border-radius:var(--r-lg); padding:14px 16px 15px;
+  box-shadow:var(--shadow); color:var(--label);
+}
+button.pk{cursor:pointer; transition:box-shadow .2s var(--ease), transform .2s var(--ease)}
+button.pk:hover{box-shadow:var(--shadow-lift); transform:translateY(-1px)}
+button.pk:active{transform:scale(.98)}
+.pk .k{font:600 12.5px/1.3 var(--font); color:var(--ember)}
+.pk .ph{display:block; margin:-14px -16px 8px; overflow:hidden; background:var(--land); aspect-ratio:4/3}
+.pk .ph img, .pk .ph svg{display:block; width:100%; height:100%; object-fit:cover}
+.pick-tag .av{
+  display:inline-grid; place-items:center; width:16px; height:16px; margin:0 6px 0 -5px; border-radius:50%;
+  background:var(--ember); color:var(--surface); font:700 9.5px/1 var(--font); font-style:normal;
+}
+.pk .v{font:600 16px/1.25 var(--font-display); letter-spacing:-.012em}
+.pk .p, .pk .who{font:500 13px/1.45 var(--font); color:var(--label-2); font-variant-numeric:tabular-nums}
+.panel-grid .pk .k{color:var(--label-2)}
+.info{display:grid; grid-template-columns:repeat(auto-fit, minmax(270px, 1fr)); gap:12px}
+.note{background:var(--surface); border-radius:var(--r-lg); padding:16px 18px 17px; box-shadow:var(--shadow); min-width:0}
+.note h3{margin:0 0 6px; font:600 15.5px/1.3 var(--font-display); letter-spacing:-.01em}
+.note p{margin:0; color:var(--label-2); font-size:14.5px; line-height:1.55; max-width:60ch}
+.note strong{color:var(--label); font-weight:600}
+.joinline{display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0}
+.contrib{margin:18px 0 0; font-size:14px; line-height:1.6; color:var(--label-2); max-width:70ch}
+.contrib a{color:var(--tint); font-weight:500}
+
+/* ---------------- the social layer: X sign-in, saved, visits, board, panel ----------------
+   All of it stays hidden until /sauna/api/me says it is switched on, so a copy of the page
+   anywhere else shows none of it. */
+button.btn{border:0; cursor:pointer}
+.btn.quiet{background:var(--fill); color:var(--label)}
+.btn.on{background:var(--ember-soft); color:var(--ember)}
+.btn:disabled{opacity:.5; cursor:default}
+.xg{flex:none}
+.signin{width:min(340px, calc(100vw - 32px)); padding:20px; border:0; border-radius:var(--r-lg, 6px); background:var(--surface); color:var(--label); box-shadow:var(--shadow-lift, var(--shadow))}
+.signin::backdrop{background:rgba(0,0,0,.35)}
+.signin form{display:flex; flex-direction:column; gap:10px; margin:0}
+.signin h3{margin:0; font:600 18px/1.2 var(--font-display)}
+.signin p{margin:0 0 4px; font-size:14px; line-height:1.5; color:var(--label-2)}
+.signin .btn{justify-content:center; height:42px}
+.acct{position:relative; flex:none}
+.acct-b{
+  display:inline-flex; align-items:center; gap:8px; height:40px; padding:0 14px; border:0; cursor:pointer;
+  border-radius:var(--r-sm); background:var(--label); color:var(--bg); font:600 14px var(--font); white-space:nowrap;
+}
+.acct-b.me{padding:0 10px 0 4px; background:var(--fill); color:var(--label)}
+.av{
+  display:inline-grid; place-items:center; flex:none; width:32px; height:32px; border-radius:50%; overflow:hidden;
+  background:var(--fill-2); color:var(--label-2); font:700 13px/1 var(--font); object-fit:cover;
+}
+.av.s{width:24px; height:24px; font-size:11px}
+.acct-m{
+  position:absolute; top:calc(100% + 6px); left:0; z-index:30; width:270px; padding:14px;
+  background:var(--surface); border-radius:var(--r-lg); box-shadow:var(--shadow-lift);
+  display:flex; flex-direction:column; gap:10px; font-size:14px;
+}
+.acct-m .who{display:flex; align-items:center; gap:10px; min-width:0}
+.acct-m .who b{display:block; font:600 15px/1.2 var(--font-display)}
+.acct-m .who span{color:var(--label-2); font-size:13px}
+.acct-m .tally{margin:0; color:var(--label-2); font-variant-numeric:tabular-nums}
+.acct-m .tally b{color:var(--ember); font:600 15px var(--font-num)}
+.acct-m a, .acct-m button.link{
+  padding:0; border:0; background:none; color:var(--tint); font:500 14px var(--font); text-align:left; cursor:pointer;
+}
+.acct-m label{display:flex; align-items:center; gap:8px; color:var(--label-2)}
+.acct-m hr{width:100%; margin:0; border:0; border-top:1px solid var(--sep)}
+.tag-me{color:var(--ember); background:var(--ember-soft)}
+.mine{margin-top:14px; display:flex; flex-direction:column; gap:8px}
+.mine .row{display:flex; flex-wrap:wrap; align-items:center; gap:8px}
+.mine .hint{margin:0; font-size:13px; color:var(--label-2)}
+.mine input[type=date]{
+  height:36px; padding:0 8px; border:0; border-radius:var(--r-sm); background:var(--fill);
+  color:var(--label); font:500 14px var(--font);
+}
+.days{display:flex; flex-wrap:wrap; gap:6px}
+.day{
+  display:inline-flex; align-items:center; gap:4px; height:26px; padding:0 4px 0 8px; border:0; cursor:pointer;
+  border-radius:var(--r-sm); background:var(--fill); color:var(--label-2); font:500 12.5px var(--font); font-variant-numeric:tabular-nums;
+}
+.day i{font-style:normal; color:var(--label-3); padding:0 3px}
+.day:hover i{color:var(--red)}
+.wr{display:flex; flex-direction:column; gap:8px; padding:12px; border-radius:var(--r-sm); background:var(--surface-2)}
+.stars{display:flex; gap:2px}
+.stars button{
+  width:34px; height:34px; padding:0; border:0; background:none; cursor:pointer;
+  color:var(--fill-2); font:400 24px/1 var(--font);
+}
+.stars button.lit{color:var(--ember)}
+.wr textarea, .join textarea{
+  width:100%; min-height:88px; padding:10px 12px; border:0; border-radius:var(--r-sm); resize:vertical;
+  background:var(--surface); box-shadow:inset 0 0 0 1px var(--sep); color:var(--label); font:400 15px/1.5 var(--font);
+}
+.wr textarea:focus, .join textarea:focus{outline:none; box-shadow:0 0 0 3px var(--tint-soft), inset 0 0 0 1px var(--tint)}
+.err{margin:0; color:var(--red); font-size:13px}
+/* a visit's log: a line and the temperatures seen */
+.logf{display:flex; flex-direction:column; gap:8px; padding:12px; border-radius:var(--r-sm); background:var(--surface-2)}
+.logf textarea{
+  width:100%; min-height:64px; padding:10px 12px; border:0; border-radius:var(--r-sm); resize:vertical;
+  background:var(--surface); box-shadow:inset 0 0 0 1px var(--sep); color:var(--label); font:400 15px/1.5 var(--font);
+}
+.logf .nums{display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; font-size:13.5px; color:var(--label-2)}
+.logf input[type=number], .logf select{
+  width:74px; height:34px; padding:0 8px; border:0; border-radius:var(--r-sm); background:var(--surface);
+  box-shadow:inset 0 0 0 1px var(--sep); color:var(--label); font:500 15px var(--font); font-variant-numeric:tabular-nums;
+}
+.logf select{width:auto}
+.logf textarea:focus, .logf input:focus, .logf select:focus{outline:none; box-shadow:0 0 0 3px var(--tint-soft), inset 0 0 0 1px var(--tint)}
+.rev-temp{font-variant-numeric:tabular-nums; color:var(--ember); font-weight:600}
+.rev-temp .pl{color:var(--tint)}
+.reported{margin:0; font-size:13.5px; color:var(--label-2)}
+.reported b{font-weight:600; color:var(--ember); font-variant-numeric:tabular-nums} .reported b.pl{color:var(--tint)}
+.rev footer .av{margin-right:2px}
+.rev footer a{color:var(--label); font-weight:600}
+.boards{display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:12px}
+.board{background:var(--surface); border-radius:var(--r-lg); padding:14px 16px 10px; box-shadow:var(--shadow); min-width:0}
+.board h3{margin:0 0 6px; font:600 15.5px/1.3 var(--font-display)}
+.lb{list-style:none; margin:0; padding:0; counter-reset:lb}
+.lb li{
+  display:flex; align-items:center; gap:10px; min-height:48px; padding:6px 0; counter-increment:lb;
+  border-top:1px solid var(--sep);
+}
+.lb li:first-child{border-top:0}
+.lb li::before{
+  content:counter(lb); width:22px; flex:none; text-align:right;
+  font:600 14px var(--font-num); color:var(--label-3); font-variant-numeric:tabular-nums;
+}
+.lb li.you{background:var(--tint-soft); margin:0 -8px; padding:6px 8px; border-radius:var(--r-sm)}
+.lb .nm{flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.lb .nm small{display:block; color:var(--label-2); font-size:12.5px}
+.lb .nm a{color:var(--label); font-weight:600}
+.lb .n{flex:none; text-align:right; font:500 13px var(--font); color:var(--label-2); font-variant-numeric:tabular-nums}
+.lb .n b{font:600 16px var(--font-num); color:var(--ember)}
+.lb .n small{display:block; font:500 12px var(--font); color:var(--label-2)}
+.lb button.nm{padding:0; border:0; background:none; text-align:left; font:600 14.5px var(--font); color:var(--tint); cursor:pointer}
+.lb .empty{color:var(--label-2); font-size:14px}
+.lb .empty::before{content:none}
+.join{margin-top:16px; display:flex; flex-direction:column; gap:10px; max-width:560px}
+.join p{margin:0; color:var(--label-2)}
+.queue{display:flex; flex-direction:column; gap:10px}
+.queue .q{background:var(--surface); border-radius:var(--r-lg); padding:12px 14px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:8px}
+.queue .q .who{display:flex; align-items:center; gap:10px}
+.queue .q p{margin:0; color:var(--label); font-size:14px}
+.panel-grid .pk .av{margin-bottom:2px}
+.toast{
+  position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom, 0px)); z-index:50; transform:translateX(-50%);
+  max-width:calc(100vw - 32px); padding:10px 16px; border-radius:var(--r); background:var(--label); color:var(--bg);
+  font:500 14px var(--font); box-shadow:var(--shadow-lift);
+}
+.credits{margin-top:44px; padding-top:22px; border-top:1px solid var(--sep)}
+.credits h3{margin:0 0 6px; font:600 13px var(--font); color:var(--label-2)}
+.cnote{margin:0 0 12px; font-size:13.5px; color:var(--label-2); max-width:72ch; line-height:1.55}
+#credit-list{
+  list-style:none; margin:0; padding:0; display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:4px 24px;
+}
+#credit-list li{font-size:12.5px; color:var(--label-3); line-height:1.5}
+#credit-list b{color:var(--label-2); font-weight:500}
+.sign{
+  display:flex; align-items:center; gap:14px; margin-top:32px; padding-top:22px;
+  border-top:1px solid var(--sep); color:var(--label-2); font-size:13px;
+}
+.sign .appicon{width:36px; height:36px; border-radius:8px; box-shadow:none}
+.sign b{display:block; color:var(--label); font:600 17px/1.2 var(--font-display); letter-spacing:-.012em}
+
+/* ---------------- phone and small tablet: map first, list as a sheet ---------------- */
+@media (max-width:1000px){
+  .split{
+    display:block; position:relative; height:min(80dvh, 780px); min-height:520px;
+    border-radius:var(--r-xl); overflow:hidden; box-shadow:var(--shadow); background:var(--land);
+  }
+  .mapcol{position:absolute; inset:0}
+  .mapcol .inner{border-radius:0; box-shadow:none}
+  .key{display:none}
+  .listcol{
+    position:absolute; left:0; right:0; bottom:0; z-index:6; height:var(--sheet, 72px);
+    background:var(--glass); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur);
+    border-radius:var(--r-lg) var(--r-lg) 0 0; box-shadow:0 -1px 0 var(--sep), 0 -12px 32px var(--sheet-shadow);
+    overflow:hidden; transition:height .34s var(--ease);
+  }
+  .grab{
+    display:flex; justify-content:center; flex:none; width:100%; padding:7px 0 10px;
+    background:none; border:0; cursor:grab; touch-action:none;
+  }
+  .grab-bar{width:36px; height:5px; border-radius:3px; background:var(--fill-2)}
+  .bar{flex-direction:column; flex-wrap:nowrap; align-items:stretch; gap:10px; padding-bottom:12px}
+  .findrow{flex:none}
+  .find{flex:1 1 auto}
+  .acct-m{left:auto; right:0}
+  .acct-b.me{padding:0 4px}
+  .acct-b.me > span:not(.av){display:none}
+  .filters{
+    flex:none; flex-wrap:nowrap; overflow-x:auto;
+    margin-right:calc(-1 * var(--gutter-r)); padding-right:calc(var(--gutter-r) + 20px);
+    scrollbar-width:none; -webkit-overflow-scrolling:touch;
+    -webkit-mask-image:linear-gradient(90deg, #000 calc(100% - 30px), transparent);
+    mask-image:linear-gradient(90deg, #000 calc(100% - 30px), transparent);
+  }
+  .filters::-webkit-scrollbar{display:none}
+  .grp{flex-wrap:nowrap; flex:none}
+  .slide{flex:0 0 210px}
+  .clear{flex:none; margin-left:0}
+  .lhead{flex:none; padding:0 16px 10px}
+  .listcol .shot img, .listcol .shot svg{aspect-ratio:2.8/1}
+  .cards{margin:0; padding:2px 12px 20px}
+  .peek{
+    display:flex; gap:12px; position:absolute; z-index:5; left:10px; right:10px;
+    bottom:calc(var(--sheet, 72px) + 10px); padding:10px; border-radius:var(--r-lg);
+    background:var(--glass); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur);
+    box-shadow:var(--shadow-lift); cursor:pointer; transition:bottom .34s var(--ease);
+  }
+  .peek-thumb{width:72px; height:58px; border-radius:2px; overflow:hidden; flex:none; background:var(--land)}
+  .peek-thumb img, .peek-thumb svg{width:100%; height:100%; object-fit:cover; display:block}
+  .peek-body{min-width:0; flex:1 1 auto; padding-right:30px}
+  .peek-name{margin:2px 0 0; font:600 16px/1.2 var(--font-display); letter-spacing:-.012em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .peek-meta{margin:2px 0 0; font:400 12.5px/1.3 var(--font); color:var(--label-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .peek-price{margin:5px 0 0; font:600 13.5px var(--font); color:var(--ember)}
+  .peek-x{
+    position:absolute; top:8px; right:8px; width:26px; height:26px; padding:0; border:0;
+    border-radius:50%; background:var(--fill); color:var(--label-2); font:500 16px/1 var(--font); cursor:pointer;
+  }
+}
+@media (max-width:700px){
+  .pgrid.scroll{
+    grid-template-columns:none; grid-auto-flow:column; grid-auto-columns:minmax(210px, 68%);
+    overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none;
+    margin-left:calc(-1 * var(--gutter-l)); margin-right:calc(-1 * var(--gutter-r));
+    padding:4px var(--gutter-r) 12px var(--gutter-l); scroll-padding-left:var(--gutter-l);
+  }
+  .pgrid.scroll::-webkit-scrollbar{display:none}
+  .pgrid.scroll .pk{scroll-snap-align:start}
+  .sec{margin-top:36px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important; animation:none !important; scroll-behavior:auto !important}
+}
+</style>
+
+<div class="wrap" id="wrap">
+  <header class="top">
+    <div class="intro">
+      <div class="brand">
+        <svg class="appicon" viewBox="0 0 64 64" aria-hidden="true">
+          <defs><linearGradient id="aig" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9A462"/><stop offset="1" stop-color="#B3502A"/></linearGradient></defs>
+          <rect width="64" height="64" rx="15" fill="url(#aig)"/>
+          <path d="M21 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11 M32 45 q-5 -6.5 0 -13 q5 -6.5 0 -13 M43 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+          <path d="M15 52 h34" stroke="#FFFFFF" stroke-opacity=".6" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <p class="eyebrow"><a class="crumb" href="__HUB__">sauna maps</a> / __CITY_LC__ &middot; checked <time id="stamp-date">__LAST_SCAN__</time></p>
+          <h1 class="title">__CITY_LC__ sauna map</h1>
+        </div>
+      </div>
+      <p class="lede">__COUNT__ saunas and spas across the city, priced and plotted. __LEDE__</p>
+      <dl class="stats">
+        <div><dt>places</dt><dd><span class="n" id="n-count">__COUNT__</span><span class="s">read at source</span></dd></div>
+        <div><dt>cheapest</dt><dd><span class="n" id="stat-cheap">&ndash;</span><span class="s" id="stat-cheap-s">&nbsp;</span></dd></div>
+        <div class="usc-only"><dt>on USC</dt><dd><span class="n" id="stat-usc">&ndash;</span><span class="s">Urban Sports Club</span></dd></div>
+        <div id="stat-hot-box"><dt>hottest</dt><dd><span class="n" id="stat-hot">&ndash;</span><span class="s" id="stat-hot-s">&nbsp;</span></dd></div>
+      </dl>
+    </div>
+    <div class="collage" id="collage"></div>
+  </header>
+
+    <div class="bar" id="bar">
+      <div class="findrow">
+        <label class="find">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+          <input type="search" id="q" placeholder="search saunas" aria-label="Search saunas" autocomplete="off">
+        </label>
+        <div class="acct" id="acct" hidden></div>
+      </div>
+      <div class="filters">
+        <div class="grp" id="g-mine" role="group" aria-label="Your saunas" hidden>
+          <button class="chip" data-v="saved" aria-pressed="false">saved</button>
+          <button class="chip" data-v="been" aria-pressed="false">been</button>
+          <button class="chip" data-v="notyet" aria-pressed="false">not yet</button>
+        </div>
+        <div class="grp" id="g-open" role="group" aria-label="Filter by opening hours">
+          <button class="chip" data-v="open" aria-pressed="false">open now</button>
+        </div>
+        <div class="grp" id="g-access" role="group" aria-label="Filter by access">
+          <button class="chip" data-v="cash" aria-pressed="false">day ticket</button>
+          <button class="chip usc-only" data-v="usc" aria-pressed="false">on USC</button>
+        </div>
+        <div class="grp" id="g-kind" role="group" aria-label="Filter by venue type">
+          <button class="chip" data-v="sauna" aria-pressed="false">not a hotel</button>
+          <button class="chip" data-v="hotel" aria-pressed="false">hotel spa</button>
+          <button class="chip" data-v="pool" aria-pressed="false">pool or plunge</button>
+          <button class="chip" data-v="aufguss" aria-pressed="false">aufguss</button>
+          <button class="chip" data-v="ownloyly" aria-pressed="false">throw your own</button>
+          <button class="chip" data-v="group" aria-pressed="false">group hire</button>
+        </div>
+        <div class="grp usc-only" id="g-usc" role="group" aria-label="Filter by Urban Sports Club tier">
+          <span class="lbl">USC tier</span>
+          <button class="chip" data-v="Classic" aria-pressed="false">Classic</button>
+          <button class="chip" data-v="Premium" aria-pressed="false">Premium</button>
+          <button class="chip" data-v="Max" aria-pressed="false">Max</button>
+        </div>
+        <label class="slide">
+          <span class="lbl">up to</span>
+          <input type="range" id="pmax" min="12" max="90" step="1" value="90" aria-label="Maximum price">
+          <output id="pout" for="pmax">Any</output>
+        </label>
+        <button class="clear" id="clear" type="button">reset</button>
+      </div>
+    </div>
+
+  <div class="split">
+    <div class="listcol">
+      <button class="grab" id="grab" aria-expanded="false" aria-controls="cards">
+        <span class="grab-bar" aria-hidden="true"></span>
+        <span class="grab-label sr" id="grab-label">__COUNT__ venues</span>
+      </button>
+      <div class="lhead">
+        <h2 id="l-title">all __COUNT__ places</h2>
+        <select class="sort" id="sort" aria-label="Order the list">
+          <option value="pick">in pick order</option>
+          <option value="hot">hottest sauna first</option>
+          <option value="plunge">coldest plunge first</option>
+          <option value="price">cheapest first</option>
+          <option value="saved">most saved first</option>
+          <option value="visits">most visited first</option>
+        </select>
+      </div>
+      <ul class="cards" id="cards"></ul>
+      <p class="none-msg" id="none" hidden>nothing matches. raise the price limit or clear a filter.</p>
+    </div>
+
+    <div class="mapcol">
+      <div class="inner">
+        <div class="mapbox">
+          <svg class="map" id="map" role="img" aria-label="Map of central __CITY__ showing __COUNT__ sauna and spa locations"></svg>
+          <div class="peek" id="peek" hidden>
+            <button class="peek-x" id="peek-x" aria-label="Clear selection">&times;</button>
+            <div class="peek-thumb" id="peek-thumb"></div>
+            <div class="peek-body">
+              <p class="peek-name" id="peek-name"></p>
+              <p class="peek-meta" id="peek-meta"></p>
+              <p class="peek-price" id="peek-price"></p>
+            </div>
+          </div>
+          <div class="zoom">
+            <button type="button" id="z-in" aria-label="Zoom in">+</button>
+            <button type="button" id="z-out" aria-label="Zoom out">&minus;</button>
+            <button type="button" id="z-fit" aria-label="Reset the map view">fit</button>
+          </div>
+        </div>
+        <div class="key" aria-label="Map key">
+          <span class="ki"><span id="key-lo"></span> <span class="ramp" aria-hidden="true"><i style="background:var(--b1)"></i><i style="background:var(--b2)"></i><i style="background:var(--b3)"></i><i style="background:var(--b4)"></i></span> <span id="key-hi"></span></span>
+          <span class="ki usc-only"><svg width="12" height="12" viewBox="-6 -6 12 12" aria-hidden="true"><circle class="usc" r="4.4"/></svg>on USC</span>
+          <span class="ki" id="key-group"><svg width="15" height="15" viewBox="-13 -13 26 26" aria-hidden="true"><circle class="b" r="11" fill="var(--b3)"/></svg>priced per booking</span>
+          <span class="ki"><svg width="15" height="15" viewBox="-13 -13 26 26" aria-hidden="true"><rect class="b" x="-11" y="-11" width="22" height="22" rx="4.5" fill="var(--b0)"/></svg>price unclear</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="sec" id="sec-picks" aria-labelledby="h-picks">
+    <h2 class="sec-h" id="h-picks">fast picks</h2>
+    <p class="sec-sub">The one answer for each way you might turn up: cash in hand, a membership card, or two hours to kill.</p>
+    <div class="pgrid scroll" id="picks"></div>
+  </section>
+
+  <section class="sec" id="board" aria-labelledby="h-board" hidden>
+    <h2 class="sec-h" id="h-board">leaderboard</h2>
+    <p class="sec-sub">Who has sat in the most of __CITY__&rsquo;s saunas, and where everyone goes. Log a visit from a sauna&rsquo;s card once you&rsquo;re signed in; it counts each sauna once however often you go.</p>
+    <div class="boards">
+      <div class="board"><h3>most saunas</h3><ol class="lb" id="lb-people"></ol></div>
+      <div class="board"><h3>most visited</h3><ol class="lb" id="lb-venues"></ol></div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="h-info">
+    <h2 class="sec-h" id="h-info">before you go</h2>
+    <div class="info" style="margin-top:16px">
+      <article class="note" id="note-practical">
+        <h3>benchmarks</h3>
+        <p>__PRACTICAL__</p>
+      </article>
+      <article class="note" id="note-traps">
+        <h3>two traps</h3>
+        <p id="traps"></p>
+      </article>
+      <article class="note">
+        <h3>prices change</h3>
+        <p>This is a personal, non-commercial guide with no affiliation to any venue listed. Prices<span class="no-usc-only"> and opening hours</span><span class="usc-only">, opening hours and Urban Sports Club terms</span> are recorded as each venue publishes them and <strong>change without notice</strong>, so check with the venue before a special trip. Where a schedule could not be confirmed, the card says so rather than guessing.</p>
+      </article>
+      <article class="note">
+        <h3>where the data comes from</h3>
+        <p>Every figure is read off the venue&rsquo;s own site and re-checked weekly; corrections are welcome. Locations from OpenStreetMap; roads, rail, water, parks and district outlines &copy; OpenStreetMap contributors, <a href="https://www.openstreetmap.org/copyright">ODbL</a>.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="h-panel">
+    <h2 class="sec-h" id="h-panel">the panel</h2>
+    <p class="sec-sub">Reviews come from a small panel rather than the open internet, so a review means something. Anyone who uses __CITY__&rsquo;s saunas can ask to join.</p>
+    <div class="pgrid panel-grid" id="panel"></div>
+    <div class="join" id="join" hidden></div>
+    <p class="contrib" id="contrib"></p>
+    <p class="joinline" id="joinline">
+      <a class="btn primary" href="https://github.com/__REPO__/issues/new?template=reviewer-application.yml" target="_blank" rel="noopener noreferrer">apply to review</a>
+      <a class="btn" href="https://github.com/__REPO__/issues/new?template=review.yml" target="_blank" rel="noopener noreferrer">post a review</a>
+    </p>
+  </section>
+
+  <section class="credits" aria-labelledby="h-credits">
+    <h3 id="h-credits">image credits</h3>
+    <p class="cnote">Photographs are used under their Creative Commons or Free Art licences, with the photographer and licence named below. Venues without a freely licensed photograph show a map of their street instead, and link to their own pictures.</p>
+    <ul id="credit-list"></ul>
+  </section>
+
+  <footer class="sign">
+    <svg class="appicon" viewBox="0 0 64 64" aria-hidden="true">
+      <rect width="64" height="64" rx="15" fill="#C4703F"/>
+      <path d="M21 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11 M32 45 q-5 -6.5 0 -13 q5 -6.5 0 -13 M43 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+      <path d="M15 52 h34" stroke="#FFFFFF" stroke-opacity=".6" stroke-width="4" stroke-linecap="round"/>
+    </svg>
+    <div><b lang="fi">Hyv&auml;t l&ouml;ylyt.</b>What Finns wish each other on the way into the sauna.</div>
+  </footer>
+</div>
+
+<script>
+const GEO = /*__GEO__*/;
+const V = /*__VENUES__*/;
+/* From the city's city.json: its currency sign, and whether Urban Sports Club exists there. */
+const CUR = "__CUR__", USC = __USC__, TU = "__TU__";
+/* Temperatures are kept in \u00b0C and shown in the city's own unit. */
+const toUnit = c => TU === "F" ? Math.round(c * 9 / 5 + 32) : Math.round(c * 10) / 10;
+const fmtT = c => c == null ? "" : `${toUnit(c)}\u00b0${TU === "F" ? "F" : ""}`;
+if (!USC) document.getElementById("wrap").classList.add("no-usc");
+const IMG = /*__IMAGES__*/;
+const NS = "http://www.w3.org/2000/svg";
+const el = (n, a) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); return e; };
+
+const band = p => p == null ? 0 : p <= 22 ? 1 : p <= 35 ? 2 : p <= 65 ? 3 : 4;
+const heat = p => `var(--b${band(p)})`;
+const dollars = p => p == null ? null : "$".repeat(band(p));
+const money = n => n.toFixed(2).replace(/\.00$/, "");   // 24.5 -> "24.50", 22 -> "22"
+
+function cityNow(){
+  const f = new Intl.DateTimeFormat("en-GB", { timeZone: "__TZ__", weekday: "short",
+    hour: "2-digit", minute: "2-digit", hour12: false, year: "numeric", month: "2-digit", day: "2-digit" });
+  const p = Object.fromEntries(f.formatToParts(new Date()).map(x => [x.type, x.value]));
+  const dayIx = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].indexOf(p.weekday);
+  return { minutes: +p.hour * 60 + +p.minute, day: dayIx,
+           date: `${p.year}-${p.month}-${p.day}` };
+}
+/* "open" | "shut" | "unknown" - unknown is the honest answer for venues whose
+   own pages say hours vary or are by arrangement. Several run winter hours from
+   1 October, so the season is picked before the weekday. */
+function openState(v, now){
+  const o = v.open;
+  if (!o) return "unknown";
+  if (o.closedUntil && now.date <= o.closedUntil) return "shut";
+  const md = now.date.slice(5);                       // "MM-DD"
+  const season = (o.seasons || []).find(s =>
+    s.from <= s.to ? (md >= s.from && md <= s.to)     // within one year
+                   : (md >= s.from || md <= s.to));   // wraps new year
+  const week = season ? season.weekly : o.weekly;
+  if (!week) return "unknown";
+  const today = week[now.day];
+  if (!today) return "shut";
+  let [a, b] = today;
+  if (b > 1440){                                      // closes after midnight
+    if (now.minutes < b - 1440) return "open";
+    b = 1440;
+  }
+  return now.minutes >= a && now.minutes < b ? "open" : "shut";
+}
+const SRC_NOTE = { venue: "from the venue", osm: "from OpenStreetMap", listed: "as published" };
+const MONTH = ["January","February","March","April","May","June","July","August","September",
+               "October","November","December"];
+/* A dated closure is written once, as a date. The sentence is composed here so
+   that the day it expires the card stops claiming the sauna is shut, without
+   waiting for someone to rebuild the page. */
+function hoursText(v, now){
+  const o = v.open;
+  if (!o || !o.closedUntil) return v.hours;
+  const [y, m, d] = o.closedUntil.split("-").map(Number);
+  const pretty = `${d} ${MONTH[m - 1]} ${y}`;
+  return now.date <= o.closedUntil
+    ? `Sauna closed until ${pretty}`
+    : `Sauna break ended ${pretty} \u2014 hours not re-verified since`;
+}
+/* The "two traps" box. Each sentence is data; if the venue has a closedUntil
+   in force the date is appended here on every render, like hoursText, so a
+   closure never has to be written as prose and never outlives itself. */
+function trapText(now){
+  return TRAPS.map(([name, text]) => {
+    const v = V.find(x => x.name === name);
+    if (!v) return "";
+    const sep = text.startsWith("\u2019") ? "" : " ";
+    let s = `<strong>${v.name}</strong>${sep}${text}`;
+    const o = v.open;
+    if (o && o.closedUntil && now.date <= o.closedUntil){
+      const [y, m, d] = o.closedUntil.split("-").map(Number);
+      s += ` It is on break until ${d} ${MONTH[m - 1]} ${y}.`;
+    }
+    return s;
+  }).filter(Boolean).join(" ");
+}
+const AUFGUSS = { scheduled: "Run to a schedule", self: "Pour your own", request: "On request",
+                  auto: "Automatic aroma", unknown: "Not known" };
+const STATUS_TEXT = { open: "open now", shut: "closed now", unknown: "check hours" };
+const STATUS_CLASS = { open: "open", shut: "shut", unknown: "unk" };
+
+/* ---------- map ---------- */
+const map = document.getElementById("map");
+map.setAttribute("viewBox", `0 0 ${GEO.w} ${GEO.h}`);
+const defs = el("defs"), atlas = el("g", { id: "atlas" });
+const put = (d, cls, w) => { if (!d) return; const a = { d, class: cls }; if (w) a["stroke-width"] = w; atlas.appendChild(el("path", a)); };
+put(GEO.parks, "parks");
+put(GEO.sea, "water sea");
+put(GEO.water, "water");
+put(GEO.river, "river", 3.6); put(GEO.canal, "river", 2.0);
+put(GEO.rail, "rail");
+put(GEO.secondary, "rcase", 2.3); put(GEO.secondary, "rfill", 1.25);
+put(GEO.primary, "rcase", 3.6);   put(GEO.primary, "rfill", 2.3);
+put(GEO.motorway, "mcase", 5.0);  put(GEO.motorway, "mfill", 3.2);
+put(GEO.districts, "districts");
+defs.appendChild(atlas); map.appendChild(defs);
+map.appendChild(el("use", { href: "#atlas" }));
+GEO.labels.forEach(l => { const t = el("text", { x: l.x, y: l.y, class: "dlabel" }); t.textContent = l.t; map.appendChild(t); });
+
+/* scale bar: GEO.sx map units per degree of longitude, and a degree of longitude is
+   111.32 km times the cosine of the latitude (77.66 units per km in Berlin) */
+const KM = GEO.sx / (111.32 * Math.cos((GEO.bbox[1] + GEO.bbox[3]) / 2 * Math.PI / 180)), sx = 22, sy = GEO.h - 22;
+const sg = el("g", { class: "scalebar" });
+sg.appendChild(el("rect", { x: sx - 9, y: sy - 17, width: KM * 2 + 52, height: 26, rx: 3, fill: "var(--land)", opacity: .82 }));
+sg.appendChild(el("path", { d: `M${sx},${sy - 6} v6 h${KM * 2} v-6 M${sx + KM},${sy} v-4`, fill: "none", stroke: "var(--label-2)", "stroke-width": 1.4 }));
+const st = el("text", { x: sx + KM * 2 + 6, y: sy + 1, class: "scale" }); st.textContent = "2 KM";
+sg.appendChild(st); map.appendChild(sg);
+
+/* Every pin is the same drawing: a squircle (per person) or a circle (per
+   booking) in its price colour, three curls of steam, and a blue dot when the
+   venue takes Urban Sports Club. Steam rather than a flame, because a sauna is
+   about the loyly rising off the stones, not the fire under them. */
+const STEAM = "M-4.4,5 q-2.1,-2.5 0,-5 q2.1,-2.5 0,-5 M0,6.2 q-2.3,-3.1 0,-6.2 q2.3,-3.1 0,-6.2 M4.4,5 q-2.1,-2.5 0,-5 q2.1,-2.5 0,-5";
+function pin(v, usc){
+  const shape = v.pricing === "group"
+    ? `<circle class="b" cx="0" cy="0" r="11.5" fill="${heat(v.price)}"></circle>`
+    : `<rect class="b" x="-11" y="-11" width="22" height="22" rx="4.5" fill="${heat(v.price)}"></rect>`;
+  return shape + `<path class="g${v.price == null ? " unk" : ""}" d="${STEAM}"></path>` +
+    (usc && v.usc === "yes" ? `<circle class="usc" cx="9.6" cy="-9.6" r="4"></circle>` : "");
+}
+const blips = new Map();
+V.forEach(v => {
+  const g = el("g", { class: "blip", transform: `translate(${v.px} ${v.py})`, tabindex: "0", role: "button", "aria-label": v.name });
+  g.innerHTML = `<circle class="halo" cx="0" cy="0" r="18"></circle>${pin(v, true)}`;
+  map.appendChild(g); blips.set(v.id, g);
+  g.addEventListener("click", () => { if (dragPx > DRAG_PX) return; choose(v.id, true); });
+  g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); choose(v.id, true); } });
+  g.addEventListener("mouseenter", () => peek(v.id, true));
+  g.addEventListener("mouseleave", () => peek(v.id, false));
+});
+const nameTag = el("g", { class: "callout" });   // the photo bubble over a picked pin
+let PS = 1;                                          // pin scale at the current zoom
+map.appendChild(nameTag);
+
+/* The map is one fixed drawing shown at wildly different sizes. At 327 CSS px
+   (a phone) a 22-unit blip is 7px - too small to see, let alone tap. So crop
+   the frame to where the venues actually are and scale the blips up until they
+   are a real touch target. */
+/* the venues' bounding box with a 40-unit margin, at least 300 units each way */
+const EXTENT = (() => {
+  if (!V.length) return [0, 0, GEO.w, GEO.h];        // a city just opened: the whole map
+  const xs = V.map(v => v.x), ys = V.map(v => v.y);
+  let x0 = Math.min(...xs) - 40, x1 = Math.max(...xs) + 40, y0 = Math.min(...ys) - 40, y1 = Math.max(...ys) + 40;
+  if (x1 - x0 < 300){ const c = (x0 + x1) / 2; x0 = c - 150; x1 = c + 150; }
+  if (y1 - y0 < 300){ const c = (y0 + y1) / 2; y0 = c - 150; y1 = c + 150; }
+  return [x0, y0, x1 - x0, y1 - y0];
+})();
+let VB = [0, 0, GEO.w, GEO.h];
+let base = null, view = null, zoomed = false;     // pan/zoom state, initialised by fitMap
+let POS = new Map(V.map(v => [v.id, { px: v.px, py: v.py }]));
+
+/* Blips are scaled up on small screens, so the build-time spacing no longer
+   holds - ten of the twenty sit in Mitte and would overlap into a blob. Re-run
+   the same relaxation against whatever size is actually being drawn, pulling
+   each blip back toward its true spot every pass so nothing drifts far. */
+function spread(minDist){
+  const p = V.map(v => ({ id: v.id, tx: v.x, ty: v.y, px: v.x, py: v.y }));
+  for (let it = 0; it < 300; it++){
+    let moved = 0;
+    for (let i = 0; i < p.length; i++) for (let j = i + 1; j < p.length; j++){
+      const a = p[i], b = p[j];
+      let dx = b.px - a.px, dy = b.py - a.py, d = Math.hypot(dx, dy);
+      if (d < 1e-6){ dx = 0.6; dy = -0.4; d = 0.72; }
+      if (d < minDist){
+        const push = (minDist - d) / 2 * 0.55, ux = dx / d, uy = dy / d;
+        a.px -= ux * push; a.py -= uy * push;
+        b.px += ux * push; b.py += uy * push; moved += push;
+      }
+    }
+    for (const q of p){ q.px += (q.tx - q.px) * 0.06; q.py += (q.ty - q.py) * 0.06; }
+    if (moved < 0.01) break;
+  }
+  return new Map(p.map(q => [q.id, q]));
+}
+function frameFor(w, h){                 // fit EXTENT to the container's aspect
+  const [ex, ey, ew, eh] = EXTENT;
+  const target = w / h;
+  let vw = ew, vh = eh;
+  if (ew / eh > target) vh = ew / target; else vw = eh * target;
+  return [ex - (vw - ew) / 2, ey - (vh - eh) / 2, vw, vh];
+}
+function fitMap(){
+  const w = map.clientWidth || GEO.w, h = map.clientHeight || GEO.h;
+  const small = w < 1400;
+  map.classList.toggle("tiny", w < 560);
+  /* On a phone the sheet covers the bottom of the map, so the venues are
+     framed in the part above it and the frame is then extended under it. */
+  const lc = document.querySelector(".listcol");
+  const hidden = lc && getComputedStyle(lc).position === "absolute" ? Math.min(lc.offsetHeight, h * 0.4) : 0;
+  /* A city map much taller or wider than its box is cropped to its venues on any screen. */
+  const crop = small || Math.abs(Math.log((GEO.w / GEO.h) / (w / h))) > 0.45;
+  VB = crop ? frameFor(w, Math.max(h - hidden, 1)) : [0, 0, GEO.w, GEO.h];
+  if (crop && hidden) VB[3] = VB[3] * h / (h - hidden);
+  map.setAttribute("viewBox", VB.join(" "));
+  map.classList.toggle("small", small);
+  base = VB.slice(); view = VB.slice(); zoomed = false;
+  const perPx = VB[2] / w;                        // viewBox units per CSS pixel
+  const target = small ? 17 : 15;                 // minimum blip size in CSS px
+  const scale = Math.max(1, (target * perPx) / 22);
+  PS = scale;
+  POS = scale > 1.02 ? spread(22 * scale * 1.14)
+                     : new Map(V.map(v => [v.id, { px: v.px, py: v.py }]));
+  blips.forEach((g, id) => {
+    const v = V.find(x => x.id === id), q = POS.get(id);
+    g.setAttribute("transform", `translate(${q.px.toFixed(1)} ${q.py.toFixed(1)}) scale(${scale.toFixed(3)})`);
+    const off = Math.hypot(v.x - q.px, v.y - q.py);
+    let tick = g.querySelector("line.tick");
+    if (off > 3){                                  // draw a hairline back to the true spot
+      if (!tick){ tick = el("line", { class: "tick" }); g.insertBefore(tick, g.firstChild); }
+      tick.setAttribute("x1", ((v.x - q.px) / scale).toFixed(1));
+      tick.setAttribute("y1", ((v.y - q.py) / scale).toFixed(1));
+      tick.setAttribute("x2", 0); tick.setAttribute("y2", 0);
+      tick.setAttribute("stroke-width", (1 / scale).toFixed(2));
+      tick.style.display = "";
+    } else if (tick) tick.style.display = "none";
+  });
+}
+fitMap();
+addEventListener("resize", () => { if (!zoomed) fitMap(); });
+
+/* ---------- pan and zoom ----------
+   The map is one SVG, so panning and zooming is just moving the viewBox. Blip
+   size is kept constant on screen by re-running fitMap's scaling at each zoom
+   level, otherwise zooming in turns the blips into billboards. */
+const MIN_W = 90, MAX_W = () => base[2];
+
+function applyView(){
+  map.setAttribute("viewBox", view.map(n => +n.toFixed(1)).join(" "));
+  const w = map.clientWidth || GEO.w;
+  const perPx = view[2] / w;
+  const scale = Math.max(0.55, (map.classList.contains("small") ? 17 : 15) * perPx / 22);
+  PS = scale;
+  POS = scale > 1.02 ? spread(22 * scale * 1.14) : new Map(V.map(v => [v.id, { px: v.px, py: v.py }]));
+  blips.forEach((g, id) => {
+    const v = V.find(x => x.id === id), q = POS.get(id);
+    g.setAttribute("transform", `translate(${q.px.toFixed(1)} ${q.py.toFixed(1)}) scale(${scale.toFixed(3)})`);
+    const off = Math.hypot(v.x - q.px, v.y - q.py);
+    let tick = g.querySelector("line.tick");
+    if (off > 3){
+      if (!tick){ tick = el("line", { class: "tick" }); g.insertBefore(tick, g.firstChild); }
+      tick.setAttribute("x1", ((v.x - q.px) / scale).toFixed(1));
+      tick.setAttribute("y1", ((v.y - q.py) / scale).toFixed(1));
+      tick.setAttribute("x2", 0); tick.setAttribute("y2", 0);
+      tick.setAttribute("stroke-width", (1 / scale).toFixed(2));
+      tick.style.display = "";
+    } else if (tick) tick.style.display = "none";
+  });
+  zoomed = Math.abs(view[2] - base[2]) > 1 || Math.abs(view[0] - base[0]) > 1 || Math.abs(view[1] - base[1]) > 1;
+  if (sel != null) showName(sel);
+}
+function clampView(){
+  view[2] = Math.min(Math.max(view[2], MIN_W), MAX_W());
+  view[3] = view[2] * base[3] / base[2];
+  const slackX = base[2] * 0.35, slackY = base[3] * 0.35;
+  view[0] = Math.min(Math.max(view[0], base[0] - slackX), base[0] + base[2] + slackX - view[2]);
+  view[1] = Math.min(Math.max(view[1], base[1] - slackY), base[1] + base[3] + slackY - view[3]);
+}
+function zoomAt(factor, cx, cy){          // cx,cy in viewBox units
+  const w0 = view[2];
+  view[2] = Math.min(Math.max(w0 * factor, MIN_W), MAX_W());
+  const k = view[2] / w0;
+  view[0] = cx - (cx - view[0]) * k;
+  view[1] = cy - (cy - view[1]) * k;
+  clampView(); applyView();
+}
+const toView = ev => {
+  const r = map.getBoundingClientRect();
+  return [view[0] + (ev.clientX - r.left) / r.width * view[2],
+          view[1] + (ev.clientY - r.top) / r.height * view[3]];
+};
+function resetView(){ base = VB.slice(); view = VB.slice(); applyView(); }
+
+map.addEventListener("wheel", e => {
+  e.preventDefault();
+  const [cx, cy] = toView(e);
+  zoomAt(Math.exp(e.deltaY * 0.0016), cx, cy);
+}, { passive: false });
+
+const pointers = new Map();
+let dragFrom = null, pinchFrom = null, dragPx = 0, capturing = false;
+const DRAG_PX = 4;   // a press moves this far in CSS px before it counts as a drag
+
+/* Capture must NOT be taken on pointerdown. Capturing retargets the subsequent
+   click to the <svg>, so a blip's own click listener never runs and picking a
+   sauna on the map did nothing. Capture only once a real drag has begun. */
+map.addEventListener("pointerdown", e => {
+  pointers.set(e.pointerId, e);
+  dragPx = 0;
+  if (pointers.size === 1){
+    dragFrom = { client: [e.clientX, e.clientY], v: toView(e) };
+  } else if (pointers.size === 2){
+    const [a, b] = [...pointers.values()];
+    pinchFrom = { dist: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY), w: view[2],
+                  mid: toView({ clientX: (a.clientX + b.clientX) / 2, clientY: (a.clientY + b.clientY) / 2 }) };
+    dragFrom = null;
+  }
+});
+map.addEventListener("pointermove", e => {
+  if (!pointers.has(e.pointerId)) return;
+  pointers.set(e.pointerId, e);
+  if (pinchFrom && pointers.size === 2){
+    const [a, b] = [...pointers.values()];
+    const d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+    if (d > 4){
+      const w0 = view[2];
+      view[2] = Math.min(Math.max(pinchFrom.w * pinchFrom.dist / d, MIN_W), MAX_W());
+      const k = view[2] / w0;
+      view[0] = pinchFrom.mid[0] - (pinchFrom.mid[0] - view[0]) * k;
+      view[1] = pinchFrom.mid[1] - (pinchFrom.mid[1] - view[1]) * k;
+      clampView(); applyView(); dragPx = 99;
+    }
+    return;
+  }
+  if (!dragFrom) return;
+  dragPx = Math.max(dragPx, Math.hypot(e.clientX - dragFrom.client[0], e.clientY - dragFrom.client[1]));
+  if (dragPx < DRAG_PX) return;                       // still short enough to be a click
+  if (!capturing){
+    try { map.setPointerCapture(e.pointerId); } catch (_) {}
+    capturing = true; map.classList.add("dragging");
+  }
+  const r = map.getBoundingClientRect();
+  view[0] = dragFrom.v[0] - (e.clientX - r.left) / r.width * view[2];
+  view[1] = dragFrom.v[1] - (e.clientY - r.top) / r.height * view[3];
+  clampView(); applyView();
+});
+function endPointer(e){
+  pointers.delete(e.pointerId);
+  if (pointers.size < 2) pinchFrom = null;
+  if (pointers.size === 0){ dragFrom = null; capturing = false; map.classList.remove("dragging"); }
+}
+map.addEventListener("pointerup", endPointer);
+map.addEventListener("pointercancel", endPointer);
+map.addEventListener("pointerleave", endPointer);
+
+document.getElementById("z-in").addEventListener("click", () => zoomAt(1 / 1.5, view[0] + view[2] / 2, view[1] + view[3] / 2));
+document.getElementById("z-out").addEventListener("click", () => zoomAt(1.5, view[0] + view[2] / 2, view[1] + view[3] / 2));
+document.getElementById("z-fit").addEventListener("click", resetView);
+/* The picked or hovered place lifts off the map as a photo bubble with its name
+   in a pill on the bubble's outer edge, drawn in pin units so it keeps one size
+   on screen at any zoom. Near the top edge it hangs below the pin instead. */
+function showName(id){
+  nameTag.innerHTML = "";
+  if (id == null) return;
+  const v = V.find(x => x.id === id), q = POS.get(id) || v, im = v.img ? IMG[v.img] : null;
+  const top = (view || VB)[1], up = q.py - 112 * PS > top, k = up ? -1 : 1;
+  const cy = k * 59;                                   // centre of the photo
+  nameTag.setAttribute("transform", `translate(${q.px.toFixed(1)} ${q.py.toFixed(1)}) scale(${PS.toFixed(3)})`);
+  nameTag.innerHTML =
+    `<path class="co-frame" d="M-7,${k * 27.5} L0,${k * 17} L7,${k * 27.5} Z"></path>` +
+    `<g class="co-ph"><rect class="co-frame" x="-33" y="${cy - 33}" width="66" height="66" rx="6"></rect>` +
+    (im
+      ? `<clipPath id="co-clip"><rect x="-29" y="${cy - 29}" width="58" height="58" rx="3"></rect></clipPath>` +
+        `<image href="${im.src}" x="-29" y="${cy - 29}" width="58" height="58" preserveAspectRatio="xMidYMid slice" clip-path="url(#co-clip)"></image>`
+      : `<rect x="-29" y="${cy - 29}" width="58" height="58" rx="3" fill="${heat(v.price)}"></rect>` +
+        `<g transform="translate(0 ${cy}) scale(2.3)"><path class="g${v.price == null ? " unk" : ""}" d="${STEAM}" style="stroke-width:1.3"></path></g>`) + `</g>` +
+    `<g class="co-name"><rect class="co-frame"></rect><text x="0" y="${cy + k * 35}" dy=".34em">${v.name.split(" \u2014 ")[0]}</text></g>`;
+  const t = nameTag.querySelector("text"), bb = t.getBBox(), r = nameTag.querySelector(".co-name rect");
+  r.setAttribute("x", (bb.x - 9).toFixed(1)); r.setAttribute("y", (bb.y - 4).toFixed(1));
+  r.setAttribute("width", (bb.width + 18).toFixed(1)); r.setAttribute("height", (bb.height + 8).toFixed(1));
+  r.setAttribute("rx", "4");
+  /* Near the frame's edge, slide the photo and the name inward; the pointer
+     stays on the pin. */
+  const [L, , W] = view || VB, R = L + W;
+  const inward = (x0, x1) => { const a = q.px + x0 * PS, b = q.px + x1 * PS;
+    return a < L ? (L - a) / PS + 6 : b > R ? (R - b) / PS - 6 : 0; };
+  nameTag.querySelector(".co-name").setAttribute("transform", `translate(${inward(bb.x - 9, bb.x + bb.width + 9).toFixed(1)} 0)`);
+  nameTag.querySelector(".co-ph").setAttribute("transform", `translate(${inward(-33, 33).toFixed(1)} 0)`);
+}
+
+/* ---------- state ---------- */
+let sel = null;
+/* Chips within a group are OR; the groups are ANDed together, so
+   "Cash + Open now" and "Not a hotel + Pool" both behave as you'd expect. */
+const F = { q: "", access: new Set(), kind: new Set(), usc: new Set(), mine: new Set(), openNow: false, pmax: 90 };
+/* What the signed-in person has saved and been to (the social layer at the end fills it). */
+const ME = { saved: new Set(), been: new Set() };
+const TEST = {
+  cash: v => v.price != null,
+  usc:  v => v.uscTiers.length > 0,
+  open: v => openState(v, cityNow()) === "open",
+  sauna: v => !/^Hotel/.test(v.kind),
+  hotel: v => /^Hotel/.test(v.kind),
+  pool:  v => !/^(No |Check)/i.test(v.pool),
+  group: v => v.pricing === "group",
+  aufguss:  v => v.loyly === "staff",
+  ownloyly: v => v.loyly === "self",
+  saved:  v => ME.saved.has(v.name),
+  been:   v => ME.been.has(v.name),
+  notyet: v => !ME.been.has(v.name),
+};
+/* A chip no venue in this city could ever match (no hotel spas, no group hire) is not offered. */
+document.querySelectorAll('.chip[data-v]').forEach(c => {
+  const t = TEST[c.dataset.v];
+  if (t && !["open", "saved", "been", "notyet", "usc"].includes(c.dataset.v) && !V.some(t)) c.hidden = true;
+});
+function ok(v){
+  if (F.openNow && openState(v, cityNow()) !== "open") return false;
+  for (const g of ["access", "kind", "mine"])
+    if (F[g].size && ![...F[g]].some(k => TEST[k](v))) return false;
+  if (F.usc.size && ![...F.usc].some(t => v.uscTiers.includes(t))) return false;
+  if (F.pmax < 90 && (v.price == null || v.price > F.pmax)) return false;
+  if (F.q && ![v.name, v.kind, v.district, v.sauna, v.pool, v.bestFor, v.priceLabel, v.uscLabel]
+        .join(" ").toLowerCase().includes(F.q)) return false;
+  return true;
+}
+
+/* ---------- venue cards ---------- */
+const lower = t => t.toLowerCase().replace(/\busc\b/g, "USC");   // the voice is lowercase; acronyms stay
+/* The picks are one person's, so they carry that person's initial, the way a
+   saved list on a places app shows who saved it. */
+const CURATOR = (([h, r]) => ({ handle: h, name: r ? r.name : "the editor" }))(
+  Object.entries(/*__REVIEWERS__*/).find(([, r]) => r.founder) || []);
+const cards = document.getElementById("cards"), cardOf = new Map();
+const priceShort = v => v.price == null ? "price unclear"
+  : v.price === 0 ? "free"
+  : v.pricing === "group" ? `${CUR}${money(v.price)} per booking` : `from ${CUR}${money(v.price)}`;
+/* Which sauna culture a place belongs to, from who throws the water: the flag
+   says it at a glance. Flags keep their own colours in both themes. The Finnish
+   score, once given, rides on the same badge. */
+const FLAGBOX = (body) => `<svg class="flagi" width="17" height="11" viewBox="0 0 18 11" aria-hidden="true">${body}</svg>`;
+const STYLE = {
+  finnish: { label: "finnish", title: "Finnish sauna: you throw the water on the stones yourself",
+    icon: FLAGBOX(`<rect width="18" height="11" fill="#FFFFFF"></rect><path d="M0 4h18v3H0z M5 0h3v11H5z" fill="#002F6C"></path>`) },
+  german:  { label: "german", title: "German sauna: a sauna master throws the Aufguss for you",
+    icon: FLAGBOX(`<rect width="18" height="3.67" fill="#000000"></rect><rect y="3.67" width="18" height="3.67" fill="#DD0000"></rect><rect y="7.33" width="18" height="3.67" fill="#FFCE00"></rect>`) },
+  russian: { label: "banya", title: "Russian banya: you throw your own water, banya-style",
+    icon: FLAGBOX(`<rect width="18" height="3.67" fill="#FFFFFF"></rect><rect y="3.67" width="18" height="3.67" fill="#0039A6"></rect><rect y="7.33" width="18" height="3.67" fill="#D52B1E"></rect>`) },
+  none:    { label: "no l\u00f6yly", title: "No l\u00f6yly: a machine doses the water and nobody may throw it. Not a real sauna by Finnish standards.",
+    icon: `<svg class="flagi nodrop" width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.6C5 4.4 3.4 6.4 3.4 8.4a3.6 3.6 0 0 0 7.2 0C10.6 6.4 9 4.4 7 1.6Z" fill="none" stroke="currentColor" stroke-width="1.4"></path><path d="M2 12.5 12 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>` },
+  unknown: { label: "not known", title: "Not known yet who throws the water here", icon: "" },
+};
+function styleBadge(v){
+  const s = STYLE[v.style] || STYLE.unknown;
+  /* the score is stars out of 5, in halves: shown as the number and one star */
+  const score = v.finnish == null ? "" : `<span class="sc">${v.finnish}<i>\u2605</i></span>`;
+  return `<span class="fin st-${v.style}" title="${s.title}${v.finnish == null ? "" : `. A Finn's score: ${v.finnish} of 5 stars as a sauna.`}">${s.icon}<span class="lb">${s.label}</span>${score}</span>`;
+}
+V.forEach(v => {
+  const li = document.createElement("li");
+  li.className = "card"; li.tabIndex = 0;
+  const im = v.img ? IMG[v.img] : null;
+  const TW = 200, TH = 112.5;                     // 16:9, matching .shot - ~2.6 km across
+  const media = im
+    ? `<figure class="shot">
+         <img src="${im.src}" alt="${v.name}" loading="lazy" width="640" height="360">
+         <figcaption>Photo ${im.by} &middot; <a href="${im.page}" target="_blank" rel="noopener noreferrer">${im.lic}</a></figcaption>
+       </figure>`
+    : `<figure class="shot maptile">
+         <svg viewBox="${(v.x - TW / 2).toFixed(1)} ${(v.y - TH / 2).toFixed(1)} ${TW} ${TH}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Map around ${v.name}">
+           <use href="#atlas"></use>
+           <g transform="translate(${v.x} ${v.y}) scale(0.5)">${pin(v, false)}</g>
+         </svg>
+         <figcaption>${v.district} &middot; map &copy; OpenStreetMap</figcaption>
+       </figure>`;
+  const st = openState(v, cityNow());
+  li.innerHTML = `
+    ${media}
+    <div class="chead">
+      <svg class="ic" width="28" height="28" viewBox="-14 -14 28 28" aria-hidden="true">${pin(v, true)}</svg>
+      <div class="ct">
+        <h3 class="cname">${v.name}</h3>
+        <p class="cmeta">${v.kind} &middot; ${v.district}</p>
+      </div>
+      ${styleBadge(v)}
+    </div>
+    <div class="tags">
+      <span class="status ${STATUS_CLASS[st]}" data-status>${STATUS_TEXT[st]}</span>
+      <span class="price">${priceShort(v)}</span>
+      ${v.hot != null ? `<span class="temp" title="hottest sauna${v.plunge != null ? " / cold plunge" : ""}">${fmtT(v.hot)}${
+        v.plunge != null ? `<i>/</i><span class="pl">${fmtT(v.plunge)}</span>` : ""}</span>` : ""}
+      ${v.badge ? `<span class="pick-tag" title="Picked by ${CURATOR.name}"><i class="av" aria-hidden="true">${CURATOR.name[0]}</i>${lower(v.badge)}</span>` : ""}
+    </div>
+    <dl class="rows">
+      <dt>entry</dt><dd><b>${v.priceLabel}</b></dd>
+      ${USC ? `<dt>USC</dt><dd>${v.uscLabel}
+        ${v.usc !== "no" ? `<span class="tiers">${["Classic","Premium","Max"]
+          .map(t => `<span class="tier${v.uscTiers.includes(t) ? "" : " off"}">${t}</span>`).join("")}</span>` : ""}</dd>` : ""}
+      <dt>heat</dt><dd>${v.sauna}</dd>
+      <dt>l\u00f6yly</dt><dd><span class="ly ly-${v.loyly}">${v.loylyText}</span>${
+        v.aufgussScore != null ? `<span class="augrade">Aufguss ${v.aufgussScore}<i>/10</i></span>` : ""}${
+        v.aufgussNote ? `<span class="src2">${v.aufgussNote}</span>` : ""}</dd>
+      <dt>water</dt><dd>${v.pool}</dd>
+      <dt>open</dt><dd>${hoursText(v, cityNow())}${v.open && SRC_NOTE[v.open.src]
+        ? ` <span class="src">${SRC_NOTE[v.open.src]}</span>` : ""}</dd>
+      <dt>best for</dt><dd>${v.bestFor}</dd>
+    </dl>
+    ${v.flag ? `<p class="alert"><b>heads up</b>${v.flag}</p>` : ""}
+    ${v.reviews.length ? `<div class="revs"><p class="revs-h">reviews <span class="score">${v.rating}<em>/5</em></span></p>${v.reviews.map(r => `
+      <blockquote class="rev">
+        <p class="rev-t">${r.text}</p>
+        <footer><span class="rev-w">${r.by}</span> <span class="rev-m">${"\u2605".repeat(r.rating)}${"\u2606".repeat(5 - r.rating)} \u00b7 visited ${r.visited}</span></footer>
+      </blockquote>`).join("")}</div>` : ""}
+    <div class="revs" data-live hidden></div>
+    <div class="revs" data-logs hidden></div>
+    <div class="mine" data-mine hidden></div>
+    <div class="acts">
+      <a class="btn primary" href="${v.url}" target="_blank" rel="noopener noreferrer">hours &amp; booking</a>
+      ${im ? "" : `<a class="btn" href="${v.url}" target="_blank" rel="noopener noreferrer">their photos</a>`}
+    </div>`;
+  cards.appendChild(li); cardOf.set(v.id, li);
+  li.addEventListener("click", e => { if (!e.target.closest("a, [data-mine], [data-live], [data-logs]")) choose(v.id, false); });
+  li.addEventListener("keydown", e => { if (e.key === "Enter" && !e.target.closest("a, [data-mine], [data-live], [data-logs]")) choose(v.id, false); });
+  li.addEventListener("mouseenter", () => peek(v.id, true));
+  li.addEventListener("mouseleave", () => peek(v.id, false));
+});
+function peek(id, on){ if (sel != null) return; blips.get(id).classList.toggle("on", on); showName(on ? id : null); }
+/* Scroll only the container the cards actually live in. On desktop that is
+   .listcol; on mobile it is .cards inside the sheet. Falling back to the window
+   dragged the whole page out from under the map. Browsers also silently drop a
+   smooth scroll over a very long distance, so pick instant for long trips. */
+function scrollportOf(el){
+  for (let p = el.parentElement; p; p = p.parentElement){
+    const oy = getComputedStyle(p).overflowY;
+    if ((oy === "auto" || oy === "scroll") && p.scrollHeight > p.clientHeight + 4) return p;
+  }
+  return null;
+}
+function revealCard(id){
+  const c = cardOf.get(id);
+  const port = scrollportOf(c);
+  if (!port){ c.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+  const head = port.querySelector(".lhead");
+  const off = head && head.offsetParent ? head.getBoundingClientRect().height : 0;
+  const delta = c.getBoundingClientRect().top - port.getBoundingClientRect().top - off;
+  const far = Math.abs(delta) > port.clientHeight * 2;
+  port.scrollTo({ top: port.scrollTop + delta, behavior: far ? "auto" : "smooth" });
+}
+function choose(id, fromMap){
+  sel = sel === id ? null : id;
+  blips.forEach((g, k) => g.classList.toggle("on", k === sel));
+  if (sel != null) map.appendChild(blips.get(sel));   // raise it above overlapping neighbours
+  map.appendChild(nameTag);
+  cardOf.forEach((c, k) => c.classList.toggle("on", k === sel));
+  showName(sel);
+  showPeek(sel);
+  if (sel != null && fromMap && !isMobile()) revealCard(sel);
+  setTimeout(updateMore, 450);   // after any smooth scroll has settled
+}
+
+/* ---------- "more below" ---------- */
+function updateMore(){
+  const rest = cards.scrollHeight - cards.scrollTop - cards.clientHeight;
+  cards.classList.toggle("has-more", cards.clientHeight > 120 && rest > 8);
+}
+cards.addEventListener("scroll", updateMore, { passive: true });
+addEventListener("resize", updateMore);
+
+/* ---------- filtering ---------- */
+const lTitle = document.getElementById("l-title"),
+      noneMsg = document.getElementById("none"), nCount = document.getElementById("n-count");
+function run(){
+  let n = 0;
+  V.forEach(v => {
+    const pass = ok(v); if (pass) n++;
+    cardOf.get(v.id).hidden = !pass;
+    blips.get(v.id).classList.toggle("gone", !pass);
+  });
+  if (sel != null && !ok(V.find(v => v.id === sel))) choose(sel, false);
+  const filtered = n !== V.length;
+  lTitle.textContent = filtered ? `${n} match${n === 1 ? "" : "es"}` : `all ${V.length} places`;
+  nCount.textContent = n;
+  noneMsg.hidden = n > 0;
+  cards.hidden = n === 0;                          // so the message sits where the list would
+  if (!V.length) noneMsg.textContent = "no saunas listed here yet. a contributor can add the first one below.";
+  if (typeof updateMore === "function") updateMore();
+  if (typeof grabLabel !== "undefined" && grabLabel)
+    grabLabel.textContent = `${n} ${n === 1 ? "venue" : "venues"}`;
+}
+/* ---------- order ----------
+   The list starts in pick order. Another order puts the venues that lack its figure last, still
+   in pick order, and is only offered when at least two venues have the figure to compare. The
+   saved and visited counts come from the social layer (COUNTS), so those two orders appear only
+   where it answers. */
+const COUNTS = new Map();                         // venue name -> { saved, visits }
+const ORDERS = [
+  ["pick", "in pick order", () => 0],
+  ["hot", "hottest sauna first", v => v.hot == null ? null : -v.hot],
+  ["plunge", "coldest plunge first", v => v.plunge == null ? null : v.plunge],
+  ["price", "cheapest first", v => v.price == null || v.pricing === "group" ? null : v.price],
+  ["saved", "most saved first", v => -(COUNTS.get(v.name)?.saved || 0) || null],
+  ["visits", "most visited first", v => -(COUNTS.get(v.name)?.visits || 0) || null],
+];
+const sortEl = document.getElementById("sort");
+let orderBy = "pick";
+function sortCards(){
+  const key = ORDERS.find(o => o[0] === orderBy)[2];
+  [...V].sort((a, b) => {
+    const x = key(a), y = key(b);
+    if (x == null || y == null) return (x == null) - (y == null) || a.id - b.id;
+    return x - y || a.id - b.id;
+  }).forEach(v => cards.appendChild(cardOf.get(v.id)));
+  if (typeof updateMore === "function") updateMore();
+}
+/* Options are rebuilt rather than hidden: Safari ignores hidden on an <option>. */
+function offerOrders(){
+  const usable = ORDERS.filter(([k, , key]) => k === "pick" || V.filter(v => key(v) != null).length >= 2);
+  if (!usable.some(o => o[0] === orderBy)) orderBy = "pick";
+  sortEl.innerHTML = usable.map(([k, label]) => `<option value="${k}"${k === orderBy ? " selected" : ""}>${label}</option>`).join("");
+  sortEl.hidden = usable.length < 2;
+  sortCards();
+}
+sortEl.addEventListener("change", () => { orderBy = sortEl.value; sortCards(); if (sel != null) revealCard(sel); });
+offerOrders();
+document.getElementById("q").addEventListener("input", e => { F.q = e.target.value.trim().toLowerCase(); run(); });
+document.getElementById("g-open").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  F.openNow = !F.openNow;
+  b.setAttribute("aria-pressed", String(F.openNow));
+  run();
+});
+[["g-access", "access"], ["g-kind", "kind"], ["g-usc", "usc"], ["g-mine", "mine"]].forEach(([id, key]) => {
+  document.getElementById(id).addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    const v = b.dataset.v, on = !F[key].has(v);
+    on ? F[key].add(v) : F[key].delete(v);
+    b.setAttribute("aria-pressed", String(on));
+    run();
+  });
+});
+const pmax = document.getElementById("pmax"), pout = document.getElementById("pout");
+const setPct = () => pmax.style.setProperty("--pct", ((pmax.value - pmax.min) / (pmax.max - pmax.min) * 100) + "%");
+setPct();
+pmax.addEventListener("input", e => {
+  F.pmax = +e.target.value;
+  pout.textContent = F.pmax >= 90 ? "Any" : CUR + F.pmax;
+  setPct();
+  run();
+});
+document.getElementById("clear").addEventListener("click", () => {
+  F.q = ""; F.access.clear(); F.kind.clear(); F.usc.clear(); F.mine.clear(); F.openNow = false; F.pmax = 90;
+  document.getElementById("q").value = ""; pmax.value = 90; pout.textContent = "Any"; setPct();
+  document.querySelectorAll(".grp .chip").forEach(c => c.setAttribute("aria-pressed", "false"));
+  if (sel != null) choose(sel, false);
+  run();
+});
+/* Statuses go stale on a page left open; refresh them on the minute. */
+setInterval(() => {
+  const now = cityNow();
+  V.forEach(v => {
+    const el2 = cardOf.get(v.id).querySelector("[data-status]"), st = openState(v, now);
+    el2.textContent = STATUS_TEXT[st]; el2.className = "status " + STATUS_CLASS[st];
+  });
+  if (F.openNow) run();
+}, 60000);
+
+/* ---------- picks ---------- */
+const PICKS = /*__PICKS__*/;
+if (!PICKS.length) document.getElementById("sec-picks").hidden = true;
+const REVIEWERS = /*__REVIEWERS__*/;
+const TRAPS = /*__TRAPS__*/;
+const pg = document.getElementById("picks");
+PICKS.forEach(([k, name]) => {
+  const v = V.find(x => x.name === name);
+  if (!v) return;
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "pk";
+  const im = v.img ? IMG[v.img] : null;
+  b.innerHTML = `<span class="ph">${im ? `<img src="${im.src}" alt="" loading="lazy">`
+      : `<svg viewBox="${(v.x - 60).toFixed(1)} ${(v.y - 45).toFixed(1)} 120 90" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#atlas"></use><g transform="translate(${v.x} ${v.y}) scale(0.8)">${pin(v, false)}</g></svg>`}</span>` +
+    `<span class="k">${lower(k)}</span><span class="v">${v.name}</span><span class="p">${v.price != null ? priceShort(v) : "no public day pass"}</span>`;
+  b.addEventListener("click", () => { if (sel !== v.id) choose(v.id, false); revealCard(v.id); });
+  pg.appendChild(b);
+});
+
+/* The header collage: three places with photographs, each a way into the map. */
+const COVER = /*__COVER__*/;                      // named in the city's venues.py
+const collage = document.getElementById("collage");
+COVER.map(n => V.find(v => v.name === n)).filter(v => v && v.img).forEach(v => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "snap";
+  b.innerHTML = `<img src="${IMG[v.img].src}" alt="${v.name}"><span class="tag">${v.name.split(" \u2014 ")[0].toLowerCase()}<span class="pr"> \u00b7 ${priceShort(v)}</span></span>`;
+  b.addEventListener("click", () => {
+    document.querySelector(".split").scrollIntoView({ behavior: "smooth", block: "start" });
+    if (sel !== v.id) choose(v.id, false);
+    if (!isMobile()) revealCard(v.id);
+  });
+  collage.appendChild(b);
+});
+
+/* Image credits, generated so they can never drift from what is embedded. */
+const creditList = document.getElementById("credit-list");
+V.filter(v => v.img).forEach(v => {
+  const im = IMG[v.img];
+  const li = document.createElement("li");
+  li.innerHTML = `<b>${v.name}</b> &mdash; photo by ${im.by}, ` +
+    `<a href="${im.page}" target="_blank" rel="noopener noreferrer">${im.lic}</a>`;
+  creditList.appendChild(li);
+});
+
+/* ---------- mobile explorer: peek card and bottom sheet ---------- */
+const listcol = document.querySelector(".listcol");
+const peekEl = document.getElementById("peek"), grab = document.getElementById("grab");
+const grabLabel = document.getElementById("grab-label");
+let COLLAPSED = 72;
+const expandedH = () => Math.round(document.querySelector(".split").clientHeight * 0.92);
+const isMobile = () => matchMedia("(max-width:1000px)").matches;
+/* Collapsed, the sheet shows only its grabber and the place count, so the map
+   keeps the screen; search and filters sit in their own row above the map. */
+const sheetHead = document.querySelector(".listcol .lhead");
+function measureSheet(){ COLLAPSED = Math.round(grab.offsetHeight + sheetHead.offsetHeight + 2); }
+let sheetOpen = false;
+
+function setSheet(px){ document.documentElement.style.setProperty("--sheet", px + "px"); }
+function openSheet(on){
+  sheetOpen = on;
+  listcol.classList.toggle("open", on);
+  grab.setAttribute("aria-expanded", String(on));
+  setSheet(on ? expandedH() : COLLAPSED);
+  setTimeout(updateMore, 380);   // after the sheet's height transition
+  /* The open sheet already shows the picked card, so the peek card steps aside
+     and comes back when the sheet is lowered. */
+  if (on) peekEl.hidden = true; else showPeek(sel);
+}
+function showPeek(id){
+  if (!isMobile()) return;
+  if (id == null || sheetOpen){ peekEl.hidden = true; return; }
+  const v = V.find(x => x.id === id), im = v.img ? IMG[v.img] : null;
+  document.getElementById("peek-name").textContent = v.name;
+  document.getElementById("peek-meta").textContent = `${v.kind} \u00b7 ${v.district}`;
+  document.getElementById("peek-price").textContent =
+    v.price == null ? v.priceLabel.split(/[\u2014\u00b7;]/)[0].trim()
+                    : priceShort(v);
+  const thumb = document.getElementById("peek-thumb");
+  thumb.innerHTML = im
+    ? `<img src="${im.src}" alt="">`
+    : `<svg viewBox="${(v.x - 45).toFixed(1)} ${(v.y - 36).toFixed(1)} 90 72" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#atlas"></use><g transform="translate(${v.x} ${v.y}) scale(0.62)">${pin(v, false)}</g></svg>`;
+  peekEl.hidden = false;
+}
+peekEl.addEventListener("click", e => {
+  if (e.target.closest("#peek-x")) return;
+  openSheet(true);
+  setTimeout(() => revealCard(sel), 260);   // after the height transition
+});
+document.getElementById("peek-x").addEventListener("click", () => { if (sel != null) choose(sel, false); });
+
+/* drag the handle, or just tap it */
+let gy = null, gh = 0, gMoved = 0;
+grab.addEventListener("pointerdown", e => {
+  gy = e.clientY; gh = listcol.getBoundingClientRect().height; gMoved = 0;
+  listcol.style.transition = "none";
+  try { grab.setPointerCapture(e.pointerId); } catch (_) {}
+});
+grab.addEventListener("pointermove", e => {
+  if (gy == null) return;
+  const dy = gy - e.clientY;
+  gMoved = Math.max(gMoved, Math.abs(dy));
+  setSheet(Math.round(Math.min(Math.max(gh + dy, COLLAPSED), expandedH())));
+});
+function grabEnd(){
+  if (gy == null) return;
+  listcol.style.transition = "";
+  const h = listcol.getBoundingClientRect().height;
+  if (gMoved < 6) openSheet(!sheetOpen);                       // a tap toggles
+  else openSheet(h > (COLLAPSED + expandedH()) / 2);           // a drag snaps
+  gy = null;
+}
+grab.addEventListener("pointerup", grabEnd);
+grab.addEventListener("pointercancel", grabEnd);
+
+/* keep the sheet honest when the viewport or the filters change */
+addEventListener("resize", () => { if (isMobile()){ measureSheet(); setSheet(sheetOpen ? expandedH() : COLLAPSED); } });
+if (isMobile()){ measureSheet(); setSheet(COLLAPSED); }
+/* Typing into search on a phone lifts the sheet so the results are visible. */
+document.getElementById("q").addEventListener("focus", () => { if (isMobile() && !sheetOpen) openSheet(true); });
+
+/* The panel. Until a review exists the member grid would be one card saying
+   "0 reviews", which reads as unfinished, so only the invitation is shown. */
+/* Who may add listings and cities: GitHub users named in contributors.json. The forms are on
+   GitHub, so this part is the same on every copy of the page. */
+const CONTRIBUTORS = /*__CONTRIBUTORS__*/;
+document.getElementById("contrib").innerHTML =
+  `Listings are added by contributors (${CONTRIBUTORS.map(h => `<a href="https://github.com/${encodeURIComponent(h)}" target="_blank" rel="noopener noreferrer">@${h}</a>`).join(", ")}), ` +
+  `each one checked against the venue\u2019s own site and merged by the editor. ` +
+  `<a href="https://github.com/__REPO__/issues/new?template=new-listing.yml" target="_blank" rel="noopener noreferrer">Add a sauna</a> or ` +
+  `<a href="https://github.com/__REPO__/issues/new?template=new-city.yml" target="_blank" rel="noopener noreferrer">open a new city</a>; ` +
+  `from anyone else the same form is a suggestion.`;
+const panel = document.getElementById("panel");
+const anyReviews = V.some(v => v.reviews.length);
+panel.hidden = !anyReviews;
+if (anyReviews) Object.entries(REVIEWERS).forEach(([handle, r]) => {
+  const n = V.reduce((a, v) => a + v.reviews.filter(x => x.handle === handle).length, 0);
+  const el2 = document.createElement("div");
+  el2.className = "pk";
+  el2.innerHTML = `<span class="k">${r.founder ? "Founder" : "Reviewer"} \u00b7 joined ${r.joined}</span>` +
+    `<span class="v">${r.name}</span><span class="who">@${handle}</span>` +
+    `<span class="p">${r.bio}</span>` +
+    `<span class="p">${n} review${n === 1 ? "" : "s"}</span>`;
+  panel.appendChild(el2);
+});
+
+document.getElementById("traps").innerHTML = trapText(cityNow());
+if (!TRAPS.length) document.getElementById("note-traps").hidden = true;
+if (!document.querySelector("#note-practical p").textContent.trim()) document.getElementById("note-practical").hidden = true;
+
+/* The cover figures are computed from the venues, so they cannot drift. */
+(() => {
+  /* "Park Inn Alexanderplatz \u2014 Gezer Spa" becomes "Park Inn" in a tile this narrow. */
+  const short = n => { const s = n.split(" \u2014 ")[0]; return s.length > 16 ? s.split(" ").slice(0, 2).join(" ") : s; };
+  const priced = V.filter(v => v.price != null && v.pricing !== "group");
+  /* the price key under the map runs from the cheapest entry to the dearest */
+  const pay = priced.filter(v => v.price > 0).map(v => v.price);
+  if (pay.length){
+    document.getElementById("key-lo").textContent = CUR + money(Math.min(...pay));
+    document.getElementById("key-hi").textContent = Math.max(...pay) > Math.min(...pay) ? CUR + money(Math.max(...pay)) : "";
+  }
+  document.getElementById("key-group").hidden = !V.some(v => v.pricing === "group");
+  document.getElementById("stat-cheap").parentNode.parentNode.hidden = !priced.length;
+  const cheap = priced.length ? priced.reduce((a, b) => b.price < a.price ? b : a) : { price: 0, name: "" };
+  const [eur, cents] = money(cheap.price).split(".");
+  document.getElementById("stat-cheap").innerHTML = cheap.price === 0 ? "free" : `${CUR}${eur}${cents ? `<small>.${cents}</small>` : ""}`;
+  document.getElementById("stat-cheap-s").textContent = short(cheap.name);
+  document.getElementById("stat-usc").textContent = V.filter(v => v.uscTiers.length).length;
+  let hot = 0, at = [];
+  V.forEach(v => {
+    if (v.hot == null) return;
+    if (v.hot > hot){ hot = v.hot; at = [v]; } else if (v.hot === hot) at.push(v);
+  });
+  document.getElementById("stat-hot-box").hidden = !hot;
+  const stats = document.querySelector(".stats"), shown = [...stats.children].filter(d => !d.hidden && getComputedStyle(d).display !== "none").length;
+  stats.classList.toggle("n3", shown === 3); stats.classList.toggle("n2", shown === 2);
+  if (hot){
+    document.getElementById("stat-hot").textContent = TU === "F" ? fmtT(hot) : `${hot}\u00b0C`;
+    document.getElementById("stat-hot-s").textContent = at.length > 1 ? `at ${at.length} places` : short(at[0].name);
+  }
+})();
+run();
+/* ---------- the social layer ----------
+   Sign in with X or GitHub, saved spots, logged visits, the leaderboard and the review panel. It lives in
+   the jommi.fi Worker under /sauna/api/ (repo jommi9/jommi-fi, worker/sauna-api.js), on the same
+   origin as the map, so it only exists where the map is served from jommi.fi. Anywhere else (the
+   github.io copy, the artifact) nothing here shows. Everything people type is escaped with esc(). */
+const API = "/sauna/api";
+const SOC = { on: false, providers: null, me: null, visits: [], mine: new Map(), pub: null, admin: null };
+const esc = t => String(t ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const XG = `<svg class="xg" width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`;
+const avatar = (p, small) => p.avatar
+  ? `<img class="av${small ? " s" : ""}" src="${esc(p.avatar)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.removeAttribute('src')">`
+  : `<span class="av${small ? " s" : ""}" aria-hidden="true">${esc((p.name || p.handle || "?")[0])}</span>`;
+const GH = `<svg class="xg" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/></svg>`;
+/* A person is a handle and where it is from: @sam on X and @sam on GitHub are two people. */
+const xLink = (p, text) => `<a href="https://${p.via === "github" ? "github.com" : "x.com"}/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+const sameAs = (a, b) => a && b && a.handle === b.handle && (a.via || "x") === (b.via || "x");
+/* The glyph on a sign-in button: X's or GitHub's when only one is offered, none when both are. */
+const signGlyph = () => { const w = ways(); return w.length === 1 ? (w[0] === "github" ? GH : XG) + "&nbsp;" : ""; };
+const ways = () => Object.entries(SOC.providers || { x: true }).filter(([, on]) => on).map(([k]) => k);
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many || one + "s"}`;
+const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "__TZ__" }).format(new Date());
+const dayText = d => new Date(d + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short",
+  year: d.slice(0, 4) === today().slice(0, 4) ? undefined : "numeric", timeZone: "UTC" }).toLowerCase();
+const byName = new Map(V.map(v => [v.name, v]));
+const canReview = () => SOC.me && (SOC.me.role === "reviewer" || SOC.me.role === "editor");
+
+async function api(path, body){
+  const r = await fetch(API + path, body === undefined ? { credentials: "same-origin" }
+    : { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || "something went wrong");
+  return data;
+}
+const goSignIn = way => { location.href = `${API}/auth/start?back=${encodeURIComponent(location.pathname)}${way === "github" ? "&with=github" : ""}`; };
+/* With one way in, go; with two, ask which. Either account does everything here; the two are
+   separate accounts, so whoever started with one should keep using it. */
+function signIn(){
+  const w = ways();
+  if (w.length < 2) return goSignIn(w[0] || "x");
+  let d = document.getElementById("signin-d");
+  if (!d){
+    d = document.createElement("dialog"); d.id = "signin-d"; d.className = "signin";
+    d.innerHTML = `<form method="dialog"><h3>sign in</h3>
+      <p>Save saunas, log visits and climb the board. Pick one and stick with it: the two are separate accounts here.</p>
+      <button class="btn primary" type="button" data-way="x">${XG}&nbsp;continue with X</button>
+      <button class="btn primary" type="button" data-way="github">${GH}&nbsp;continue with GitHub</button>
+      <button class="btn quiet" value="cancel">not now</button></form>`;
+    d.addEventListener("click", e => { const b = e.target.closest("[data-way]"); if (b) goSignIn(b.dataset.way); else if (e.target === d) d.close(); });
+    document.body.appendChild(d);
+  }
+  d.showModal();
+}
+let toastEl = null, toastT = 0;
+function toast(text){
+  if (!toastEl){ toastEl = document.createElement("div"); toastEl.className = "toast"; toastEl.setAttribute("role", "status"); document.body.appendChild(toastEl); }
+  toastEl.textContent = text; toastEl.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(() => { toastEl.hidden = true; }, 3200);
+}
+
+function setMe(r){
+  SOC.me = r.me;
+  if (r.providers) SOC.providers = r.providers;
+  SOC.visits = r.visits || [];
+  SOC.mine = new Map((r.reviews || []).map(x => [x.venue, x]));
+  ME.saved = new Set(r.saved || []);
+  ME.been = new Set(SOC.visits.map(x => x.venue));
+}
+async function loadPublic(fresh){
+  try { SOC.pub = await api("/public" + (fresh ? "?t=" + Date.now() : "")); } catch { SOC.pub = null; }
+  COUNTS.clear();
+  (SOC.pub?.venues || []).forEach(x => COUNTS.set(x.venue, { saved: x.saved || 0, visits: x.visits || 0 }));
+  drawBoard(); drawPanel(); V.forEach(v => { drawLive(v); drawCounts(v); drawLogs(v); });
+  offerOrders();
+}
+async function loadAdmin(){
+  if (SOC.me?.role !== "editor") return;
+  try { SOC.admin = await api("/admin"); } catch { SOC.admin = null; }
+  drawJoin(); drawAcct();
+}
+
+/* the account button beside search, and its menu */
+const acct = document.getElementById("acct");
+function drawAcct(){
+  acct.hidden = !SOC.on;
+  if (!SOC.on) return;
+  const me = SOC.me;
+  if (!me){
+    acct.innerHTML = `<button class="acct-b" type="button">${signGlyph()}sign in</button>`;
+    acct.firstChild.addEventListener("click", signIn);
+    return;
+  }
+  const waiting = SOC.admin ? SOC.admin.applications.length : 0;
+  const role = { member: "apply to review", applied: "review application sent", reviewer: "you're on the review panel",
+    editor: waiting ? `review applications (${waiting})` : "the review panel" }[me.role];
+  const open = acct.querySelector(".acct-m") && !acct.querySelector(".acct-m").hidden;
+  acct.innerHTML = `
+    <button class="acct-b me" type="button" aria-expanded="${open}" aria-haspopup="true" aria-label="Your account">${avatar(me, true)}<span>@${esc(me.handle)}</span></button>
+    <div class="acct-m" ${open ? "" : "hidden"}>
+      <div class="who">${avatar(me)}<div><b>${esc(me.name)}</b><span>@${esc(me.handle)} on ${me.via === "github" ? "GitHub" : "X"}</span></div></div>
+      <p class="tally"><b>${ME.been.size}</b> of ${V.length} saunas &middot; ${plural(SOC.visits.length, "visit")} &middot; ${ME.saved.size} saved</p>
+      <button class="link" type="button" data-go="board">leaderboard</button>
+      ${role ? `<button class="link" type="button" data-go="h-panel">${role}</button>` : ""}
+      ${me.via === "github" && CONTRIBUTORS.some(h => h.toLowerCase() === me.handle.toLowerCase())
+        ? `<a class="link" href="https://github.com/__REPO__/issues/new?template=new-listing.yml" target="_blank" rel="noopener noreferrer">add a sauna (you're a contributor)</a>` : ""}
+      <label><input type="checkbox" data-show ${me.hidden ? "" : "checked"}> show me on the leaderboard</label>
+      <hr>
+      <button class="link" type="button" data-out>sign out</button>
+    </div>`;
+}
+acct.addEventListener("click", async e => {
+  const menu = acct.querySelector(".acct-m"), b = acct.querySelector(".acct-b.me");
+  if (!menu) return;
+  if (e.target.closest(".acct-b")){ menu.hidden = !menu.hidden; b.setAttribute("aria-expanded", String(!menu.hidden)); return; }
+  const go = e.target.closest("[data-go]");
+  if (go){ menu.hidden = true; document.getElementById(go.dataset.go).scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+  if (e.target.closest("[data-out]")){
+    await fetch(API + "/auth/logout", { method: "POST", credentials: "same-origin" }).catch(() => {});
+    setMe({ me: null }); SOC.admin = null; F.mine.clear();
+    document.querySelectorAll("#g-mine .chip").forEach(c => c.setAttribute("aria-pressed", "false"));
+    drawAll(); toast("signed out");
+  }
+});
+acct.addEventListener("change", async e => {
+  if (!e.target.matches("[data-show]")) return;
+  try { const r = await api("/me", { hidden: !e.target.checked }); SOC.me.hidden = r.hidden; loadPublic(true); }
+  catch (err) { e.target.checked = !e.target.checked; toast(err.message); }
+});
+document.addEventListener("click", e => {
+  const menu = acct.querySelector(".acct-m");
+  if (menu && !menu.hidden && !acct.contains(e.target)){ menu.hidden = true; acct.querySelector(".acct-b").setAttribute("aria-expanded", "false"); }
+});
+document.addEventListener("keydown", e => {
+  const menu = acct.querySelector(".acct-m");
+  if (e.key === "Escape" && menu && !menu.hidden){ menu.hidden = true; acct.querySelector(".acct-b").focus(); }
+});
+
+/* on a card: saved and been on the compact row; save, log a visit and review on the open card */
+function drawTags(v){
+  const tags = cardOf.get(v.id).querySelector(".tags");
+  let t = tags.querySelector("[data-me]");
+  const bits = SOC.me ? [ME.saved.has(v.name) ? "★ saved" : "", ME.been.has(v.name) ? "✓ been" : ""].filter(Boolean) : [];
+  if (!bits.length){ if (t) t.remove(); return; }
+  if (!t){ t = document.createElement("span"); t.className = "tag-me"; t.dataset.me = ""; tags.appendChild(t); }
+  t.textContent = bits.join(" · ");
+}
+/* How many people saved a sauna and how often it has been visited, on its row. */
+function drawCounts(v){
+  const tags = cardOf.get(v.id).querySelector(".tags");
+  let t = tags.querySelector("[data-count]");
+  const c = COUNTS.get(v.name), bits = c ? [c.saved ? `${c.saved} saved` : "", c.visits ? plural(c.visits, "visit") : ""].filter(Boolean) : [];
+  if (!bits.length){ if (t) t.remove(); return; }
+  if (!t){ t = document.createElement("span"); t.className = "count"; t.dataset.count = ""; tags.appendChild(t); }
+  t.textContent = bits.join(" \u00b7 ");
+}
+const nth = n => n + (n % 100 >= 11 && n % 100 <= 13 ? "th" : ["th", "st", "nd", "rd"][n % 10] || "th");
+const tempsOf = x => x.hot == null && x.plunge == null ? "" : `<span class="rev-temp">${x.hot != null ? fmtT(x.hot) : ""}${
+  x.hot != null && x.plunge != null ? " / " : ""}${x.plunge != null ? `<span class="pl">${fmtT(x.plunge)}</span>` : ""}</span>`;
+/* What visitors wrote and the temperatures they saw. These are people's word, so they stay in
+   their own section and never stand in for the venue's own figures on the row or in the card. */
+function drawLogs(v){
+  const box = cardOf.get(v.id).querySelector("[data-logs]");
+  const list = SOC.on && SOC.pub ? (SOC.pub.logs || []).filter(x => x.venue === v.name) : [];
+  const rep = SOC.on && SOC.pub ? (SOC.pub.reported || {})[v.name] : null;
+  box.hidden = !list.length && !rep;
+  if (box.hidden){ box.innerHTML = ""; return; }
+  const said = rep ? [rep.hot ? `<b>${fmtT(rep.hot.t)}</b> in the sauna on ${dayText(rep.hot.day)}` : "",
+                      rep.plunge ? `<b class="pl">${fmtT(rep.plunge.t)}</b> in the plunge on ${dayText(rep.plunge.day)}` : ""].filter(Boolean) : [];
+  box.innerHTML = `<p class="revs-h">from visitors</p>` +
+    (said.length ? `<p class="reported">latest reported: ${said.join(", ")}</p>` : "") +
+    list.map(x => `
+    <blockquote class="rev">
+      ${x.note ? `<p class="rev-t">${esc(x.note)}</p>` : ""}
+      <footer>${avatar(x, true)}<span class="rev-w">${xLink(x, esc(x.name))}</span>
+        <span class="rev-m">${nth(x.nth)} visit \u00b7 ${dayText(x.day)}</span> ${tempsOf(x)}</footer>
+    </blockquote>`).join("");
+}
+function drawMine(v){
+  const box = cardOf.get(v.id).querySelector("[data-mine]");
+  box.hidden = !SOC.on;
+  if (!SOC.on) return;
+  if (!SOC.me){
+    box.innerHTML = `<div class="row"><button class="btn quiet" type="button" data-sign>${signGlyph()}sign in to save and log visits</button></div>`;
+    return;
+  }
+  const t = today(), days = SOC.visits.filter(x => x.venue === v.name).map(x => x.day).sort().reverse();
+  const saved = ME.saved.has(v.name), been = days.includes(t), mine = SOC.mine.get(v.name);
+  box.innerHTML = `
+    <div class="row">
+      <button class="btn ${saved ? "on" : "quiet"}" type="button" data-save aria-pressed="${saved}">${saved ? "★ saved" : "☆ save"}</button>
+      <button class="btn ${been ? "on" : "quiet"}" type="button" data-today aria-pressed="${been}">${been ? "✓ been today" : "been here today"}</button>
+      <button class="btn quiet" type="button" data-other aria-expanded="false">another day</button>
+      ${canReview() ? `<button class="btn quiet" type="button" data-write>${mine ? "edit your review" : "write a review"}</button>` : ""}
+    </div>
+    <div class="row" data-pick hidden>
+      <input type="date" min="2000-01-01" max="${t}" value="${t}" aria-label="Day of the visit">
+      <button class="btn quiet" type="button" data-log>log visit</button>
+    </div>
+    ${days.length ? `<p class="hint">you've been here ${days.length === 1 ? "once" : days.length + " times"}. tap a day to take it back.</p>
+    <div class="days">${days.map(d => `<button class="day" type="button" data-day="${d}" aria-label="Remove the visit on ${dayText(d)}">${dayText(d)}<i aria-hidden="true">×</i></button>`).join("")}</div>` : ""}
+    ${days.length ? logForm(v, days) : ""}
+    <div data-wr></div>`;
+}
+/* A note and the temperatures seen, on one of the person's visits: the latest by default. The
+   numbers are typed in the city's unit and sent in \u00b0C. */
+let logDay = new Map();                            // venue name -> the visit being written about
+function logForm(v, days){
+  const day = days.includes(logDay.get(v.name)) ? logDay.get(v.name) : days[0];
+  const x = SOC.visits.find(y => y.venue === v.name && y.day === day) || {};
+  const shown = c => c == null ? "" : toUnit(c);
+  const [hlo, hhi, plo, phi] = TU === "F" ? [104, 266, 32, 86] : [40, 130, 0, 30];
+  return `
+    <div class="logf" data-logf>
+      <div class="nums">
+        <label>visit <select data-lday>${days.map(d => `<option value="${d}"${d === day ? " selected" : ""}>${dayText(d)}</option>`).join("")}</select></label>
+        <label>sauna <input type="number" inputmode="numeric" min="${hlo}" max="${hhi}" step="1" data-lhot value="${shown(x.hot)}"> \u00b0${TU}</label>
+        <label>plunge <input type="number" inputmode="decimal" min="${plo}" max="${phi}" step="0.5" data-lplunge value="${shown(x.plunge)}"> \u00b0${TU}</label>
+      </div>
+      <textarea maxlength="280" placeholder="how was it? a line for the next person (optional)" data-lnote>${esc(x.note || "")}</textarea>
+      <div class="row"><button class="btn quiet" type="button" data-lsave>save note</button><p class="err" data-lerr hidden></p></div>
+    </div>`;
+}
+const fromUnit = (n, whole) => {
+  if (n === "" || n == null) return null;
+  const c = TU === "F" ? (+n - 32) * 5 / 9 : +n;
+  return whole ? Math.round(c) : Math.round(c * 10) / 10;
+};
+async function saveLog(v, box){
+  const f = box.querySelector("[data-logf]"), err = f.querySelector("[data-lerr]");
+  const day = f.querySelector("[data-lday]").value;
+  const log = { note: f.querySelector("[data-lnote]").value,
+                hot: fromUnit(f.querySelector("[data-lhot]").value, true),
+                plunge: fromUnit(f.querySelector("[data-lplunge]").value, false) };
+  try {
+    const r = await api("/visit", { venue: v.name, day, on: true, log });
+    const x = SOC.visits.find(y => y.venue === v.name && y.day === day);
+    if (x) Object.assign(x, { note: r.note, hot: r.hot, plunge: r.plunge });
+    logDay.set(v.name, day);
+    drawMine(v); toast("note saved"); loadPublic(true);
+  } catch (x) { err.textContent = x.message; err.hidden = false; }
+}
+function drawWriter(v){
+  const box = cardOf.get(v.id).querySelector("[data-wr]"), mine = SOC.mine.get(v.name);
+  let rating = mine ? mine.rating : 0;
+  box.innerHTML = `
+    <div class="wr">
+      <div class="stars" role="radiogroup" aria-label="Your rating">${[1, 2, 3, 4, 5].map(i =>
+        `<button type="button" role="radio" data-star="${i}" aria-label="${plural(i, "star")}">★</button>`).join("")}</div>
+      <textarea maxlength="800" placeholder="the heat, the löyly, the crowd, when to go"></textarea>
+      <p class="err" hidden></p>
+      <div class="row">
+        <button class="btn primary" type="button" data-post>${mine ? "save review" : "post review"}</button>
+        <button class="btn quiet" type="button" data-cancel>cancel</button>
+        ${mine ? `<button class="btn quiet" type="button" data-del>delete</button>` : ""}
+      </div>
+    </div>`;
+  const ta = box.querySelector("textarea"); ta.value = mine ? mine.text : "";
+  const light = () => box.querySelectorAll("[data-star]").forEach(b => {
+    b.classList.toggle("lit", +b.dataset.star <= rating); b.setAttribute("aria-checked", String(+b.dataset.star === rating));
+  });
+  light();
+  box.querySelector(".stars").addEventListener("click", e => { const b = e.target.closest("[data-star]"); if (b){ rating = +b.dataset.star; light(); } });
+  box.querySelector("[data-post]").addEventListener("click", async e => {
+    const err = box.querySelector(".err");
+    if (!rating){ err.textContent = "pick a rating"; err.hidden = false; return; }
+    e.target.disabled = true;
+    try {
+      const r = await api("/review", { venue: v.name, rating, text: ta.value });
+      SOC.mine.set(v.name, r); drawMine(v); toast("review posted"); loadPublic(true);
+    } catch (x) { err.textContent = x.message; err.hidden = false; e.target.disabled = false; }
+  });
+  box.querySelector("[data-cancel]").addEventListener("click", () => { box.innerHTML = ""; });
+  box.querySelector("[data-del]")?.addEventListener("click", async () => {
+    try { await api("/review", { venue: v.name, remove: true }); SOC.mine.delete(v.name); drawMine(v); toast("review deleted"); loadPublic(true); }
+    catch (x) { toast(x.message); }
+  });
+  ta.focus();
+}
+function drawLive(v){
+  const box = cardOf.get(v.id).querySelector("[data-live]");
+  const list = SOC.on && SOC.pub ? SOC.pub.reviews.filter(r => r.venue === v.name) : [];
+  box.hidden = !list.length;
+  if (!list.length){ box.innerHTML = ""; return; }
+  const avg = Math.round(list.reduce((a, r) => a + r.rating, 0) / list.length * 10) / 10;
+  box.innerHTML = `<p class="revs-h">reviews <span class="score">${avg}<em>/5</em></span></p>` + list.map(r => `
+    <blockquote class="rev">
+      <p class="rev-t">${esc(r.text)}</p>
+      <footer>${avatar(r, true)}<span class="rev-w">${xLink(r, esc(r.name))}</span>
+        <span class="rev-m">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)} · ${dayText(r.day)}</span></footer>
+    </blockquote>`).join("");
+}
+async function logVisit(v, day, on){
+  try {
+    await api("/visit", { venue: v.name, day, on });
+    if (on){ if (!SOC.visits.some(x => x.venue === v.name && x.day === day)) SOC.visits.push({ venue: v.name, day }); logDay.set(v.name, day); }
+    else SOC.visits = SOC.visits.filter(x => !(x.venue === v.name && x.day === day));
+    ME.been = new Set(SOC.visits.map(x => x.venue));
+    drawMine(v); drawTags(v); drawAcct(); loadPublic(true);
+    if (F.mine.size) run();
+  } catch (x) { toast(x.message); }
+}
+cards.addEventListener("change", e => {
+  const pick = e.target.closest("[data-lday]"); if (!pick) return;
+  const v = V.find(x => cardOf.get(x.id).contains(pick));
+  logDay.set(v.name, pick.value); drawMine(v);
+});
+cards.addEventListener("click", async e => {
+  const box = e.target.closest("[data-mine]"); if (!box) return;
+  const v = V.find(x => cardOf.get(x.id).contains(box));
+  if (e.target.closest("[data-sign]")) return signIn();
+  if (e.target.closest("[data-save]")){
+    const on = !ME.saved.has(v.name);
+    try {
+      await api("/saved", { venue: v.name, on });
+      on ? ME.saved.add(v.name) : ME.saved.delete(v.name);
+      drawMine(v); drawTags(v); drawAcct(); if (F.mine.size) run();
+    } catch (x) { toast(x.message); }
+    return;
+  }
+  if (e.target.closest("[data-today]")){ const t = today(); return logVisit(v, t, !SOC.visits.some(x => x.venue === v.name && x.day === t)); }
+  if (e.target.closest("[data-other]")){
+    const pick = box.querySelector("[data-pick]"), b = e.target.closest("[data-other]");
+    pick.hidden = !pick.hidden; b.setAttribute("aria-expanded", String(!pick.hidden));
+    return;
+  }
+  if (e.target.closest("[data-log]")){ const d = box.querySelector("[data-pick] input").value; if (d) logVisit(v, d, true); return; }
+  const day = e.target.closest("[data-day]"); if (day) return logVisit(v, day.dataset.day, false);
+  if (e.target.closest("[data-lsave]")) return saveLog(v, box);
+  if (e.target.closest("[data-write]")) drawWriter(v);
+});
+
+/* the leaderboard */
+function drawBoard(){
+  const sec = document.getElementById("board");
+  sec.hidden = !SOC.on || !SOC.pub;
+  if (sec.hidden) return;
+  const me = SOC.me, b = SOC.pub;
+  document.getElementById("lb-people").innerHTML = b.people.length ? b.people.map(p => `
+    <li${sameAs(p, me) ? ' class="you"' : ""}>${avatar(p)}
+      <span class="nm">${xLink(p, esc(p.name))}<small>@${esc(p.handle)}</small></span>
+      <span class="n"><b>${p.saunas}</b> ${p.saunas === 1 ? "sauna" : "saunas"}<small>${plural(p.visits, "visit")}</small></span></li>`).join("")
+    : `<li class="empty">nobody has logged a visit yet.</li>`;
+  const vs = b.venues.filter(x => byName.has(x.venue) && x.visits > 0);
+  document.getElementById("lb-venues").innerHTML = vs.length ? vs.map(x => `
+    <li><button class="nm" type="button" data-id="${byName.get(x.venue).id}">${esc(x.venue)}</button>
+      <span class="n"><b>${x.visits}</b> ${x.visits === 1 ? "visit" : "visits"}<small>${plural(x.people, "person", "people")}</small></span></li>`).join("")
+    : `<li class="empty">no visits logged yet.</li>`;
+}
+document.getElementById("lb-venues").addEventListener("click", e => {
+  const b = e.target.closest("[data-id]"); if (!b) return;
+  const id = +b.dataset.id;
+  document.querySelector(".split").scrollIntoView({ behavior: "smooth", block: "start" });
+  if (sel !== id) choose(id, true);
+});
+
+/* the panel: who is on it, and how to join it, all through X */
+function drawPanel(){
+  if (!SOC.on || !SOC.pub) return;
+  const list = SOC.pub.panel;
+  panel.hidden = !list.length;
+  panel.innerHTML = list.map(p => `
+    <div class="pk">${avatar(p)}
+      <span class="k">${p.editor ? "editor" : "reviewer"}</span>
+      <span class="v">${esc(p.name)}</span><span class="who">${xLink(p, "@" + esc(p.handle))}</span>
+      <span class="p">${plural(p.reviews, "review")}</span></div>`).join("");
+}
+const join = document.getElementById("join");
+function drawJoin(){
+  document.getElementById("joinline").hidden = SOC.on;
+  join.hidden = !SOC.on;
+  if (!SOC.on) return;
+  const me = SOC.me;
+  if (!me){
+    join.innerHTML = `<p>Sign in to ask to join. The editor reads every application.</p>
+      <div><button class="btn primary" type="button" data-sign>${signGlyph()}sign in to apply</button></div>`;
+    return;
+  }
+  if (me.role === "member"){
+    join.innerHTML = `<p>Tell the editor which saunas you go to, how often, and what you look for in one. The answer shows up here.</p>
+      <textarea maxlength="500" aria-label="Your application" placeholder="I go to …"></textarea><p class="err" hidden></p>
+      <div><button class="btn primary" type="button" data-apply>apply to review</button></div>`;
+    return;
+  }
+  if (me.role === "applied"){ join.innerHTML = `<p>Your application is with the editor. Once you're on the panel, each sauna's card gets a <b>write a review</b> button.</p>`; return; }
+  if (me.role === "rejected"){ join.innerHTML = `<p>Your application wasn't taken up this time.</p>`; return; }
+  if (me.role === "reviewer"){ join.innerHTML = `<p>You're on the panel. Open a sauna's card to write a review.</p>`; return; }
+  /* the editor: applications waiting, then everyone on the panel */
+  const a = SOC.admin;
+  if (!a){ join.innerHTML = `<p>Loading applications…</p>`; return; }
+  join.innerHTML = `<p><b>applications</b></p>` + (a.applications.length ? `<div class="queue">${a.applications.map(x => `
+      <div class="q"><div class="who">${avatar(x)}<span>${xLink(x, esc(x.name))} <span class="rev-m">@${esc(x.handle)} on ${x.via === "github" ? "GitHub" : "X"} · ${dayText(x.day)}</span></span></div>
+        <p>${esc(x.note)}</p>
+        <div class="mine"><div class="row"><button class="btn primary" type="button" data-verdict="approve" data-h="${esc(x.handle)}" data-via="${x.via === "github" ? "github" : "x"}">approve</button>
+        <button class="btn quiet" type="button" data-verdict="reject" data-h="${esc(x.handle)}" data-via="${x.via === "github" ? "github" : "x"}">reject</button></div></div></div>`).join("")}</div>`
+      : `<p>No applications waiting.</p>`)
+    + (a.panel.length ? `<p><b>on the panel</b></p><div class="queue">${a.panel.map(x => `
+      <div class="q"><div class="who">${avatar(x)}<span>${xLink(x, esc(x.name))} <span class="rev-m">@${esc(x.handle)}</span></span></div>
+        <div class="mine"><div class="row"><button class="btn quiet" type="button" data-verdict="revoke" data-h="${esc(x.handle)}" data-via="${x.via === "github" ? "github" : "x"}">take off the panel</button></div></div></div>`).join("")}</div>` : "");
+}
+join.addEventListener("click", async e => {
+  if (e.target.closest("[data-sign]")) return signIn();
+  if (e.target.closest("[data-apply]")){
+    const err = join.querySelector(".err");
+    try { const r = await api("/apply", { note: join.querySelector("textarea").value }); SOC.me.role = r.role; drawJoin(); drawAcct(); }
+    catch (x) { err.textContent = x.message; err.hidden = false; }
+    return;
+  }
+  const b = e.target.closest("[data-verdict]"); if (!b) return;
+  b.disabled = true;
+  try { await api("/admin", { handle: b.dataset.h, via: b.dataset.via, verdict: b.dataset.verdict }); await loadAdmin(); loadPublic(true); }
+  catch (x) { toast(x.message); b.disabled = false; }
+});
+
+function drawAll(){
+  document.getElementById("g-mine").hidden = !SOC.me;
+  drawAcct(); drawJoin(); drawBoard(); drawPanel();
+  V.forEach(v => { drawMine(v); drawTags(v); drawLive(v); });
+  run();
+}
+/* The Worker answers on: false until sign-in is set up; a copy of the page off jommi.fi has no
+   /sauna/ path and never asks. */
+if (location.pathname.startsWith("/sauna/")) (async () => {
+  let r;
+  try { r = await api("/me"); } catch { return; }
+  if (!r.on) return;
+  SOC.on = true; setMe(r);
+  const said = new URLSearchParams(location.search).get("x");
+  if (said){
+    toast({ connected: SOC.me ? `signed in as @${SOC.me.handle}` : "signed in", cancelled: "sign-in cancelled",
+      unavailable: "sign-in isn't available right now" }[said] || "sign-in failed. try again.");
+    const u = new URL(location.href); u.searchParams.delete("x"); history.replaceState(null, "", u.pathname + u.search + u.hash);
+  }
+  drawAll();
+  loadPublic(); loadAdmin();
+})();
+</script>

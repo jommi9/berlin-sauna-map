@@ -1,5 +1,5 @@
 name: Post a review
-description: Review a sauna on the map. Approved reviewers only.
+description: Review a sauna on one of the maps. Approved reviewers only.
 title: "Review: "
 labels: ["review"]
 body:
@@ -12,7 +12,7 @@ body:
     id: venue
     attributes:
       label: Venue
-      description: Exactly as it appears on the map, e.g. "KIEZ SAUNA Friedrichshain".
+      description: Exactly as it appears on its city's map, e.g. "KIEZ SAUNA Friedrichshain".
     validations: { required: true }
   - type: dropdown
     id: rating

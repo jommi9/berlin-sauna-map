@@ -1,0 +1,312 @@
+# -*- coding: utf-8 -*-
+"""Berlin: every fact about its venues. This file is the source of truth.
+
+engine/build_venues.py joins these tables into venues.json and meta.json, and
+engine/selfupdate.py is the only script allowed to rewrite it (prices and
+closure dates it can prove from a venue's own page). Nothing here is code:
+it is tables, one per kind of fact, keyed by the venue's name.
+"""
+
+# name, lat, lon, kind, district, price(from|None), priceLabel, usc, uscLabel,
+# sauna, pool, hours, bestFor, badge, flag, url
+V = [
+ ["Vabali",52.52840,13.35889,"Standalone spa","Moabit",27.5,"€27.50 / 2h · €36.50 / 4h · €51.50 day (weekends & holidays €29.50 / €39.50 / €56.50)","no","Not on Urban Sports Club",
+  "10 saunas, 3 steam baths, frequent Aufguss, large garden","4 pools","09:00–24:00","Best full sauna day","Best sauna day",None,
+  "https://www.vabali.de/berlin/"],
+ ["Grand Hyatt — Club Olympus",52.50819,13.37248,"Hotel day spa","Tiergarten",40,"Weekday €40 / 2h · €80 day; weekend €50 / 2h · €95 day","no","Not on Urban Sports Club",
+  "90°C Finnish sauna, steam bath, whirlpool, rooftop terrace","Indoor rooftop pool + cold plunge","07:00–21:00","Best premium hotel sauna","Most premium",None,
+  "https://www.hyatt.com/de-DE/spas/Club-Olympus-Berlin/day-spa"],
+ ["Hilton Berlin — LivingWell",52.51210,13.39253,"Hotel spa","Mitte",33,"€33 / 2.5h · €39 day","yes","Premium 4×/mo · Max 8×/mo · 2h per visit",
+  "Finnish saunas, steam rooms, experience showers, relaxation area; towels included with USC","14 m heated pool","07:00–21:00","Best overall USC hotel option","Best USC hotel",None,
+  "https://urbansportsclub.com/de/venues/hilton-berlin-living-well-health-club?view=new"],
+ ["Steigenberger — Sky Spa",52.52366,13.36747,"Hotel spa","Mitte",25,"€25 / 2h · €40 day","yes","Premium & Max 4×/mo · reserved 2h slot",
+  "90°C Finnish, 60°C bio, outdoor sauna, steam bath, terrace","No major pool focus","Tue 14:00–22:00; hours vary by day","Best USC option if sauna matters most","Best USC sauna",None,
+  "https://www.sky-spa-fitnesslounge.de/day-spa/"],
+ ["Hotel de Rome — De Rome Spa",52.51579,13.39406,"Hotel day spa","Mitte",90,"From about €90 day","no","Not on Urban Sports Club",
+  "Finnish sauna, steam room, ice fountain, Kneipp circuit","20 m pool in a former bank vault","Sauna roughly 10:00–21:00","Most atmospheric / beautiful","Most beautiful",None,
+  "https://www.visitberlin.de/de/berlins-beste-sauna"],
+ ["Hotel Adlon Kempinski",52.51557,13.38006,"Hotel day spa","Mitte",65,"€65 weekday · €85 weekend day pass","no","Not on Urban Sports Club",
+  "Sauna area, steam bath, relaxation rooms, whirlpool","Pool","07:00–21:00","Luxury hotel experience",None,None,
+  "https://www.kempinski.com/de/hotel-adlon/luxus-spa/mitgliedschaften/tagespass-und-mitgliedschaften"],
+ ["Hotel Palace — Palace Spa",52.50491,13.33884,"Hotel day spa","Charlottenburg",34,"About €34–35 / 3h · €39 day","no","Not on Urban Sports Club",
+  "Sauna, tepidarium, ice grotto","Pool","Tue 06:30–22:00; check daily hours","Best-value cash hotel spa","Best value hotel",None,
+  "https://www.palace.de/hotel/palace-spa-fitness"],
+ ["Titanic Gendarmenmarkt — BeFine",52.51490,13.39451,"Hotel day spa","Mitte",35,"About €35 day","no","Not on Urban Sports Club",
+  "Dry sauna, steam bath, Turkish hammam, ice fountain, relaxation rooms","No major pool focus","Tue 12:30–21:00; check daily hours","Hammam plus sauna",None,None,
+  "https://www.titanic.com.tr/de/titanic-gendarmenmarkt-berlin/befine-spa/sauna"],
+ ["Park Inn Alexanderplatz — Gezer Spa",52.52284,13.41278,"Hotel spa","Mitte",12.5,"€12.50 / 2h · €17.50 / 4h · €22.50 day card (Stadtgäste)","yes","Classic 4×/mo · Premium & Max 8×/mo · max 2h",
+  "95°C Finnish, 75°C bio, infrared cabin, relaxation loungers, tea and water","No pool","12:00–22:00","Best easy / low-friction USC sauna","Cheapest session",None,
+  "https://urbansportsclub.com/de/venues/gezer-spa-fitness-1"],
+ ["InterContinental Berlin",52.50727,13.34540,"Hotel day spa","Tiergarten",60,"€60 / 2h · €100 day (day visitors) · hotel guests €10 pool, €20 pool + sauna per day","no","Not on Urban Sports Club",
+  "Large sauna area, whirlpool, terrace","Pool","07:00–21:00","Large conventional hotel spa",None,None,
+  "https://www.berlin.intercontinental.com/wellness/"],
+ ["The Westin Grand — Gezer Spa",52.51587,13.38860,"Hotel spa","Mitte",15,"€15 / 2h · €20 / 4h · €25 day card (Stadtgäste)","yes","Classic 4×/mo · Premium & Max 8×/mo · max 2h",
+  "Only the Sanarium is open, 60–65°C — two saunas still under repair","Check current spa setup","Currently shown around 14:00–22:00; verify before going","Central USC alternative",None,"Confirmed by Gezer Spa on 3 September 2026. No completion date for the two saunas under repair. The Urban Sports Club listing still shows the old closure banner — ignore it.",
+  "https://urbansportsclub.com/en/venues/gezer-spa-fitness?view=new"],
+ ["sly Berlin",52.52492,13.44815,"Hotel spa","Friedrichshain",None,"Hotel guests only — no public access","no","No current USC listing",
+  "KLAFS panoramic rooftop sauna, steam bath, roof terrace, tea, towels and bathrobes","No pool","About 06:00–23:00; hotel pages differ","Top-tier sauna, but you cannot get in",None,"Confirmed by sly Berlin on 2 September 2026: because of the spa's size it is open to hotel guests only. There is no public day pass.",
+  "https://www.sly-berlin.com/en/spa-and-gym"],
+ ["KIEZ SAUNA Friedrichshain",52.51545,13.44865,"Standalone sauna","Friedrichshain",22,"€22 / 4h","no","Not on Urban Sports Club",
+  "90°C Finnish, 60°C bio, steam room, hourly Aufguss, terrace","No pool focus","15:00–24:00","Best neighborhood / proper sauna","Best local sauna",None,
+  "https://www.kiezsauna.de/%C3%B6ffnungszeiten/"],
+ ["Olivin",52.53160,13.41116,"Standalone sauna","Prenzlauer Berg",24,"€24 / 4h · reduced €21 · extra hour +€6 · late tariff from 21:30 €22 · happy hour Mon–Fri €20","no","Not on Urban Sports Club",
+  "Finnish sauna, hourly essential-oil Aufguss, small calm design-focused space","No pool focus","Tue 17:00–24:00; check daily hours","Quiet, smaller, design-y option",None,None,
+  "https://olivin-berlin.com/facts/"],
+ ["LIQUIDROM",52.50118,13.38140,"Standalone spa","Kreuzberg",24.5,"Short Escape 90 min €22 · Urban Flow 2h €24.50 · Deep Dive 3h €29.50 · +€5 per extra 30 min · sauna add-on +€2.50","partial","Premium / Max access exists, but USC entry excludes the sauna",
+  "Sauna plus spa facilities and Onsen","Saltwater sound pool","09:00–24:00","Spa / pool atmosphere rather than pure sauna",None,"USC entry does not include the sauna — you pay the supplement.",
+  "https://www.liquidrom-berlin.de/en/info.php"],
+ ["Saunabad Prenzlauer Berg",52.53578,13.42035,"Standalone sauna","Prenzlauer Berg",18,"€18 / 2.5h · €20 / 4h","no","No verified USC access",
+  "Large 95°C sauna, hourly Aufguss, garden, quiet rooms","No pool focus",None,"Best cheap traditional sauna","Best cheap sauna","Cash only, no cards. Their own site served a hosting parking page for a spell in September 2026; it is back as of 8 October with the same prices and hours. Rykestr. 10, tel. 030 44046397.",
+  "https://www.saunabad-berlin.de/"],
+ ["Lützow Sauna",52.50154,13.36890,"Standalone sauna","Tiergarten",24,"€24 / 2h · €27 / 3h · €30 day","no","No verified USC access",
+  "90°C sauna, sanarium, steam bath, hourly Aufguss","30°C pool and 14°C plunge","Closed Tuesdays; check other daily hours","Excellent classic hot–cold cycles",None,None,
+  "https://www.luetzow-sauna.de/start"],
+ ["ANTI SPA",52.53125,13.40084,"Sauna & cold plunge studio","Mitte",29,"Regular sessions around €29; promos vary","yes","Classic 4×/mo · Premium & Max 8×/mo",
+  "Cedar sauna, lounge; swimwear mandatory","Proper cold plunge","Session based","Best USC sauna plus serious cold plunge","Best cold plunge",None,
+  "https://www.antispaces.com/spa/welcome-pass"],
+ # Read off fitnesscompany-berlin.de (sauna, Tarife, opening hours) and its Urban Sports Club
+ # listing on 20 Oct 2026. The USC listing does not mention the sauna; a gym check-in includes
+ # it, per a regular's visits. Coordinates: midway between two directory geocodes ~90 m apart.
+ ["Fitness Company Berlin",52.51290,13.44068,"Gym with sauna","Friedrichshain",11,"€11 sauna-only day ticket · €15 day with gym and classes · 10 sauna visits €90 (valid 3 months)","yes","Classic 4×/mo · Premium 8×/mo · Max 1×/day · sauna included with a gym check-in",
+  "90°C dry sauna and a 60°C bio sauna at 50% humidity","No pool",None,"USC sauna by Berghain",None,"The Urban Sports Club listing does not mention the sauna, but a normal gym check-in gets you in.",
+  "https://www.fitnesscompany-berlin.de/sauna.html"],
+ ["Stadtbad Neukölln",52.47919,13.43973,"Public bath / sauna","Neukölln",20,"€20 / 3h · €23 day (reduced €16 / €19) · €10 chip deposit, box office only","yes","Included on Max",
+  "Finnish sauna, herbal sauna, steam bath, caldarium","Public bath facilities",None,"Excellent value, and the warm-water pool is back",None,"Monday is a women-only sauna day. Entry closes an hour before closing time.",
+  "https://www.berlinerbaeder.de/baeder/detail/stadtbad-neukoelln/"],
+ ["Finnland Zentrum",52.48963,13.39737,"Private rental sauna","Kreuzberg",40,"€40 for up to 4 people (3h) · extra adults €10","no","Not mentioned",
+  "Indoor sauna on the 2nd floor, adjacent shower and small changing room, fireplace room on the same floor; BYO drinks allowed, take the empties with you","No pool; cool off by the changing-room windows or in the rear courtyard","Booking by email or phone (+49 30 781 81 89); weekend availability varies","Private group sauna with BYO drinks",None,"Booked by email or phone rather than walking in — the €40 covers the whole group for three hours.",
+  "https://www.finnlandzentrum.de/sauna/"],
+]
+
+# Wikimedia Commons photo per venue, where a freely licensed one exists.
+# The standalone saunas have none - they get a generated map tile instead.
+IMG = {
+ "Grand Hyatt \u2014 Club Olympus":"hyatt", "Hilton Berlin \u2014 LivingWell":"hilton",
+ "Steigenberger \u2014 Sky Spa":"steigenberger", "Hotel de Rome \u2014 De Rome Spa":"derome",
+ "Hotel Adlon Kempinski":"adlon", "Hotel Palace \u2014 Palace Spa":"palace",
+ "Titanic Gendarmenmarkt \u2014 BeFine":"titanic", "Park Inn Alexanderplatz \u2014 Gezer Spa":"parkinn",
+ "InterContinental Berlin":"intercon", "The Westin Grand \u2014 Gezer Spa":"westin",
+ "LIQUIDROM":"liquidrom", "Stadtbad Neuk\u00f6lln":"neukoelln",
+}
+
+
+# --- Which Urban Sports Club tiers actually get into the SAUNA (not just the gym).
+#     Liquidrom is deliberately empty: USC access exists but excludes the sauna.
+USC_TIERS = {
+ "Fitness Company Berlin": ["Classic", "Premium", "Max"],
+ "Hilton Berlin \u2014 LivingWell": ["Premium", "Max"],
+ "Steigenberger \u2014 Sky Spa": ["Premium", "Max"],
+ "Park Inn Alexanderplatz \u2014 Gezer Spa": ["Classic", "Premium", "Max"],
+ "The Westin Grand \u2014 Gezer Spa": ["Classic", "Premium", "Max"],
+ "ANTI SPA": ["Classic", "Premium", "Max"],
+ "Stadtbad Neuk\u00f6lln": ["Max"],
+ "LIQUIDROM": [],
+}
+
+# --- Opening hours. weekly = Mon..Sun, each [open, close] in minutes past
+#     midnight (1440 = midnight, >1440 = past midnight), or None for closed.
+#     seasons override weekly between two MM-DD dates and may wrap the year.
+#     src: "venue" = read off the operator's own page, "osm" = OpenStreetMap,
+#     "listed" = as published on the hotel page and not re-verified since.
+D = lambda a, b: [[a, b]] * 7
+WINTER = "10-01", "03-31"
+OPEN = {
+ # Studio hours from its Tarife page; the 90°C sauna runs all opening hours.
+ "Fitness Company Berlin": {"weekly": [[480, 1380], [480, 1320], [480, 1380], [480, 1320], [480, 1320], [585, 1140], [600, 1200]], "src": "venue"},
+ "Vabali": {"weekly": D(540, 1440), "src": "venue",
+            "seasons": [{"from": WINTER[0], "to": WINTER[1], "weekly": D(480, 1440)}]},
+ "KIEZ SAUNA Friedrichshain": {"weekly": D(900, 1440), "src": "venue",
+            "seasons": [{"from": WINTER[0], "to": WINTER[1], "weekly": D(780, 1440)}]},
+ "Park Inn Alexanderplatz \u2014 Gezer Spa": {"weekly": D(720, 1320), "src": "venue",
+            "seasons": [{"from": WINTER[0], "to": WINTER[1], "weekly": D(720, 1080)}]},
+ # Olivin runs SHORTER hours in summer, not longer - opens at 17:00 except Thursdays.
+ "Olivin": {"weekly": D(720, 1440), "src": "venue",
+            "seasons": [{"from": "06-01", "to": "09-30",
+                         "weekly": [[1020,1440]]*3 + [[720,1440]] + [[1020,1440]]*3}]},
+ "Hotel Palace \u2014 Palace Spa": {"weekly": [[390,1320]]*6 + [[480,1320]], "src": "venue"},
+ "Titanic Gendarmenmarkt \u2014 BeFine":
+                {"weekly": [[750,1260]]*4 + [[600,1260],[600,1260],[600,1110]], "src": "venue"},
+ "Steigenberger \u2014 Sky Spa": {"weekly": [[840,1320]]*5 + [[600,1320],[600,1080]], "src": "osm"},
+ "L\u00fctzow Sauna": {"weekly": [[1080,1380], None, [960,1380], None,
+                                 [960,1380], [960,1380], [960,1380]], "src": "osm"},
+ "LIQUIDROM": {"weekly": [[600,1440]]*4 + [[600,1500]]*3, "src": "osm"},
+ "InterContinental Berlin": {"weekly": D(420, 1260), "src": "venue"},
+ "Grand Hyatt \u2014 Club Olympus": {"weekly": D(420, 1260), "src": "venue"},
+ "Hilton Berlin \u2014 LivingWell": {"weekly": D(420, 1260), "src": "listed"},
+ "Hotel Adlon Kempinski": {"weekly": D(420, 1260), "src": "listed"},
+ "Hotel de Rome \u2014 De Rome Spa": {"weekly": D(600, 1260), "src": "listed"},
+ "sly Berlin": {"weekly": D(360, 1380), "src": "listed"},
+ "Saunabad Prenzlauer Berg": {"weekly": [[900, 1440]] * 6 + [[720, 1440]], "src": "venue"},
+ "The Westin Grand \u2014 Gezer Spa": {"weekly": D(840, 1320), "src": "venue"},
+ "ANTI SPA": {"weekly": D(420, 960), "src": "venue"},
+ # Reopened after the 2026 summer break. The winter listing (1 Oct to 30 Apr) was read
+ # off berlinerbaeder.de on 8 Oct 2026; the summer listing is not published yet, so the
+ # same hours stand in for it until May. Windows end at last entry (an hour before the
+ # sauna closes), so "Open now" never sends anyone to a shut box office. Monday is women only.
+ "Stadtbad Neuk\u00f6lln": {"weekly": [[720, 1290]] + [[600, 1290]] * 6, "src": "venue",
+            "seasons": [{"from": "10-01", "to": "04-30",
+                         "weekly": [[720, 1290]] + [[600, 1290]] * 6}]},
+}
+
+HOURS_TEXT = {
+ "Fitness Company Berlin": "Mon & Wed 08:00\u201323:00 \u00b7 Tue, Thu, Fri 08:00\u201322:00 \u00b7 Sat 09:45\u201319:00 \u00b7 Sun 10:00\u201320:00; the 90\u00b0C sauna runs all opening hours, the bio sauna keeps shorter ones",
+ "Vabali": "Daily 09:00\u201324:00 (08:00\u201324:00 from 1 Oct to 31 Mar)",
+ "KIEZ SAUNA Friedrichshain": "Daily 15:00\u201324:00 (13:00\u201324:00 from 1 Oct to 31 Mar)",
+ "Park Inn Alexanderplatz \u2014 Gezer Spa": "Daily 12:00\u201322:00 (12:00\u201318:00 from 1 Oct to 31 Mar)",
+ "Olivin": "Daily 12:00\u201324:00; in summer (1 Jun\u201330 Sep) 17:00\u201324:00, Thu 12:00\u201324:00",
+ "Hotel Palace \u2014 Palace Spa": "Mon\u2013Sat 06:30\u201322:00 \u00b7 Sun & holidays 08:00\u201322:00; mixed sauna from 16:30",
+ "Titanic Gendarmenmarkt \u2014 BeFine": "Mon\u2013Thu 12:30\u201321:00 \u00b7 Fri\u2013Sat 10:00\u201321:00 \u00b7 Sun 10:00\u201318:30",
+ "Steigenberger \u2014 Sky Spa": "Mon\u2013Fri 14:00\u201322:00 \u00b7 Sat 10:00\u201322:00 \u00b7 Sun 10:00\u201318:00",
+ "L\u00fctzow Sauna": "Mon 18:00\u201323:00 \u00b7 Wed, Fri\u2013Sun 16:00\u201323:00 \u00b7 closed Tue & Thu",
+ "LIQUIDROM": "Mon\u2013Thu 10:00\u201324:00 \u00b7 Fri\u2013Sun 10:00\u201301:00",
+ "InterContinental Berlin": "Daily 07:00\u201321:00 (Spa Card); Time Card Mon\u2013Fri 07:00\u201315:00",
+ "Finnland Zentrum": "By arrangement \u2014 book by phone or email (+49 30 781 81 89)",
+ "ANTI SPA": "Open Spa daily 07:00\u201316:00 for self-guided sauna and cold plunge; guided sessions at other times \u2014 timetable on their site and Instagram",
+ "The Westin Grand \u2014 Gezer Spa": "Daily 14:00\u201322:00 \u2014 only the Sanarium is running while two saunas are repaired",
+ "Stadtbad Neuk\u00f6lln": "Sauna Mon 12:00\u201322:30 (women only) \u00b7 Tue\u2013Sun 10:00\u201322:30 \u00b7 last entry 21:30",
+ "Saunabad Prenzlauer Berg": "Mon\u2013Sat 15:00\u201324:00 \u00b7 Sun 12:00\u201324:00",
+}
+
+
+# --- Priced per booking rather than per head. A EUR 40 group hire is not
+#     comparable to a EUR 12.50 entry, so these are drawn as circles rather than
+#     squares and are excluded from the per-person "cheapest" figure.
+GROUP_PRICED = {"Finnland Zentrum"}
+
+
+# --- Cabin temperatures and Aufguss practice, answered by the venues themselves
+#     in September 2026 (email). "aufguss" drives the filter chip:
+#     scheduled = run to a plan, self = buckets provided, request = ask staff,
+#     auto = automatic aroma dosing, unknown = they did not reply.
+HEAT = {
+ "Vabali": ("13 saunas: bio 55\u00b0C coolest, Gratensauna 90\u00b0C hottest, steam 45\u00b0C",
+   "scheduled", "Plan rewritten daily and posted in-house \u2014 birch ceremonies, Asian scent journey, mint, orange peeling"),
+ "Steigenberger \u2014 Sky Spa": ("2 Finnish saunas 90\u00b0C, bio 60\u00b0C, steam 45\u00b0C at high humidity",
+   "self", "No staff plan; guests pour their own, preparations provided"),
+ "Hotel Adlon Kempinski": ("Finnish 80\u2013100\u00b0C, bio/soft 50\u201360\u00b0C, steam 40\u201345\u00b0C at 98% humidity",
+   "auto", "No plan; the cabins release aroma automatically every 20 minutes"),
+ "Hotel Palace \u2014 Palace Spa": ("Finnish 90\u00b0C, tepidarium 55\u00b0C with colour therapy, ladies' sauna 90\u00b0C from 16:30, ice grotto 4\u00b0C",
+   "self", "Self-serve buckets: rose, herbal, lemongrass"),
+ "Titanic Gendarmenmarkt \u2014 BeFine": ("Finnish 90\u00b0C, steam 40\u201350\u00b0C, Turkish hammam 40\u00b0C",
+   "request", "No fixed plan; ask the team on the day"),
+ "Park Inn Alexanderplatz \u2014 Gezer Spa": ("Two Finnish saunas, 70\u201380\u00b0C and 90\u2013100\u00b0C",
+   "self", "No plan; pour your own freely"),
+ "InterContinental Berlin": ("Large Finnish 90\u00b0C, ladies' sauna 90\u00b0C, steam and herbal bath both 45\u00b0C; textile optional",
+   "self", "A bucket stands ready in both Finnish saunas; guests pour their own"),
+ "The Westin Grand \u2014 Gezer Spa": ("Only the Sanarium is open, 60\u201365\u00b0C \u2014 two saunas still under repair",
+   "unknown", None),
+ "sly Berlin": ("One electric Finnish sauna, fixed at 80\u00b0C", "unknown", None),
+ "Olivin": ("A single Finnish sauna at 90\u00b0C \u2014 there are no other cabins",
+   "scheduled", "On the hour, every hour"),
+ "LIQUIDROM": ("Hot Room 90\u00b0C, Kelo herbal room 80\u00b0C, Salt Room 65\u00b0C, steam 45\u00b0C; 36\u00b0C saltwater dome",
+   "scheduled", "Hourly heat sessions, roughly 10:00\u201323:00 (to 00:00 Fri\u2013Sat)"),
+ "Finnland Zentrum": ("One sauna, yours alone for the booking",
+   "self", "You are your own saunameister, as in Finland"),
+ "Grand Hyatt \u2014 Club Olympus": ("Finnish sauna 90\u00b0C, steam bath 45\u00b0C",
+   "auto", "Automatic infusion in the Finnish sauna, four scents to choose from"),
+ "Hilton Berlin \u2014 LivingWell": ("Mixed sauna area: Finnish 90\u00b0C, bio 65\u00b0C, steam 48\u00b0C",
+   "auto", "Press the button for an automatic infusion every 30 min \u2014 pouring your own is not allowed"),
+ "ANTI SPA": ("One sauna at 60\u00b0C plus the cold plunge \u2014 no Finnish, bio or steam cabin; swimwear mandatory",
+   "unknown", None),
+ "KIEZ SAUNA Friedrichshain": (None, "scheduled", "Hourly"),
+ "Saunabad Prenzlauer Berg": (None, "scheduled", "Hourly"),
+ "L\u00fctzow Sauna": (None, "scheduled", "Hourly"),
+}
+
+
+# --- Where the cabin temperatures and Aufguss notes in HEAT come from; shown on
+#     each card that has them.
+HEAT_SOURCE = "confirmed by the venue, email 3 Sep 2026"
+
+
+# --- The cold plunge in °C, where the venue states a figure; the card and the "coldest plunge"
+#     sort use it. A venue missing here has no stated figure, not a warm plunge.
+PLUNGE = {
+ "L\u00fctzow Sauna": 14,
+}
+
+
+# --- Banyas. You throw your own in a banya just as in a Finnish sauna, so the
+#     loyly cannot tell the two apart and a banya has to be named. None of the
+#     listed venues is one yet.
+BANYA = set()
+
+
+# --- The Finnish score: how good it is AS A SAUNA, in stars out of 5 (halves
+#     allowed), judged by a Finn (jommi9). Not comfort, not the spa around it -
+#     heat, loyly, and whether you are allowed to throw water at all.
+#
+#     A place missing from the table is NOT SCORED YET, and the site says
+#     nothing rather than showing a zero. These are one person's opinion and
+#     nobody else's, so they are only ever filled in by hand, never by
+#     selfupdate.py.
+FINNISH = {
+ "Finnland Zentrum": 4.5,
+ "Vabali": 4,
+ "Olivin": 4,
+ "KIEZ SAUNA Friedrichshain": 3.5,
+ "Fitness Company Berlin": 3.5,
+}
+
+
+# --- For staff-run Aufguss only: how good the Aufguss itself is, out of 10.
+#     Meaningless where you throw your own, so it is only shown for "staff".
+AUFGUSS_SCORE = {
+ "Vabali": 10,
+}
+
+
+# --- The "fast picks" list, defined ONCE here so the site and the generated
+#     Notion page cannot disagree about it.
+PICKS = [
+ ("Best overall sauna day", "Vabali"),
+ ("Best proper local sauna", "KIEZ SAUNA Friedrichshain"),
+ ("Best USC hotel experience", "Hilton Berlin \u2014 LivingWell"),
+ ("Best USC for sauna quality", "Steigenberger \u2014 Sky Spa"),
+ ("Best easy USC option", "Park Inn Alexanderplatz \u2014 Gezer Spa"),
+ ("Best USC sauna + cold plunge", "ANTI SPA"),
+ ("Best cash-value hotel spa", "Hotel Palace \u2014 Palace Spa"),
+ ("Best premium hotel option", "Grand Hyatt \u2014 Club Olympus"),
+ ("Most beautiful", "Hotel de Rome \u2014 De Rome Spa"),
+ ("Best sauna you can't easily book", "sly Berlin"),
+]
+
+# --- The header collage: these venues, in this order, where they have a photograph.
+COVER = ["LIQUIDROM", "Hotel Palace \u2014 Palace Spa", "Stadtbad Neuk\u00f6lln"]
+
+PRACTICAL = ("For a normal sauna session rather than a luxury spa day, **KIEZ SAUNA, Saunabad, "
+             "Olivin and L\u00fctzow** are better benchmarks than most hotel spas. Hotel spas make "
+             "more sense when the pool, terrace, relaxation area, or USC access is part of what "
+             "you want.")
+
+LAST_CHECKED = "8 October 2026"
+
+# --- The "two traps" box: a venue and one sentence, no dates. When the venue
+#     has a closedUntil in force the browser appends "on break until ..." itself
+#     (see trapText in the template), so a closure is never written as prose
+#     here; the old "summer break through 31 October" outlived the real break
+#     by weeks.
+TRAPS = [
+ ("LIQUIDROM", "is on Urban Sports Club, but USC entry does not include the sauna "
+               "\u2014 you still pay the supplement."),
+ ("Stadtbad Neuk\u00f6lln", "\u2019s sauna is women-only on Mondays, and it closes for a summer "
+                           "break most years."),
+]
+
+
+# --- Wikimedia Commons file behind each photo key in IMG. engine/fetch_images.py
+#     reads the credits for these into img/credits.json.
+COMMONS = {
+ "hyatt":"File:2023 Grand Hyatt Hotel Berlin.jpg",
+ "hilton":"File:MitteMohrenstraßeHotelHilton.jpg",
+ "steigenberger":"File:2023 Steigenberger Hotel Berlin.jpg",
+ "derome":"File:Hotel de Rome, Berlin (1X7A5173).jpg",
+ "adlon":"File:Adlon Hotel Berlin Germany - 01.jpg",
+ "palace":"File:Hotel Palace bei Nacht 20140726 5.jpg",
+ "titanic":"File:2023 Hotel Titanic Berlin.jpg",
+ "parkinn":"File:Park Inn by Radisson Alexanderplatz - Berlin.jpg",
+ "intercon":"File:Berlin Hotel Intercontinental-20241207-RM-104709.jpg",
+ "westin":"File:Westin Grand Berlin, 2024 (01).jpg",
+ "neukoelln":"File:Stadtbad B-Neukoelln 07-2014.jpg",
+ "liquidrom":"File:Tempodrom, Berlín, Alemania, 2016-04-22, DD 01-03 HDR.JPG",
+}

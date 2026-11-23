@@ -1,0 +1,12 @@
+{
+  "name": "New York",
+  "country": "US",
+  "timezone": "America/New_York",
+  "bbox": [-74.05, 40.66, -73.9, 40.8],
+  "districtLevel": 5,
+  "lede": "Russian baths, bathhouses and the new contrast-therapy studios.",
+  "notionIntro": "New York sauna shortlist.",
+  "currency": "$",
+  "temp": "F",
+  "usc": false
+}

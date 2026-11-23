@@ -1,0 +1,12 @@
+{
+  "name": "Helsinki",
+  "country": "FI",
+  "timezone": "Europe/Helsinki",
+  "bbox": [24.88, 60.14, 25.01, 60.2],
+  "districtLevel": 10,
+  "lede": "Public saunas, from the city's last wood-heated neighbourhood sauna to the new ones on the shore.",
+  "notionIntro": "Helsinki public sauna shortlist.",
+  "currency": "€",
+  "temp": "C",
+  "usc": false
+}
