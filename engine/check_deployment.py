@@ -15,7 +15,9 @@ import datetime, hashlib, json, os, re, sys, time, urllib.request
 import city
 CITY = city.enter()
 
-# GitHub Pages serves the repo as it is, so a city's page is at <owner>.github.io/<repo>/<city>/.
+# Two copies are published from main. GitHub Pages serves the repo as it is, so every city's
+# page is at <owner>.github.io/<repo>/<city>/. Cities marked "live" in their city.json are also
+# on jommi.fi, from Cloudflare.
 # In Actions the repository names itself, which keeps this right across a rename.
 OWNER, REPO = os.environ.get("GITHUB_REPOSITORY", city.REPO).split("/")
 SITE = f"https://{OWNER}.github.io/{REPO}/{CITY['slug']}/"
@@ -28,28 +30,38 @@ problems = []
 m = re.search(r"--wait[= ](\d+)", " ".join(sys.argv))
 deadline = time.time() + (int(m.group(1)) * 60 if m else 0)
 
-# --- is the live page the page we built?
+# --- is the live page the page we built? Checked wherever the city is published.
 local = hashlib.sha256(open("index.html", "rb").read()).hexdigest()
-while True:
-    try:
-        live_bytes = urllib.request.urlopen(
-            urllib.request.Request(SITE + "?cachebust=" + str(datetime.datetime.now().timestamp()),
-                                   headers=UA), timeout=60).read()
-        live = hashlib.sha256(live_bytes).hexdigest()
-        if live == local:
-            print(f"ok  {SITE} matches the repo ({local[:12]})")
-            break
-        err = (f"{SITE} does NOT match the repo\n"
-               f"      repo {local[:12]}\n      live {live[:12]}\n"
-               f"      A push can succeed while the Pages deploy fails. "
-               f"Re-run the latest 'pages build and deployment' run.")
-    except Exception as e:
-        err = f"could not fetch {SITE}: {type(e).__name__} {e}"
-    if time.time() >= deadline:
-        problems.append(err)
-        break
-    print("..  live site not updated yet, waiting 45s")
-    time.sleep(45)
+def published(site, fix):
+    while True:
+        try:
+            live_bytes = urllib.request.urlopen(
+                urllib.request.Request(site + "?cachebust=" + str(datetime.datetime.now().timestamp()),
+                                       headers=UA), timeout=60).read()
+            # jommi.fi has Cloudflare Web Analytics on, and Cloudflare adds its beacon script before
+            # </body> on some requests. That tag is theirs, not a stale page, so it is left out.
+            live_bytes = re.sub(rb'<script[^>]*static\.cloudflareinsights\.com[^>]*></script>\n?', b'', live_bytes)
+            live = hashlib.sha256(live_bytes).hexdigest()
+            if live == local:
+                print(f"ok  {site} matches the repo ({local[:12]})")
+                return
+            err = (f"{site} does NOT match the repo\n"
+                   f"      repo {local[:12]}\n      live {live[:12]}\n"
+                   f"      A push can succeed while the deploy fails. {fix}")
+        except Exception as e:
+            err = f"could not fetch {site}: {type(e).__name__} {e}"
+        if time.time() >= deadline:
+            problems.append(err)
+            return
+        print(f"..  {site} not updated yet, waiting 45s")
+        time.sleep(45)
+
+published(SITE, "Re-run the latest 'pages build and deployment' run.")
+# A city that is open on the hub is served there from Cloudflare (the sauna-maps Worker, deployed
+# by Cloudflare's Git connection on each push), which is the copy people actually see.
+if CITY.get("live"):
+    published(CITY["site"], "In Cloudflare, open Workers & Pages > sauna-maps > Deployments and "
+                            "retry the latest build; a commit made by a workflow may not have started one.")
 
 # --- did a seasonal switch just happen?
 today = datetime.date.today()

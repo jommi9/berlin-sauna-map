@@ -7,5 +7,6 @@
   "notionIntro": "Berlin sauna shortlist combining hotel day spas, Urban Sports Club options, and regular standalone saunas.",
   "currency": "€",
   "temp": "C",
-  "usc": true
+  "usc": true,
+  "live": true
 }

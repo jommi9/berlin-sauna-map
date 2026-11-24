@@ -183,15 +183,36 @@ coherent:
   visible scrollbar back it up (`updateMore`). No floating buttons over the list.
   The list-and-map panel is sized so it fits one screen under the filter row.
 
+## Where the pages are served from
+
+Two copies are published from `main`, and neither needs a build step because the pages are
+built and committed here.
+
+- **Cloudflare, for jommi.fi.** `wrangler.jsonc` makes this repository an assets-only Worker,
+  `sauna-maps`, deployed by Cloudflare's Git connection on each push to `main`. It has no
+  address of its own: the jommi.fi Worker reaches it through a service binding and serves each
+  live city at `jommi.fi/sauna/<city>/`. `.assetsignore` is an allowlist: only each city's
+  `index.html`, `og.png`, `venues.json` and `img/card/*.webp`, plus the root `index.html`, are
+  published. A new kind of file a page needs has to be added there or it will 404 on jommi.fi
+  while working on GitHub Pages.
+- **GitHub Pages**, at `jommi9.github.io/<repo>/<city>/`, which is where a city that is not yet
+  open on the hub can be looked at.
+
+A city is open on the hub when its `city.json` says `"live": true` (and the jommi.fi Worker lists
+it); `check_deployment.py` then checks the jommi.fi copy as well as the Pages one. It ignores
+the analytics tag Cloudflare adds to pages on jommi.fi.
+
 ## After pushing, confirm the site actually changed
 
 A `git push` succeeding is not the same as the site updating. On 4 September 2026
 the Pages deploy failed on an OIDC token timeout while the push reported success,
 and the site quietly served stale content. `engine/check_deployment.py <city>` hashes the
 city's live page against its `index.html` and also warns when a seasonal hours switch has just
-passed; it runs in the weekly audit. If it reports a mismatch, re-run the latest
-"pages build and deployment" workflow run — the build almost always succeeded and
-only the deploy step failed.
+passed; it runs in the weekly audit. If it reports a mismatch on the Pages copy, re-run the
+latest "pages build and deployment" workflow run — the build almost always succeeded and
+only the deploy step failed. A mismatch on the jommi.fi copy means Cloudflare did not deploy
+the last push: retry the latest build under Workers & Pages > sauna-maps > Deployments. Watch
+for this after the weekly self-update in particular, since that commit is made by a workflow.
 
 ## Rebuild
 
