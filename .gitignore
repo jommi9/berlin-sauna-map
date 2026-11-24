@@ -16,3 +16,4 @@ __pycache__/
 # a lead for coordinates and never evidence that a venue exists
 /*/places.json
 /*/candidates.json
+.wrangler/

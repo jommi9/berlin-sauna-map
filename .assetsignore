@@ -1,0 +1,12 @@
+# What Cloudflare publishes from this repository: only what a city's page needs. Everything is
+# left out first, then each kind of file a page uses is let back in. A new kind of file in a
+# city's folder (say, a second image folder) stays unpublished until it is named here.
+*
+!*/
+!/index.html
+!/*/index.html
+!/*/og.png
+!/*/venues.json
+!/*/img/
+!/*/img/card/
+!/*/img/card/*.webp

@@ -1,0 +1,17 @@
+{
+  // The maps as static files on Cloudflare: a Worker with no code, only assets. It has no address
+  // of its own. The jommi.fi Worker (repo jommi9/jommi-fi) reaches it through a service binding
+  // and serves each live city at jommi.fi/sauna/<city>/, so there is one copy and a push to main
+  // is live as soon as Cloudflare has deployed it.
+  //
+  // Deployed by Cloudflare's Git connection on every push to main (Workers & Pages > sauna-maps >
+  // Settings > Builds). No build step: the pages are built and committed in this repository.
+  // .assetsignore decides which files are published; everything else stays out.
+  "name": "sauna-maps",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    "directory": "."
+  }
+}

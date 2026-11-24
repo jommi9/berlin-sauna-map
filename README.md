@@ -16,13 +16,15 @@ redirects the old repository address.
 | `reviewers.json` | The review panel, one list for every city. |
 | `contributors.json` | The GitHub users who may add listings and cities, through the "Add a sauna" and "Open a new city" issue forms. Each proposal becomes a pull request for the owner to merge. |
 | `index.html` | A redirect to the hub, for anyone who lands on the root of the GitHub Pages copy. |
+| `wrangler.jsonc`, `.assetsignore` | The Cloudflare side: the repository as an assets-only Worker, and the allowlist of files it publishes. |
 
-A city's folder is also what gets served. GitHub Pages serves the repository as it is, so
-Berlin is at https://jommi9.github.io/sauna-maps/berlin/, and the jommi.fi Worker (repo
-`jommi9/jommi-fi`) passes `/sauna/berlin/` through to that folder. There is one copy, and the
-weekly self-update reaches both addresses. Canonical and share links point at jommi.fi. This is
-why a city's page, its photos, its share image and its `venues.json` all sit in the one folder:
-the page links them relatively, and the Worker only passes that folder through.
+A city's folder is also what gets served, from two places. Cloudflare publishes it as the
+assets-only Worker `sauna-maps` (`wrangler.jsonc`, with `.assetsignore` listing the few files a
+page needs), and the jommi.fi Worker (repo `jommi9/jommi-fi`) serves each live city from it at
+`/sauna/<city>/`. GitHub Pages serves the repository as it is, so every city, live or not, is
+also at https://jommi9.github.io/sauna-maps/<city>/. Canonical and share links point at
+jommi.fi. This is why a city's page, its photos, its share image and its `venues.json` all sit
+in the one folder: the page links them relatively.
 
 Berlin is also published as a private Claude Artifact:
 https://claude.ai/code/artifact/79203c00-258e-4438-b918-bd671cd3db9c
