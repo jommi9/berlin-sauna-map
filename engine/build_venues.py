@@ -121,7 +121,9 @@ for i, row in enumerate(V):
     d["heatSrc"] = HEAT_SOURCE if t else None
     # The hottest cabin, as a number: the highest temperature the heat text names (which the
     # venue stated), so the figure and the prose cannot disagree. °F is converted.
-    temps = [int(n) if u == "C" else round((int(n) - 32) * 5 / 9)
+    # A Fahrenheit figure keeps a decimal in Celsius, so the page can show the venue's own
+    # number again: 220 F rounded to 104 C would come back as 219 F.
+    temps = [int(n) if u == "C" else round((int(n) - 32) * 5 / 9, 1)
              for n, u in re.findall(r"(\d{2,3})\s*\u00b0\s*([CF])", d["sauna"] or "")]
     d["hot"] = max(temps) if temps else None
     d["plunge"] = PLUNGE.get(d["name"])
