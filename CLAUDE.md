@@ -52,8 +52,10 @@ only propose:
 - The forms are recognised by their title ("New listing: ", "New city: "), not by a label.
 - Form text lands in `innerHTML` unescaped, like all venue data, so `propose.py` refuses
   `< > " \` and backticks outright. Keep that if the forms gain fields.
-- The workflow needs Settings > Actions > General > "Allow GitHub Actions to create and approve
-  pull requests".
+- With Settings > Actions > General > "Allow GitHub Actions to create and approve pull
+  requests" ticked, the workflow opens the pull request itself. Without it the proposal is
+  still pushed to its `proposal-<issue>` branch and the issue gets a link that opens the pull
+  request in one click, so the forms work either way.
 
 ## Data sourcing: primary source first, always
 

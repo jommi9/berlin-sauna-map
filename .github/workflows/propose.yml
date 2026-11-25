@@ -8,8 +8,9 @@ name: Propose a listing or a city
 # The forms are recognised by the title they set, not by a label, so nothing has to be created
 # in the repository's settings first. The issue's text is only ever handled as a file of data.
 #
-# One setting is needed once: Settings > Actions > General > "Allow GitHub Actions to create
-# and approve pull requests". Without it the last step fails and says so on the issue.
+# With Settings > Actions > General > "Allow GitHub Actions to create and approve pull
+# requests" ticked, the pull request opens by itself. Without it the proposal is still pushed
+# to its branch, and the issue gets a link that opens the pull request in one click.
 on:
   issues:
     types: [opened, edited]
@@ -70,8 +71,10 @@ jobs:
           printf '\n\nCloses #%s.\n' "$NUMBER" >> "$RUNNER_TEMP/result.md"
           if [ -n "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')" ]; then
             gh pr edit "$BRANCH" --body-file "$RUNNER_TEMP/result.md"
-          else
-            gh pr create --head "$BRANCH" --title "$(jq -r .title "$RUNNER_TEMP/issue.json" | cut -c1-120)" --body-file "$RUNNER_TEMP/result.md"
+          elif ! gh pr create --head "$BRANCH" --title "$(jq -r .title "$RUNNER_TEMP/issue.json" | cut -c1-120)" --body-file "$RUNNER_TEMP/result.md"; then
+            # Actions may not open pull requests here. The branch is pushed, so hand over a link.
+            echo "link=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/compare/$BRANCH?expand=1" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
           gh pr view "$BRANCH" --json url --jq .url > "$RUNNER_TEMP/pr.txt"
 
@@ -80,11 +83,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           NUMBER: ${{ github.event.issue.number }}
+          LINK: ${{ steps.pr.outputs.link }}
         run: |
-          if [ "${{ steps.pr.outcome }}" = "success" ]; then
+          if [ -n "$LINK" ]; then
+            gh issue comment "$NUMBER" --body "$(printf 'Checked and pushed to its branch. The owner opens the pull request here: %s\n\n%s' "$LINK" "$(tail -c 3000 "$RUNNER_TEMP/result.md")")"
+          elif [ "${{ steps.pr.outcome }}" = "success" ]; then
             gh issue comment "$NUMBER" --body "Checked and ready for the owner to merge: $(cat "$RUNNER_TEMP/pr.txt")"
           elif [ "${{ steps.propose.outcome }}" = "success" ]; then
-            gh issue comment "$NUMBER" --body "The proposal passed its checks, but the pull request could not be opened. The repository needs Settings > Actions > General > 'Allow GitHub Actions to create and approve pull requests'."
+            gh issue comment "$NUMBER" --body "The proposal passed its checks, but its branch could not be pushed. See the workflow run for why."
           elif [ "${{ steps.propose.outputs.code }}" = "3" ]; then
             gh issue comment "$NUMBER" --body "$(cat "$RUNNER_TEMP/result.md")"
           else
