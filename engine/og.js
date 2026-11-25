@@ -39,7 +39,7 @@ const { chromium } = require('playwright');
       wrap.appendChild(map);
       const card = document.createElement('div');
       Object.assign(card.style, { position: 'fixed', left: '44px', top: '52px', width: photos ? '1112px' : '590px', boxSizing: 'border-box',
-        padding: photos ? '30px 34px 30px' : '44px 34px 40px', borderRadius: '22px', background: 'rgba(246,245,242,.86)',
+        padding: photos ? '30px 34px 30px' : '44px 34px 40px', borderRadius: '0', background: 'rgba(255,255,255,.9)',
         backdropFilter: 'blur(14px)', boxShadow: '0 18px 50px rgba(0,0,0,.12)' });
       card.appendChild(hero);
       hero.style.margin = '0'; hero.style.padding = '0';

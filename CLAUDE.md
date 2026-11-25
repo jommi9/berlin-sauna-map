@@ -18,8 +18,9 @@ as it is and the jommi.fi Worker passes `/sauna/berlin/` through to it.
 - Each city has its own app icon: `"icon"` in its `city.json` is the city's landmark as a few SVG
   shapes (Berlin's TV tower, Helsinki's cathedral), and `city.icon()` stands it between two curls
   of steam. A landmark too wide for that draws its own steam and says `"iconFull": true`, as San
-  Francisco's Golden Gate Bridge does. It is the header tile, the tab icon and the city's row in the switcher. A city
-  without one gets the plain three curls, which is also the mark in the footer.
+  Francisco's Golden Gate Bridge does. It is the tab icon and the city's row in the switcher (the
+  header no longer shows it, but its hidden SVG still holds the gradient the menu's icons use).
+  A city without one gets the plain three curls, which is also the mark in the footer.
 - A fact about one city never goes in `engine/`. If the template needs to say something that
   differs by city, it becomes a field in `city.json` and a placeholder (`__CITY__`, `__LEDE__`,
   `__TZ__`), and `assemble.py` fails the build on a placeholder left unfilled.
@@ -178,16 +179,28 @@ and on a phone the map fills a framed screen with the list riding up over it as
 a sheet that collapses to its handle and the place count. Rules that keep it
 coherent:
 
-- Corners are small and few: 4 to 6 px on surfaces (`--r-*`), 2 to 3 px on tags,
-  photos flush to their card's edges. Full rounding is kept for things that are
-  round by meaning: dots, the slider knob, the app icon.
+- The look is an index: white and ink, one light sans (Inter Tight) set very large for the
+  title, monospaced capitals (IBM Plex Mono) for every label, tag, chip and button, hairlines in
+  place of boxes. No rounded corners (`--r-*` are 0) and no shadows; menus and dialogs get a
+  1 px ink line instead. Rounding is kept for things round by meaning: dots, the slider knob,
+  avatars.
+- The site is called "sauna map" and the city comes after it: the title reads "sauna map
+  berlin", and so do the page title and share title ("Sauna Map Berlin").
+- The sauna is in three marks and no more. Birch bark fades in from the top of the page
+  (`--bark`), the title thins toward its top edge like steam (`--title-fade`), and a
+  thermometer line runs under the header from "cold plunge" to "hot stones" (`--cold`,
+  `--cool`, `--mild`, `--warm`, `--hot`). The hottest figure is `--hot` and plunge
+  temperatures are `--cold`.
+- Both typefaces are under the SIL Open Font License and live in `engine/fonts` with their
+  licences. `assemble.py` copies them into each city's `fonts/` and the page loads them from
+  there, so no visitor's browser calls a font service; the Artifact carries them inline.
 
 - Every colour is a token at the top of `engine/template.html`'s `<style>`: light values on
   `:root`, the same names redefined for dark mode. A component never uses a
   literal colour, except over a photo.
-- Two accents only. Lake blue (`--tint`) is anything you can tap; the warm
-  `--ember` is heat, prices and picks. Pin colours are the price bands
-  `--b0`..`--b4`.
+- Ink is what you can tap: `--tint` is the ink colour, a pressed chip is filled with it, and
+  links are underlined or outlined. Red (`--ember`, `--hot`) is heat, prices and picks. Pin
+  colours are the price bands `--b0`..`--b4`, greys that darken to ink as the price rises.
 - Pins are drawn by one function, `pin()`: a squircle (per person) or circle
   (per booking) with three curls of steam, because a sauna is about the löyly
   rising off the stones. The picked pin lifts a photo bubble (`showName`).
@@ -198,8 +211,13 @@ coherent:
   `COVER`, and only those with a photograph.
 - `og.png` is a screenshot of the hero over the map at 1200×630; retake it when
   the header changes (`node engine/og.js <city> ...`, which also does Berlin's collage).
-- The city in the title is drawn as a button (tint text on `--tint-soft`, with a chevron) so it
-  reads as something to tap. The footer carries the link to the repository with GitHub's mark.
+- The city in the title is the switcher: underlined, with a red chevron after it. The footer
+  carries the link to the repository with GitHub's mark.
+- The °C / °F switch stands at the right end of the filter bar, in line with the map's right
+  edge, on a computer and on a phone.
+- A picked sauna has its own address, the page's with `#<name-as-a-slug>` after it (`slugOf`).
+  Picking one writes it to the address bar, opening such a link picks that sauna, and each
+  card has a "share" button that copies it (or opens the phone's share sheet).
 - "open now" and "closed now" are as of this minute in the city's own time, so their dot
   pulses. When the change is three hours away or less the tag adds "closes in 50 min" or "opens
   in 2 h 30 min" (`statusText`), worked out from the same weekly hours. A window that ends at
@@ -220,8 +238,8 @@ built and committed here.
   address of its own: the jommi.fi Worker reaches it through a service binding and serves each
   live city at `jommi.fi/sauna/<city>/`. `.assetsignore` is an allowlist: only each city's
   `index.html`, `og.png`, `venues.json` and `img/card/*.webp`, plus the root `index.html`, are
-  published. A new kind of file a page needs has to be added there or it will 404 on jommi.fi
-  while working on GitHub Pages.
+  published, and its `fonts/*.woff2`. A new kind of file a page needs has to be added there or
+  it will 404 on jommi.fi while working on GitHub Pages.
 - **GitHub Pages**, at `jommi9.github.io/<repo>/<city>/`, which is where a city that is not yet
   open on the hub can be looked at.
 

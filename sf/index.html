@@ -10,8 +10,8 @@
 <link rel="canonical" href="https://jommi.fi/sauna/sf/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23E9A462'/%3E%3Cstop offset='1' stop-color='%23B3502A'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='15' fill='url(%23g)'/%3E%3Cpath d='M22 19 q-3.2 -3 0 -6 q3.2 -3 0 -6 M32 20 q-3.4 -3.4 0 -6.8 q3.4 -3.4 0 -6.8 M42 19 q-3.2 -3 0 -6 q3.2 -3 0 -6' fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M20 25 V50 M44 25 V50' fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M7 40 Q15.5 37 20 26 Q32 48 44 26 Q48.5 37 57 40' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M7 43 H57' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M15 52 h34' stroke='%23fff' stroke-opacity='.6' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="San Francisco Sauna Map">
-<meta property="og:title" content="San Francisco Sauna Map">
+<meta property="og:site_name" content="Sauna Map San Francisco">
+<meta property="og:title" content="Sauna Map San Francisco">
 <meta property="og:description" content="6 San Francisco saunas and spas, priced and plotted on one map, with a Finn's notes on the loyly.">
 <meta property="og:url" content="https://jommi.fi/sauna/sf/">
 <meta property="og:image" content="https://jommi.fi/sauna/sf/og.png">
@@ -20,13 +20,17 @@
 <meta property="og:image:alt" content="A map of central San Francisco with sauna locations marked as flame blips">
 <meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="San Francisco Sauna Map">
+<meta name="twitter:title" content="Sauna Map San Francisco">
 <meta name="twitter:description" content="6 San Francisco saunas and spas, priced and plotted on one map, with a Finn's notes on the loyly.">
 <meta name="twitter:image" content="https://jommi.fi/sauna/sf/og.png">
-<title>San Francisco Sauna Map</title>
+<title>Sauna Map San Francisco</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 
 <style>
+@font-face{font-family:'Inter Tight'; font-style:normal; font-weight:100 900; font-display:swap; src:url(fonts/inter-tight-latin-wght-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Inter Tight'; font-style:normal; font-weight:100 900; font-display:swap; src:url(fonts/inter-tight-latin-ext-wght-normal.woff2) format('woff2'); unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'IBM Plex Mono'; font-style:normal; font-weight:400; font-display:swap; src:url(fonts/ibm-plex-mono-latin-400-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'IBM Plex Mono'; font-style:normal; font-weight:500; font-display:swap; src:url(fonts/ibm-plex-mono-latin-500-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 /* Layout: an iPad-style split view. A sidebar of venue cards sits beside one
    large map; on a phone the map fills a framed screen and the list rides up
    over it as a sheet, the way Maps does it. Below sit the picks and the fine
@@ -36,66 +40,73 @@
    picks; everything you can tap is lake blue. Type is the system face, so on
    an iPhone it is San Francisco, with rounded numerals for the figures. */
 :root{
-  --bg:#F2F1EE; --surface:#FFFFFF; --surface-2:#F7F6F3;
-  --fill:rgba(118,112,102,.12); --fill-2:rgba(118,112,102,.24);
-  --label:#151514; --label-2:rgba(38,36,32,.66); --label-3:rgba(38,36,32,.44); --sep:rgba(38,36,32,.11);
-  --tint:#1D5AA6; --tint-soft:rgba(29,90,166,.10); --on-tint:#FFFFFF;
-  --ember:#B94B24; --ember-soft:rgba(191,79,39,.10);
-  --green:#23793B; --green-soft:rgba(35,121,59,.10);
-  --red:#B5352A; --red-soft:rgba(184,54,42,.09);
+  --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F4F4F4;
+  --fill:rgba(0,0,0,.05); --fill-2:rgba(0,0,0,.18);
+  --label:#000000; --label-2:rgba(0,0,0,.62); --label-3:rgba(0,0,0,.42); --sep:rgba(0,0,0,.14);
+  --tint:#000000; --tint-soft:rgba(0,0,0,.06); --on-tint:#FFFFFF;
+  --ember:#E0301E; --ember-soft:rgba(224,48,30,.07);
+  --green:#12803F; --green-soft:rgba(18,128,63,.08);
+  --red:#C2241A; --red-soft:rgba(194,36,26,.07);
   --knob:#FFFFFF;
-  --glass:rgba(250,249,247,.78);
-  --shadow:0 1px 2px rgba(24,20,14,.05), 0 6px 20px rgba(24,20,14,.06);
-  --shadow-lift:0 2px 6px rgba(24,20,14,.08), 0 18px 44px rgba(24,20,14,.13);
-  --sheet-shadow:rgba(24,20,14,.10); --pin-shadow:rgba(24,20,14,.30);
-  --land:#ECE9E2; --park:#D2E0C3; --water:#A9C7DC; --road-case:#DCD6CA; --road:#FFFFFF;
-  --mtw:#F1D18E; --mtw-case:#D8B265; --rail:#B7B1A4; --border:#A39C8F; --dist:#8A8377;
-  --b0:#D9D5CD; --b1:#E2AC45; --b2:#DC8031; --b3:#C9582A; --b4:#983720;
-  --pin-ring:#FFFFFF; --pin-glyph:#FFFFFF; --pin-glyph-0:#857F74;
-  --font:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
-  --font-display:-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
-  --font-num:ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  --r-xl:6px; --r-lg:6px; --r:4px; --r-sm:4px;
+  --glass:rgba(255,255,255,.92);
+  --shadow:none;
+  --shadow-lift:none;
+  --sheet-shadow:rgba(0,0,0,.14); --pin-shadow:rgba(0,0,0,.22);
+  --land:#F2F2F2; --park:#E4E8E0; --water:#DCE4E8; --road-case:#E4E4E4; --road:#FFFFFF;
+  --mtw:#DADADA; --mtw-case:#C6C6C6; --rail:#CFCFCF; --border:#B0B0B0; --dist:#8A8A8A;
+  --b0:#D6D6D6; --b1:#B5B5B5; --b2:#858585; --b3:#474747; --b4:#000000;
+  --pin-ring:#FFFFFF; --pin-glyph:#FFFFFF; --pin-glyph-0:#6E6E6E;
+  --font:'Inter Tight', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
+  --font-display:'Inter Tight', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
+  --font-num:'Inter Tight', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
+  --r-xl:0px; --r-lg:0px; --r:0px; --r-sm:0px;
+  --mono:'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --cold:#1F5FD0; --cool:#8FB2D9; --mild:#E9E2D0; --warm:#F2A53A; --hot:#E0301E; --title-fade:rgba(0,0,0,.16);
+  --bark:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='130' viewBox='0 0 280 130'%3E%3Crect x='12' y='14' width='46' height='3' rx='1.5' fill='%23000' fill-opacity='0.5'/%3E%3Crect x='96' y='9' width='22' height='2' rx='1.0' fill='%23000' fill-opacity='0.35'/%3E%3Crect x='150' y='22' width='64' height='4' rx='2.0' fill='%23000' fill-opacity='0.55'/%3E%3Crect x='236' y='12' width='18' height='2' rx='1.0' fill='%23000' fill-opacity='0.3'/%3E%3Crect x='40' y='52' width='20' height='2' rx='1.0' fill='%23000' fill-opacity='0.3'/%3E%3Crect x='84' y='60' width='58' height='3' rx='1.5' fill='%23000' fill-opacity='0.5'/%3E%3Crect x='182' y='64' width='26' height='2' rx='1.0' fill='%23000' fill-opacity='0.35'/%3E%3Crect x='228' y='56' width='40' height='3' rx='1.5' fill='%23000' fill-opacity='0.45'/%3E%3Crect x='8' y='96' width='30' height='2' rx='1.0' fill='%23000' fill-opacity='0.35'/%3E%3Crect x='62' y='104' width='70' height='4' rx='2.0' fill='%23000' fill-opacity='0.5'/%3E%3Crect x='160' y='100' width='20' height='2' rx='1.0' fill='%23000' fill-opacity='0.3'/%3E%3Crect x='204' y='110' width='52' height='3' rx='1.5' fill='%23000' fill-opacity='0.45'/%3E%3C/svg%3E");
   --gutter-l:max(16px, env(safe-area-inset-left, 0px));
   --gutter-r:max(16px, env(safe-area-inset-right, 0px));
   --ease:cubic-bezier(.32,.72,0,1);
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#0E0F11; --surface:#1A1B1E; --surface-2:#232428;
-  --fill:rgba(150,150,160,.16); --fill-2:rgba(150,150,160,.30);
-  --label:#F2F2EF; --label-2:rgba(236,236,230,.64); --label-3:rgba(236,236,230,.40); --sep:rgba(236,236,230,.10);
-  --tint:#7AAEF2; --tint-soft:rgba(122,174,242,.15); --on-tint:#0B1A2E;
-  --ember:#F08B5F; --ember-soft:rgba(240,139,95,.14);
-  --green:#63C982; --green-soft:rgba(99,201,130,.13);
-  --red:#F2796B; --red-soft:rgba(242,121,107,.13);
-  --knob:#F2F2EF;
-  --glass:rgba(30,31,34,.76);
-  --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.28);
-  --shadow-lift:0 2px 6px rgba(0,0,0,.40), 0 18px 44px rgba(0,0,0,.50);
-  --sheet-shadow:rgba(0,0,0,.40); --pin-shadow:rgba(0,0,0,.55);
-  --land:#1D1E21; --park:#202C24; --water:#1B2F42; --road-case:#2A2B2F; --road:#393B41;
-  --mtw:#6D5933; --mtw-case:#4C3F26; --rail:#47484E; --border:#5D5E64; --dist:#808188;
-  --b0:#4A4A4F; --b1:#E2AC45; --b2:#DC8031; --b3:#C9582A; --b4:#983720;
-  --pin-ring:#F2F2EF; --pin-glyph:#FFFFFF; --pin-glyph-0:#B3B0A8;
+  --bg:#0B0B0B; --surface:#0B0B0B; --surface-2:#171717;
+  --fill:rgba(255,255,255,.07); --fill-2:rgba(255,255,255,.22);
+  --label:#FFFFFF; --label-2:rgba(255,255,255,.66); --label-3:rgba(255,255,255,.44); --sep:rgba(255,255,255,.18);
+  --tint:#FFFFFF; --tint-soft:rgba(255,255,255,.08); --on-tint:#0B0B0B;
+  --ember:#FF5A45; --ember-soft:rgba(255,90,69,.12);
+  --green:#4CC47A; --green-soft:rgba(76,196,122,.12);
+  --red:#FF6B5E; --red-soft:rgba(255,107,94,.12);
+  --knob:#FFFFFF;
+  --glass:rgba(11,11,11,.9);
+  --shadow:none;
+  --shadow-lift:none;
+  --sheet-shadow:rgba(0,0,0,.6); --pin-shadow:rgba(0,0,0,.6);
+  --land:#141414; --park:#16201A; --water:#0E1A24; --road-case:#1C1C1C; --road:#2E2E2E;
+  --mtw:#3A3A3A; --mtw-case:#262626; --rail:#3A3A3A; --border:#555555; --dist:#8A8A8A;
+  --b0:#3C3C3C; --b1:#6E6E6E; --b2:#9A9A9A; --b3:#CFCFCF; --b4:#FFFFFF;
+  --pin-ring:#0B0B0B; --pin-glyph:#0B0B0B; --pin-glyph-0:#D0D0D0;
+  --cold:#6FA3FF; --cool:#5E7FA8; --mild:#55524A; --warm:#F2B24A; --hot:#FF5A45; --title-fade:rgba(255,255,255,.22);
+  --bark:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='130' viewBox='0 0 280 130'%3E%3Crect x='12' y='14' width='46' height='3' rx='1.5' fill='%23fff' fill-opacity='0.5'/%3E%3Crect x='96' y='9' width='22' height='2' rx='1.0' fill='%23fff' fill-opacity='0.35'/%3E%3Crect x='150' y='22' width='64' height='4' rx='2.0' fill='%23fff' fill-opacity='0.55'/%3E%3Crect x='236' y='12' width='18' height='2' rx='1.0' fill='%23fff' fill-opacity='0.3'/%3E%3Crect x='40' y='52' width='20' height='2' rx='1.0' fill='%23fff' fill-opacity='0.3'/%3E%3Crect x='84' y='60' width='58' height='3' rx='1.5' fill='%23fff' fill-opacity='0.5'/%3E%3Crect x='182' y='64' width='26' height='2' rx='1.0' fill='%23fff' fill-opacity='0.35'/%3E%3Crect x='228' y='56' width='40' height='3' rx='1.5' fill='%23fff' fill-opacity='0.45'/%3E%3Crect x='8' y='96' width='30' height='2' rx='1.0' fill='%23fff' fill-opacity='0.35'/%3E%3Crect x='62' y='104' width='70' height='4' rx='2.0' fill='%23fff' fill-opacity='0.5'/%3E%3Crect x='160' y='100' width='20' height='2' rx='1.0' fill='%23fff' fill-opacity='0.3'/%3E%3Crect x='204' y='110' width='52' height='3' rx='1.5' fill='%23fff' fill-opacity='0.45'/%3E%3C/svg%3E");
   color-scheme:dark;
 } }
 :root[data-theme="dark"]{
-  --bg:#0E0F11; --surface:#1A1B1E; --surface-2:#232428;
-  --fill:rgba(150,150,160,.16); --fill-2:rgba(150,150,160,.30);
-  --label:#F2F2EF; --label-2:rgba(236,236,230,.64); --label-3:rgba(236,236,230,.40); --sep:rgba(236,236,230,.10);
-  --tint:#7AAEF2; --tint-soft:rgba(122,174,242,.15); --on-tint:#0B1A2E;
-  --ember:#F08B5F; --ember-soft:rgba(240,139,95,.14);
-  --green:#63C982; --green-soft:rgba(99,201,130,.13);
-  --red:#F2796B; --red-soft:rgba(242,121,107,.13);
-  --knob:#F2F2EF;
-  --glass:rgba(30,31,34,.76);
-  --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.28);
-  --shadow-lift:0 2px 6px rgba(0,0,0,.40), 0 18px 44px rgba(0,0,0,.50);
-  --sheet-shadow:rgba(0,0,0,.40); --pin-shadow:rgba(0,0,0,.55);
-  --land:#1D1E21; --park:#202C24; --water:#1B2F42; --road-case:#2A2B2F; --road:#393B41;
-  --mtw:#6D5933; --mtw-case:#4C3F26; --rail:#47484E; --border:#5D5E64; --dist:#808188;
-  --b0:#4A4A4F; --b1:#E2AC45; --b2:#DC8031; --b3:#C9582A; --b4:#983720;
-  --pin-ring:#F2F2EF; --pin-glyph:#FFFFFF; --pin-glyph-0:#B3B0A8;
+  --bg:#0B0B0B; --surface:#0B0B0B; --surface-2:#171717;
+  --fill:rgba(255,255,255,.07); --fill-2:rgba(255,255,255,.22);
+  --label:#FFFFFF; --label-2:rgba(255,255,255,.66); --label-3:rgba(255,255,255,.44); --sep:rgba(255,255,255,.18);
+  --tint:#FFFFFF; --tint-soft:rgba(255,255,255,.08); --on-tint:#0B0B0B;
+  --ember:#FF5A45; --ember-soft:rgba(255,90,69,.12);
+  --green:#4CC47A; --green-soft:rgba(76,196,122,.12);
+  --red:#FF6B5E; --red-soft:rgba(255,107,94,.12);
+  --knob:#FFFFFF;
+  --glass:rgba(11,11,11,.9);
+  --shadow:none;
+  --shadow-lift:none;
+  --sheet-shadow:rgba(0,0,0,.6); --pin-shadow:rgba(0,0,0,.6);
+  --land:#141414; --park:#16201A; --water:#0E1A24; --road-case:#1C1C1C; --road:#2E2E2E;
+  --mtw:#3A3A3A; --mtw-case:#262626; --rail:#3A3A3A; --border:#555555; --dist:#8A8A8A;
+  --b0:#3C3C3C; --b1:#6E6E6E; --b2:#9A9A9A; --b3:#CFCFCF; --b4:#FFFFFF;
+  --pin-ring:#0B0B0B; --pin-glyph:#0B0B0B; --pin-glyph-0:#D0D0D0;
+  --cold:#6FA3FF; --cool:#5E7FA8; --mild:#55524A; --warm:#F2B24A; --hot:#FF5A45; --title-fade:rgba(255,255,255,.22);
+  --bark:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='130' viewBox='0 0 280 130'%3E%3Crect x='12' y='14' width='46' height='3' rx='1.5' fill='%23fff' fill-opacity='0.5'/%3E%3Crect x='96' y='9' width='22' height='2' rx='1.0' fill='%23fff' fill-opacity='0.35'/%3E%3Crect x='150' y='22' width='64' height='4' rx='2.0' fill='%23fff' fill-opacity='0.55'/%3E%3Crect x='236' y='12' width='18' height='2' rx='1.0' fill='%23fff' fill-opacity='0.3'/%3E%3Crect x='40' y='52' width='20' height='2' rx='1.0' fill='%23fff' fill-opacity='0.3'/%3E%3Crect x='84' y='60' width='58' height='3' rx='1.5' fill='%23fff' fill-opacity='0.5'/%3E%3Crect x='182' y='64' width='26' height='2' rx='1.0' fill='%23fff' fill-opacity='0.35'/%3E%3Crect x='228' y='56' width='40' height='3' rx='1.5' fill='%23fff' fill-opacity='0.45'/%3E%3Crect x='8' y='96' width='30' height='2' rx='1.0' fill='%23fff' fill-opacity='0.35'/%3E%3Crect x='62' y='104' width='70' height='4' rx='2.0' fill='%23fff' fill-opacity='0.5'/%3E%3Crect x='160' y='100' width='20' height='2' rx='1.0' fill='%23fff' fill-opacity='0.3'/%3E%3Crect x='204' y='110' width='52' height='3' rx='1.5' fill='%23fff' fill-opacity='0.45'/%3E%3C/svg%3E");
   color-scheme:dark;
 }
 
@@ -768,11 +779,65 @@ button.btn{border:0; cursor:pointer}
   .pgrid.scroll .pk{scroll-snap-align:start}
   .sec{margin-top:36px}
 }
+/* ---------------- the look: an index, with birch bark and a thermometer ----------------
+   White and ink, one light sans set very large, monospaced capitals for every label,
+   hairlines in place of boxes and no shadows. The sauna is in three marks: birch bark
+   fading in from the top, a title that thins upward like steam, and a thermometer line
+   under the header running from the cold plunge to the hot stones. */
+body{letter-spacing:0}
+.eyebrow, .stats dt, .rows dt, .lbl, .lhead .c, .snap .tag, .status, .price, .temp, .count, .pick-tag, .tag-me, .fin, .sort, .clear, .chip, .unit button{
+  font-family:var(--mono) !important; text-transform:uppercase; letter-spacing:.05em; font-size:11px !important; font-weight:500 !important}
+.top{display:block; position:relative; padding-block:40px 28px}
+.top::before{content:""; position:absolute; inset:0 0 auto 0; height:118px; z-index:-1; background:var(--bark) 0 0/280px 130px;
+  -webkit-mask-image:linear-gradient(#000, transparent); mask-image:linear-gradient(#000, transparent); opacity:.5; pointer-events:none}
+.brand{display:block}
+.top .appicon{position:absolute; width:0; height:0; overflow:hidden}   /* out of sight, but its gradient still paints the menu's icons */
+.eyebrow{color:var(--label-2)}
+.title{font:300 clamp(54px,9.6vw,150px)/.86 var(--font-display); letter-spacing:-.055em; margin-top:10px;
+  background:linear-gradient(to top, var(--label) 38%, var(--title-fade)); -webkit-background-clip:text; background-clip:text; color:transparent}
+.city-b{background:none; margin:0; padding:0; color:var(--label); -webkit-text-fill-color:var(--label); border-bottom:.035em solid var(--label); border-radius:0; font-weight:300}
+.city-b svg{color:var(--hot); width:.34em; height:.34em} .city-b:hover, .city-b[aria-expanded="true"]{box-shadow:none; background:var(--tint-soft)}
+.intro{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:10px 48px; align-items:end}
+.intro .brand{grid-column:1 / -1} .lede{font-size:17px; max-width:44ch; margin:18px 0 0; color:var(--label-2)}
+.stats{background:none; border-top:1px solid var(--label); margin-top:18px !important; max-width:none !important} .stats > div{padding:10px 12px 0 0} .stats > div + div{border-left:0}
+.stats .n{font:300 44px/1.05 var(--font-display); letter-spacing:-.035em} #stat-hot{color:var(--hot)}
+.collage{height:auto; aspect-ratio:5.4/1; margin-top:24px; max-width:none !important}
+.snap{transform:none !important; top:0 !important; padding:0; width:32.6%; aspect-ratio:1.76; background:none}
+.snap:nth-child(1){left:0} .snap:nth-child(2){left:33.7%} .snap:nth-child(3){right:0}
+.snap img{border-radius:0} .snap .tag{left:0; bottom:0; background:var(--bg); color:var(--label); padding:5px 8px; -webkit-backdrop-filter:none; backdrop-filter:none} .snap .tag .pr{display:none}
+.snap:nth-child(1) .tag{box-shadow:inset 3px 0 0 var(--cold)} .snap:nth-child(2) .tag{box-shadow:inset 3px 0 0 var(--warm)} .snap:nth-child(3) .tag{box-shadow:inset 3px 0 0 var(--hot)}
+/* the thermometer line, cold plunge to hot stones */
+.bar{position:relative; border-bottom:1px solid var(--label); padding-block:14px 12px; margin:18px 0}
+.bar::before{content:""; position:absolute; left:0; right:0; top:-2px; height:3px; background:linear-gradient(90deg, var(--cold), var(--cool) 30%, var(--mild) 48%, var(--warm) 68%, var(--hot))}
+.bar::after, .unit::before{position:absolute; font:500 9.5px/1.2 var(--mono); letter-spacing:.06em; text-transform:uppercase; white-space:nowrap; pointer-events:none}
+.bar::after{content:"cold plunge"; left:0; top:-18px; color:var(--cold)}
+.unit{position:relative} .unit::before{content:"hot stones"; right:0; bottom:calc(100% + 20px); color:var(--hot)}
+.find input{background:none; border-bottom:1px solid var(--label)}
+.unit{background:none; box-shadow:inset 0 0 0 1px var(--sep)} .unit button[aria-pressed="true"]{background:var(--label); color:var(--bg); box-shadow:none}
+.chip{background:none; box-shadow:inset 0 0 0 1px var(--sep); height:30px; line-height:30px !important} .chip:hover{background:var(--tint-soft)} .chip[aria-pressed="true"]{background:var(--label); color:var(--bg)}
+.lhead h2, .sec-h{font:300 32px/1.05 var(--font-display); letter-spacing:-.035em}
+.card{background:none; border-top:1px solid var(--sep); padding-inline:0 !important}
+.card:not(.on){padding-left:78px !important} .card:not(.on) .shot{left:0 !important}
+.card.on{box-shadow:none; border-top:2px solid var(--label)} .card.on .shot{margin-inline:0}
+.cname{font:500 19px/1.2 var(--font-display); letter-spacing:-.02em}
+.status, .price, .temp, .count, .pick-tag, .tag-me, .fin{background:none !important; padding:0 10px 0 0; height:20px; box-shadow:none !important}
+.temp .pl{color:var(--cold) !important}
+.btn{font-family:var(--mono); text-transform:uppercase; font-size:11.5px; letter-spacing:.05em; background:none; box-shadow:inset 0 0 0 1px var(--label); color:var(--label); border:0; cursor:pointer}
+.btn.primary{background:var(--label); color:var(--bg)}
+.blip{filter:none}
+/* menus and dialogs sit on the page with a line round them, since nothing here casts a shadow */
+.city-m, .acct-m, .signin, .peek{box-shadow:0 0 0 1px var(--label)}
+/* the unit switch stands at the right end of the bar, in line with the map's edge */
+@media (min-width:1001px){
+  .bar{align-items:flex-start}
+  .findrow{display:contents} .acct{order:1} .filters{order:2} .unit{order:3; margin-left:auto}
+}
+@media (max-width:980px){.intro{display:block} .collage{aspect-ratio:5.4/1.05} .stats .n{font-size:26px} .title{font-size:clamp(46px,14vw,90px)}}
 @media (prefers-reduced-motion:reduce){
   *{transition:none !important; animation:none !important; scroll-behavior:auto !important}
 }
 </style>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","name":"San Francisco Sauna Map","url":"https://jommi.fi/sauna/sf/","description":"6 San Francisco saunas and spas, priced and plotted on one map, with a Finn's notes on the loyly.","numberOfItems":6,"itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"Place","name":"Archimedes Banya","url":"https://banyasf.com/","address":{"@type":"PostalAddress","addressLocality":"San Francisco","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":37.730554,"longitude":-122.37273}}},{"@type":"ListItem","position":2,"item":{"@type":"Place","name":"Kabuki Springs & Spa","url":"https://kabukisprings.com/springs/","address":{"@type":"PostalAddress","addressLocality":"San Francisco","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":37.784699,"longitude":-122.432624}}},{"@type":"ListItem","position":3,"item":{"@type":"Place","name":"Alchemy Springs","url":"https://alchemysprings.com/","address":{"@type":"PostalAddress","addressLocality":"San Francisco","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":37.786994,"longitude":-122.417393}}},{"@type":"ListItem","position":4,"item":{"@type":"Place","name":"Onsen","url":"https://www.onsensf.com/bathing","address":{"@type":"PostalAddress","addressLocality":"San Francisco","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":37.783703,"longitude":-122.415362}}},{"@type":"ListItem","position":5,"item":{"@type":"Place","name":"Dogpatch Paddle","url":"https://www.dogpatchpaddle.com/sauna/","address":{"@type":"PostalAddress","addressLocality":"San Francisco","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":37.763198,"longitude":-122.388308}}},{"@type":"ListItem","position":6,"item":{"@type":"Place","name":"Fjord","url":"https://www.thisisfjord.com/","address":{"@type":"PostalAddress","addressLocality":"San Francisco","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":37.8669,"longitude":-122.49484}}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","name":"Sauna Map San Francisco","url":"https://jommi.fi/sauna/sf/","description":"6 San Francisco saunas and spas, priced and plotted on one map, with a Finn's notes on the loyly.","numberOfItems":6,"itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"Place","name":"Archimedes Banya","url":"https://banyasf.com/","address":{"@type":"PostalAddress","addressLocality":"San Francisco","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":37.730554,"longitude":-122.37273}}},{"@type":"ListItem","position":2,"item":{"@type":"Place","name":"Kabuki Springs & Spa","url":"https://kabukisprings.com/springs/","address":{"@type":"PostalAddress","addressLocality":"San Francisco","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":37.784699,"longitude":-122.432624}}},{"@type":"ListItem","position":3,"item":{"@type":"Place","name":"Alchemy Springs","url":"https://alchemysprings.com/","address":{"@type":"PostalAddress","addressLocality":"San Francisco","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":37.786994,"longitude":-122.417393}}},{"@type":"ListItem","position":4,"item":{"@type":"Place","name":"Onsen","url":"https://www.onsensf.com/bathing","address":{"@type":"PostalAddress","addressLocality":"San Francisco","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":37.783703,"longitude":-122.415362}}},{"@type":"ListItem","position":5,"item":{"@type":"Place","name":"Dogpatch Paddle","url":"https://www.dogpatchpaddle.com/sauna/","address":{"@type":"PostalAddress","addressLocality":"San Francisco","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":37.763198,"longitude":-122.388308}}},{"@type":"ListItem","position":6,"item":{"@type":"Place","name":"Fjord","url":"https://www.thisisfjord.com/","address":{"@type":"PostalAddress","addressLocality":"San Francisco","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":37.8669,"longitude":-122.49484}}}]}</script>
 </head>
 <body>
 <div class="wrap" id="wrap">
@@ -787,7 +852,7 @@ button.btn{border:0; cursor:pointer}
         <div>
           <p class="eyebrow"><a class="crumb" href="https://jommi.fi/sauna/">sauna maps</a> / san francisco &middot; checked <time id="stamp-date">25.11.2026</time></p>
           <div class="cityp">
-            <h1 class="title"><button class="city-b" id="city-b" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="city-m" title="Change city">san francisco<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button> sauna map</h1>
+            <h1 class="title">sauna map <button class="city-b" id="city-b" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="city-m" title="Change city">san francisco<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></h1>
             <nav class="city-m" id="city-m" aria-label="Sauna maps of other cities" hidden></nav>
           </div>
         </div>
@@ -809,11 +874,11 @@ button.btn{border:0; cursor:pointer}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
           <input type="search" id="q" placeholder="search saunas" aria-label="Search saunas" autocomplete="off">
         </label>
+        <div class="acct" id="acct" hidden></div>
         <div class="unit" id="unit" role="group" aria-label="Temperature unit">
           <button type="button" data-u="C" aria-pressed="false" title="Show temperatures in Celsius">&deg;C</button>
           <button type="button" data-u="F" aria-pressed="false" title="Show temperatures in Fahrenheit">&deg;F</button>
         </div>
-        <div class="acct" id="acct" hidden></div>
       </div>
       <div class="filters">
         <div class="grp" id="g-mine" role="group" aria-label="Your saunas" hidden>
@@ -1520,10 +1585,12 @@ V.forEach(v => {
     <div class="acts">
       <a class="btn primary" href="${v.url}" target="_blank" rel="noopener noreferrer">hours &amp; booking</a>
       ${im ? "" : `<a class="btn" href="${v.url}" target="_blank" rel="noopener noreferrer">their photos</a>`}
+      <button class="btn" type="button" data-share>share</button>
     </div>`;
   cards.appendChild(li); cardOf.set(v.id, li);
-  li.addEventListener("click", e => { if (!e.target.closest("a, [data-mine], [data-live], [data-logs]")) choose(v.id, false); });
-  li.addEventListener("keydown", e => { if (e.key === "Enter" && !e.target.closest("a, [data-mine], [data-live], [data-logs]")) choose(v.id, false); });
+  li.addEventListener("click", e => { if (!e.target.closest("a, [data-share], [data-mine], [data-live], [data-logs]")) choose(v.id, false); });
+  li.addEventListener("keydown", e => { if (e.key === "Enter" && !e.target.closest("a, [data-share], [data-mine], [data-live], [data-logs]")) choose(v.id, false); });
+  li.querySelector("[data-share]").addEventListener("click", e => shareVenue(v, e.currentTarget));
   li.addEventListener("mouseenter", () => peek(v.id, true));
   li.addEventListener("mouseleave", () => peek(v.id, false));
 });
@@ -1549,8 +1616,24 @@ function revealCard(id){
   const far = Math.abs(delta) > port.clientHeight * 2;
   port.scrollTo({ top: port.scrollTop + delta, behavior: far ? "auto" : "smooth" });
 }
+/* A picked sauna has its own address: the page's, with the sauna's name after a #. Picking one
+   writes it to the address bar, and opening such a link picks that sauna. */
+const slugOf = v => v.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+const linkTo = v => location.origin + location.pathname + location.search + "#" + slugOf(v);
+function fromHash(){
+  const want = decodeURIComponent(location.hash.slice(1)), v = want && V.find(x => slugOf(x) === want);
+  if (v && sel !== v.id){ choose(v.id, true); if (isMobile()) cardOf.get(v.id).scrollIntoView({ block: "nearest" }); }
+}
+async function shareVenue(v, button){
+  const url = linkTo(v), said = t => { const was = button.textContent; button.textContent = t; setTimeout(() => { button.textContent = was; }, 1800); };
+  if (navigator.share && isMobile()){ try { await navigator.share({ title: v.name, url }); return; } catch (x) { if (x && x.name === "AbortError") return; } }
+  if (sel !== v.id) choose(v.id, false);          // so the address bar holds this sauna's link too
+  try { await navigator.clipboard.writeText(url); said("link copied"); }
+  catch { said("link is in the address bar"); }
+}
 function choose(id, fromMap){
   sel = sel === id ? null : id;
+  try { history.replaceState(null, "", sel == null ? location.pathname + location.search : "#" + slugOf(V.find(x => x.id === sel))); } catch {}
   blips.forEach((g, k) => g.classList.toggle("on", k === sel));
   if (sel != null) map.appendChild(blips.get(sel));   // raise it above overlapping neighbours
   map.appendChild(nameTag);
@@ -1880,6 +1963,8 @@ const showHottest = () => { if (HOTTEST) document.getElementById("stat-hot").tex
   }
 })();
 run();
+fromHash();                                   // a link to one sauna opens on that sauna
+addEventListener("hashchange", fromHash);
 
 /* ---------- the Celsius / Fahrenheit switch ---------- */
 const unitBox = document.getElementById("unit");
