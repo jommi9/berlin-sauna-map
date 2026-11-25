@@ -31,7 +31,7 @@ meta = json.load(open('meta.json', encoding='utf-8'))
 picks = json.dumps(meta['picks'], separators=(',', ':'), ensure_ascii=True)
 # Every city the engine builds, for the switcher in the title. A new city changes this list on
 # every page, so it means rebuilding them all.
-cities = json.dumps([{"slug": s, "name": c["name"], "live": bool(c.get("live"))}
+cities = json.dumps([{"slug": s, "name": c["name"], "live": bool(c.get("live")), "icon": city.icon(c)}
                      for s, c in ((s, city.load(s)) for s in city.slugs())],
                     separators=(',', ':'), ensure_ascii=True)
 
@@ -67,12 +67,12 @@ def assemble(TPL, OUT):
               .replace('__USC__', 'true' if CITY.get('usc') else 'false')
               .replace('__TU__', 'F' if CITY.get('temp') == 'F' else 'C')
               .replace('/*__COVER__*/', json.dumps(meta['cover'], separators=(',', ':'), ensure_ascii=True))
-              .replace('/*__CITIES__*/', cities).replace('__SLUG__', CITY['slug'])
+              .replace('__APPICON__', city.icon(CITY)).replace('/*__CITIES__*/', cities).replace('__SLUG__', CITY['slug'])
               .replace('__SIBLINGS__', 'false' if artifact else 'true')
               .replace('/*__CONTRIBUTORS__*/', json.dumps(meta['contributors'], separators=(',', ':'), ensure_ascii=True))
               .replace('__HUB__', city.HUB).replace('__REPO__', city.REPO))
     for token in ('__LAST_SCAN__', '__COUNT__', '__PRACTICAL__', '__CITY', '__LEDE__', '__TZ__', '__CUR__', '__USC__', '__TU__',
-                  '__HUB__', '__REPO__', '__SLUG__', '__SIBLINGS__', '/*__'):
+                  '__HUB__', '__REPO__', '__SLUG__', '__SIBLINGS__', '__APPICON__', '/*__'):
         assert token not in doc, f"unfilled placeholder {token}"
     assert doc.isascii(), "non-ascii survived"
     if not artifact:
@@ -89,14 +89,13 @@ def document(doc):
     TITLE = text(f"{NAME} Sauna Map")
     PLAIN = f"{meta['count']} {NAME} saunas and spas, priced and plotted on one map, with a Finn's notes on the loyly."
     DESC = text(PLAIN)
-    # The app icon from the header, as the tab icon: steam rising off the stones.
+    # The app icon from the header, as the tab icon: steam rising beside the city's landmark.
     icon = ('data:image/svg+xml,' +
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
             '<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">'
             '<stop offset="0" stop-color="#E9A462"/><stop offset="1" stop-color="#B3502A"/></linearGradient></defs>'
             '<rect width="64" height="64" rx="15" fill="url(#g)"/>'
-            '<path d="M21 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11 M32 45 q-5 -6.5 0 -13 q5 -6.5 0 -13 M43 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11" fill="none" stroke="#fff" stroke-width="4.6" stroke-linecap="round"/>'
-            '<path d="M15 52 h34" stroke="#fff" stroke-opacity=".6" stroke-width="4.6" stroke-linecap="round"/>'
+            + city.icon(CITY) +
             '</svg>').replace('"', "'").replace('<', '%3C').replace('>', '%3E').replace('#', '%23')
     # Structured data: the list of places, so a search engine sees twenty named
     # venues with coordinates rather than one opaque page.

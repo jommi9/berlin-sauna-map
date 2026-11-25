@@ -4,6 +4,7 @@
   "timezone": "Europe/Helsinki",
   "bbox": [24.88, 60.14, 25.01, 60.2],
   "districtLevel": 10,
+  "icon": "<path d='M23 51 V40 h18 V51 z M26.5 40 V34 h11 V40 z' fill='#fff'/><path d='M25.5 34 a6.5 7.5 0 0 1 13 0 z' fill='#fff'/><path d='M32 26 V14 M29 18 h6' stroke='#fff' stroke-width='2.4' stroke-linecap='round'/>",
   "lede": "Public saunas, from the city's last wood-heated neighbourhood sauna to the new ones on the shore.",
   "notionIntro": "Helsinki public sauna shortlist.",
   "currency": "€",

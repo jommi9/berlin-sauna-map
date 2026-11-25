@@ -3,6 +3,7 @@
   "country": "US",
   "timezone": "America/Los_Angeles",
   "bbox": [-122.52, 37.7, -122.355, 37.812],
+  "icon": "<path d='M27.5 51 V14 M36.5 51 V14' stroke='#fff' stroke-width='3.4' stroke-linecap='round'/><path d='M27.5 20 h9 M27.5 30 h9' stroke='#fff' stroke-width='2.6'/><path d='M26 14 Q24.5 33 20.5 41.5 M38 14 Q39.5 33 43.5 41.5' fill='none' stroke='#fff' stroke-width='1.9' stroke-linecap='round'/><path d='M20 42.5 h24' stroke='#fff' stroke-width='3.2' stroke-linecap='round'/>",
   "lede": "A Russian banya and Japanese baths, with more to come.",
   "notionIntro": "San Francisco sauna shortlist.",
   "currency": "$",

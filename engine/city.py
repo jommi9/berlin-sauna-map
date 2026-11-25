@@ -24,7 +24,9 @@ UA = {"User-Agent": f"sauna-maps/1.0 (personal project; https://github.com/{REPO
 # "currency" (the sign prices are written in, default "€"), "temp" ("F" to show
 # temperatures in Fahrenheit; they are kept in Celsius), "usc" (true where Urban
 # Sports Club exists and the venue rows say who takes it), "districtLevel" (the OSM admin_level
-# osm_extract.py draws as district outlines).
+# osm_extract.py draws as district outlines), "icon" (the city's landmark for its app icon: SVG
+# drawn in white on a 64 by 64 grid, standing on y=52 and no wider than x=20..44, written with
+# single quotes; see icon() below).
 REQUIRED = ("name", "country", "timezone", "bbox", "lede", "notionIntro")
 
 
@@ -41,6 +43,20 @@ def load(slug):
     cfg["slug"] = slug
     cfg["site"] = f"{HUB}{slug}/"
     return cfg
+
+
+def icon(cfg):
+    """What is drawn on a city's app icon, inside the 64 by 64 tile: steam rising either side of
+    the city's own landmark. A city without one gets the plain icon, three curls of steam."""
+    curl = lambda x: f"M{x} 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11"
+    stones = "<path d='M15 52 h34' stroke='#fff' stroke-opacity='.6' stroke-width='4' stroke-linecap='round'/>"
+    steam = lambda d: f"<path d='{d}' fill='none' stroke='#fff' stroke-width='4' stroke-linecap='round'/>"
+    mark = cfg.get("icon")
+    if not mark:
+        return steam(f"{curl(21)} M32 45 q-5 -6.5 0 -13 q5 -6.5 0 -13 {curl(43)}") + stones
+    if not mark.isascii() or '"' in mark or "\\" in mark or "<script" in mark.lower():
+        raise SystemExit(f"{cfg['slug']}/city.json: the icon must be plain SVG shapes written with single quotes")
+    return steam(f"{curl(15.5)} {curl(48.5)}") + mark + stones
 
 
 def enter():

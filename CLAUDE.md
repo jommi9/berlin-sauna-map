@@ -11,10 +11,14 @@ as it is and the jommi.fi Worker passes `/sauna/berlin/` through to it.
 - Every engine script takes the city first: `python3 engine/selfupdate.py berlin --dry-run`.
   `engine/build.py` rebuilds one city or all of them, and `engine/each.py <script>` runs a
   script over every city for the workflows.
-- The city in each page's title is a switcher listing every city, so a new city, a renamed one
-  or a change to `"live"` alters every page: rebuild them all (`engine/build.py` with no city).
-  On GitHub Pages every city in it is a link, because the folders sit side by side; on jommi.fi
-  and in the artifact only live cities are links and the rest say "soon".
+- The city in each page's title is a switcher listing every city, so a new city, a renamed one,
+  a new icon or a change to `"live"` alters every page: rebuild them all (`engine/build.py` with
+  no city). On GitHub Pages every city in it is a link, because the folders sit side by side; on
+  jommi.fi and in the artifact only live cities are links and the rest say "soon".
+- Each city has its own app icon: `"icon"` in its `city.json` is the city's landmark as a few SVG
+  shapes (Berlin's TV tower, Helsinki's cathedral), and `city.icon()` stands it between two curls
+  of steam. It is the header tile, the tab icon and the city's row in the switcher. A city
+  without one gets the plain three curls, which is also the mark in the footer.
 - A fact about one city never goes in `engine/`. If the template needs to say something that
   differs by city, it becomes a field in `city.json` and a placeholder (`__CITY__`, `__LEDE__`,
   `__TZ__`), and `assemble.py` fails the build on a placeholder left unfilled.
@@ -182,7 +186,9 @@ coherent:
   venue data, so they cannot drift. The collage shows the venues named in
   `COVER`, and only those with a photograph.
 - `og.png` is a screenshot of the hero over the map at 1200×630; retake it when
-  the header changes.
+  the header changes (`node engine/og.js <city> ...`, which also does Berlin's collage).
+- The city in the title is drawn as a button (tint text on `--tint-soft`, with a chevron) so it
+  reads as something to tap. The footer carries the link to the repository with GitHub's mark.
 - A place is a compact row (thumbnail, name, status) until it is picked; only
   the picked one opens into the full card. That keeps several places in view,
   which is what shows the list scrolls; a soft fade at its bottom edge and a
