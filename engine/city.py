@@ -26,7 +26,8 @@ UA = {"User-Agent": f"sauna-maps/1.0 (personal project; https://github.com/{REPO
 # Sports Club exists and the venue rows say who takes it), "districtLevel" (the OSM admin_level
 # osm_extract.py draws as district outlines), "icon" (the city's landmark for its app icon: SVG
 # drawn in white on a 64 by 64 grid, standing on y=52 and no wider than x=20..44, written with
-# single quotes; see icon() below).
+# single quotes; see icon() below), "iconFull" (true when the icon is the whole drawing, steam
+# included, as San Francisco's bridge is: it is too wide to stand between two curls).
 REQUIRED = ("name", "country", "timezone", "bbox", "lede", "notionIntro")
 
 
@@ -56,6 +57,8 @@ def icon(cfg):
         return steam(f"{curl(21)} M32 45 q-5 -6.5 0 -13 q5 -6.5 0 -13 {curl(43)}") + stones
     if not mark.isascii() or '"' in mark or "\\" in mark or "<script" in mark.lower():
         raise SystemExit(f"{cfg['slug']}/city.json: the icon must be plain SVG shapes written with single quotes")
+    if cfg.get("iconFull"):
+        return mark + stones
     return steam(f"{curl(15.5)} {curl(48.5)}") + mark + stones
 
 

@@ -17,7 +17,8 @@ as it is and the jommi.fi Worker passes `/sauna/berlin/` through to it.
   jommi.fi and in the artifact only live cities are links and the rest say "soon".
 - Each city has its own app icon: `"icon"` in its `city.json` is the city's landmark as a few SVG
   shapes (Berlin's TV tower, Helsinki's cathedral), and `city.icon()` stands it between two curls
-  of steam. It is the header tile, the tab icon and the city's row in the switcher. A city
+  of steam. A landmark too wide for that draws its own steam and says `"iconFull": true`, as San
+  Francisco's Golden Gate Bridge does. It is the header tile, the tab icon and the city's row in the switcher. A city
   without one gets the plain three curls, which is also the mark in the footer.
 - A fact about one city never goes in `engine/`. If the template needs to say something that
   differs by city, it becomes a field in `city.json` and a placeholder (`__CITY__`, `__LEDE__`,
