@@ -23,6 +23,16 @@ def table(name, default):
     return getattr(data, name, default)
 
 V = data.V
+
+# A venue's name is its key on jommi.fi: saved spots, visits and reviews are stored under it with
+# no city beside it. So the same name may not appear in two cities.
+for other in city.slugs():
+    path = os.path.join(city.ROOT, other, "venues.json")
+    if other != CITY["slug"] and os.path.exists(path):
+        twice = {r[0] for r in V} & {v["name"] for v in json.load(open(path, encoding="utf-8"))}
+        if twice:
+            raise SystemExit(f"{', '.join(sorted(twice))}: already the name of a venue in {other}. "
+                             "Venue names have to be unique across the cities; add the city or the branch to one of them.")
 IMG = table("IMG", {})
 USC_TIERS = table("USC_TIERS", {})
 OPEN = table("OPEN", {})
