@@ -9,5 +9,6 @@
   "notionIntro": "Helsinki public sauna shortlist.",
   "currency": "€",
   "temp": "C",
-  "usc": false
+  "usc": false,
+  "live": true
 }

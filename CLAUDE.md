@@ -27,10 +27,14 @@ as it is and the jommi.fi Worker passes `/sauna/berlin/` through to it.
   there (`"usc"`); without it the page drops the USC chip, figure, legend dot and card row. The
   price bands are the same numbers in every currency, which is rough but fine for euros and
   dollars. Filter chips that no venue in a city could match hide themselves.
-- The naive cities were built to the same sourcing rule as Berlin: every venue passed
+- The other cities were built to the same sourcing rule as Berlin: every venue passed
   `verify_venue.py`, and every price and hour was read off its own site. Where a site renders
   prices with a script, or does not say who throws the water, the field is empty rather than
-  guessed. Who throws the water, the Finnish scores, picks and photos are still to do there.
+  guessed. San Francisco and Helsinki were re-read and filled out on 25 November 2026; New York
+  is still the first naive map. The Finnish scores and picks are empty everywhere but Berlin.
+- A day has one opening window in `OPEN`. Where a venue runs a morning turn and an evening one
+  (Löyly, Kulttuurisauna), `OPEN` holds the main window and the hours text says both, so the
+  status reads "closed now" during the other turn.
 - Base maps for a new city come from an OpenStreetMap extract, not Overpass, which resets every
   connection from a cloud session: `engine/osm_extract.py <city> <extract.osm.pbf>` (BBBike has
   city extracts), then `engine/build_geo.py <city>`. It draws the sea from the coastline, which
@@ -42,7 +46,7 @@ as it is and the jommi.fi Worker passes `/sauna/berlin/` through to it.
 - To open a city on jommi.fi: set `"live": true` in its `city.json` and rebuild every city, then
   in `jommi9/jommi-fi` add the slug to `SAUNA_LIVE` in `worker/sauna-api.js`, add its two paths to
   `run_worker_first` in `wrangler.jsonc`, and set its status to `live` in `src/lib/sauna.ts`.
-  Berlin and San Francisco are open; Helsinki and New York are not yet.
+  Berlin, San Francisco and Helsinki are open; New York is not yet.
 - The repository was `berlin-sauna-map` until November 2026. `check_deployment.py` reads the
   repository's name from Actions, so the Pages address follows a rename by itself; `REPO` in
   `engine/city.py` is the one place the name is written down.
