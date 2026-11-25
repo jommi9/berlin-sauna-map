@@ -40,6 +40,13 @@ as it is and the jommi.fi Worker passes `/sauna/berlin/` through to it.
   connection from a cloud session: `engine/osm_extract.py <city> <extract.osm.pbf>` (BBBike has
   city extracts), then `engine/build_geo.py <city>`. It draws the sea from the coastline, which
   Berlin never needed. `engine/og.js` takes a city's share image.
+- A frame wider than one extract takes several: `osm_extract.py` reads any number of them. San
+  Francisco's frame runs from the city to Sausalito, Albany and Point San Pablo, and is the
+  SanFrancisco and Berkeley extracts plus a strip neither covers (Tiburon to the Richmond shore),
+  which `engine/osm_fill.py <W> <S> <E> <N> <out.osm.pbf>` fetched from OpenStreetMap's own API
+  and saved in the same format. Where no extract reaches, no coastline is read and the land is
+  drawn as open sea, so look at the whole base map after widening a frame. Geofabrik's downloads
+  reset from a cloud session the way Overpass does.
 - The social layer on jommi.fi keys saved spots, visits and reviews by venue name alone, and
   works out the city from the name. So a venue's name must be unique across the cities, and
   `build_venues.py` refuses a name another city already uses. Each page asks for its own city's
@@ -192,8 +199,10 @@ coherent:
   `--cool`, `--mild`, `--warm`, `--hot`). The hottest figure is `--hot` and plunge
   temperatures are `--cold`.
 - Both typefaces are under the SIL Open Font License and live in `engine/fonts` with their
-  licences. `assemble.py` copies them into each city's `fonts/` and the page loads them from
-  there, so no visitor's browser calls a font service; the Artifact carries them inline.
+  licences. `assemble.py` copies them into one `fonts/` folder at the repo root, beside the
+  cities, and every page loads them from `../fonts/`, so no visitor's browser calls a font
+  service and swapping cities does not fetch them twice; the Artifact carries them inline. On
+  jommi.fi that folder is `/sauna/fonts/`, which the jommi.fi Worker passes through like a city.
 
 - Every colour is a token at the top of `engine/template.html`'s `<style>`: light values on
   `:root`, the same names redefined for dark mode. A component never uses a
@@ -216,8 +225,22 @@ coherent:
 - The °C / °F switch stands at the right end of the filter bar, in line with the map's right
   edge, on a computer and on a phone.
 - A picked sauna has its own address, the page's with `#<name-as-a-slug>` after it (`slugOf`).
-  Picking one writes it to the address bar, opening such a link picks that sauna, and each
-  card has a "share" button that copies it (or opens the phone's share sheet).
+  Picking one writes it to the address bar and opening such a link picks that sauna.
+- "share" on a card hands out a different address, `<city>/s/<slug>/`: a small page `assemble.py`
+  writes per sauna (`stubs()`), because whatever draws a link preview never sees what follows a
+  `#`. That page carries the sauna's name, a line about it and its picture in Open Graph tags, and
+  its one line of script sends a person on to the map with the sauna picked. The picture is
+  `<city>/og/<slug>.jpg`, drawn by `node engine/og.js --venues <city> ...` (name, kind, district
+  and heat beside the photograph, or beside the map around its pin); without one the page falls
+  back to the city's `og.png`. Run that after adding or renaming a venue or giving it a photo,
+  then rebuild. `slug_of` in `assemble.py` and `slugOf` in the template must stay the same rule.
+  The artifact has no such pages, so there "share" copies the `#` address.
+- Until the script at the foot of the page has run there is no list and no map, so the page shows
+  a loading state: steam rising where the map will be and ghost rows in the list (`.loading`,
+  and `.wrap.ready` once `run()` is done). Do not make the first screen depend on the script.
+- Swapping cities is a new page. When the pointer nears the switcher or it opens, the other
+  cities are prefetched (`fetchAhead`), and Chrome prerenders one as its row is pressed
+  (speculation rules).
 - "open now" and "closed now" are as of this minute in the city's own time, so their dot
   pulses. When the change is three hours away or less the tag adds "closes in 50 min" or "opens
   in 2 h 30 min" (`statusText`), worked out from the same weekly hours. A window that ends at
@@ -237,9 +260,11 @@ built and committed here.
   `sauna-maps`, deployed by Cloudflare's Git connection on each push to `main`. It has no
   address of its own: the jommi.fi Worker reaches it through a service binding and serves each
   live city at `jommi.fi/sauna/<city>/`. `.assetsignore` is an allowlist: only each city's
-  `index.html`, `og.png`, `venues.json` and `img/card/*.webp`, plus the root `index.html`, are
-  published, and its `fonts/*.woff2`. A new kind of file a page needs has to be added there or
-  it will 404 on jommi.fi while working on GitHub Pages.
+  `index.html`, `og.png`, `venues.json`, `img/card/*.webp`, `og/*.jpg` and `s/*/index.html`, plus
+  the root `index.html` and `fonts/*.woff2`, are published. A new kind of file a page needs has
+  to be added there or it will 404 on jommi.fi while working on GitHub Pages. The jommi.fi Worker
+  sets how long a browser keeps each kind (`saunaCache` in `worker/index.js`): the typefaces for a
+  year, pictures for a day, a page for a minute and stale for ten more while it refreshes.
 - **GitHub Pages**, at `jommi9.github.io/<repo>/<city>/`, which is where a city that is not yet
   open on the hub can be looked at.
 
@@ -396,8 +421,9 @@ Three related things, deliberately kept apart.
 
 **Who throws the water** is derived, never typed twice: `LOYLY_OF` maps the
 `aufguss` kind the venues confirmed by email onto `staff` (someone throws for
-you), `self` (you throw your own) or `machine` (a dispenser doses aroma and
-nobody throws anything). Hilton is the clearest `machine` — they wrote that
+you), `self` (you throw your own), `machine` (a dispenser doses aroma and
+nobody throws anything) or `dry` (kind `"dry"`: the venue asks that no water goes
+on the stones at all, as Good Hot does; it gets the same "no löyly" badge). Hilton is the clearest `machine` — they wrote that
 pouring your own is *not allowed*. Change the kind in `HEAT` and the löyly
 follows; there is no second dict to keep in step.
 

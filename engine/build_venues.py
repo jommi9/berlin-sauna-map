@@ -66,26 +66,28 @@ LAST_CHECKED_STAMP = datetime.datetime.strptime(LAST_CHECKED, "%d %B %Y").strfti
 #       staff   someone else throws and you sit and take it (Aufguss)
 #       self    you throw your own loyly
 #       machine a dispenser doses aroma; nobody throws anything
+#       dry     the venue asks that no water goes on the stones at all
 LOYLY_OF = {"scheduled": "staff", "request": "staff", "self": "self",
-            "auto": "machine", "unknown": "unknown"}
+            "auto": "machine", "dry": "dry", "unknown": "unknown"}
 
 # --- Which sauna culture a place belongs to, derived from who throws the water
 #     and never typed separately: you throw your own (Finnish), a sauna master
 #     throws the Aufguss (German), you throw your own in a banya (Russian), or a
 #     machine doses it and nobody may (no loyly - a fake sauna by Finnish
-#     standards). A banya is the one thing the loyly cannot tell apart, so each
+#     standards). A stove that takes no water at all is no loyly too. A banya is the one thing the loyly cannot tell apart, so each
 #     city names its banyas in BANYA.
 def style_of(name, loyly):
     if name in BANYA:              # a banya is a banya whoever throws the water
         return "russian"
     if loyly == "self":
         return "finnish"
-    return {"staff": "german", "machine": "none"}.get(loyly, "unknown")
+    return {"staff": "german", "machine": "none", "dry": "none"}.get(loyly, "unknown")
 
 LOYLY_TEXT = {
  "staff":   "Someone throws for you \u2014 Aufguss",
  "self":    "You throw your own l\u00f6yly",
  "machine": "Automatic dosing \u2014 nobody throws",
+ "dry":     "No water on the stones",
  "unknown": "Not known",
 }
 

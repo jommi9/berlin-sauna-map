@@ -30,8 +30,22 @@ def text_of(url, timeout=25):
         return e.code, url, ""
     except Exception as e:
         return 0, url, f"__ERR__{type(e).__name__}"
-    body = re.sub(r"<script.*?</script>|<style.*?</style>", " ", raw, flags=re.S | re.I)
-    return code, final, re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", body)))
+    clean = lambda t: re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", t)))
+    txt = clean(re.sub(r"<script.*?</script>|<style.*?</style>", " ", raw, flags=re.S | re.I))
+    if len(txt) < 400:
+        # A page a site builder draws by script (Square Online is one) has almost no text in its
+        # markup: its words are strings inside the data the script is handed. Read those, so such
+        # a venue is not called SUSPECT every week for how its site is made.
+        said = []
+        for m in re.finditer(r'"((?:[^"\\]|\\.){20,})"', raw):
+            try:
+                t = json.loads('"' + m.group(1) + '"')
+            except ValueError:
+                continue
+            if " " in t.strip() and not t.lstrip().startswith(("http", "{", "[", "/", "data:")):
+                said.append(t)
+        txt = clean(txt + " " + " ".join(dict.fromkeys(said)))
+    return code, final, txt
 
 def check(name, url):
     code, final, txt = text_of(url)

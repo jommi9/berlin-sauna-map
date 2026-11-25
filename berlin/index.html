@@ -9,6 +9,8 @@
 <meta name="description" content="21 Berlin saunas and spas, priced and plotted on one map, with a Finn's notes on the loyly.">
 <link rel="canonical" href="https://jommi.fi/sauna/berlin/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23E9A462'/%3E%3Cstop offset='1' stop-color='%23B3502A'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='15' fill='url(%23g)'/%3E%3Cpath d='M15.5 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11 M48.5 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M30 51 L31.2 31 h1.6 L34 51 z' fill='%23fff'/%3E%3Ccircle cx='32' cy='26' r='6.6' fill='%23fff'/%3E%3Cpath d='M32 19 V9.5' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3Cpath d='M15 52 h34' stroke='%23fff' stroke-opacity='.6' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preload" href="../fonts/inter-tight-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/ibm-plex-mono-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Sauna Map Berlin">
 <meta property="og:title" content="Sauna Map Berlin">
@@ -27,10 +29,10 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 
 <style>
-@font-face{font-family:'Inter Tight'; font-style:normal; font-weight:100 900; font-display:swap; src:url(fonts/inter-tight-latin-wght-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:'Inter Tight'; font-style:normal; font-weight:100 900; font-display:swap; src:url(fonts/inter-tight-latin-ext-wght-normal.woff2) format('woff2'); unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:'IBM Plex Mono'; font-style:normal; font-weight:400; font-display:swap; src:url(fonts/ibm-plex-mono-latin-400-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:'IBM Plex Mono'; font-style:normal; font-weight:500; font-display:swap; src:url(fonts/ibm-plex-mono-latin-500-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Inter Tight'; font-style:normal; font-weight:100 900; font-display:swap; src:url(../fonts/inter-tight-latin-wght-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Inter Tight'; font-style:normal; font-weight:100 900; font-display:swap; src:url(../fonts/inter-tight-latin-ext-wght-normal.woff2) format('woff2'); unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'IBM Plex Mono'; font-style:normal; font-weight:400; font-display:swap; src:url(../fonts/ibm-plex-mono-latin-400-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'IBM Plex Mono'; font-style:normal; font-weight:500; font-display:swap; src:url(../fonts/ibm-plex-mono-latin-500-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 /* Layout: an iPad-style split view. A sidebar of venue cards sits beside one
    large map; on a phone the map fills a framed screen and the list rides up
    over it as a sheet, the way Maps does it. Below sit the picks and the fine
@@ -833,8 +835,25 @@ body{letter-spacing:0}
   .findrow{display:contents} .acct{order:1} .filters{order:2} .unit{order:3; margin-left:auto}
 }
 @media (max-width:980px){.intro{display:block} .collage{aspect-ratio:5.4/1.05} .stats .n{font-size:26px} .title{font-size:clamp(46px,14vw,90px)}}
+/* Until the script at the foot of the page has run there is no list and no map. The page says so:
+   steam rises where the map will be and the list shows ghost rows. .ready takes both away. */
+.loading{position:absolute; inset:0; z-index:3; display:grid; place-content:start center; justify-items:center; gap:14px; padding-top:min(22vh, 150px);
+  background:var(--land); color:var(--label-2); font:500 11px/1 var(--mono); letter-spacing:.14em; text-transform:uppercase}
+.loading svg{width:64px; height:64px; overflow:visible}
+.loading path{fill:none; stroke:var(--label); stroke-width:3; stroke-linecap:round; stroke-dasharray:26 60; animation:steam 1.5s linear infinite}
+.loading path:nth-child(2){animation-delay:-.5s}
+.loading path:nth-child(3){animation-delay:-1s}
+@keyframes steam{from{stroke-dashoffset:86; opacity:0} 25%{opacity:1} 75%{opacity:1} to{stroke-dashoffset:0; opacity:0}}
+.wrap.ready .loading{display:none}
+.wrap:not(.ready) .usc-only{display:none}
+.wrap:not(.ready) .filters{visibility:hidden; max-height:40px; overflow:hidden}
+.wrap:not(.ready) .cards:empty{min-height:340px; margin:0 14px;
+  background:repeating-linear-gradient(to bottom, transparent 0 16px, var(--fill) 16px 30px, transparent 30px 40px, var(--fill) 40px 48px, transparent 48px 67px, var(--sep) 67px 68px);
+  animation:ghost 1.2s ease-in-out infinite alternate}
+@keyframes ghost{from{opacity:.45} to{opacity:1}}
 @media (prefers-reduced-motion:reduce){
   *{transition:none !important; animation:none !important; scroll-behavior:auto !important}
+  .loading path{stroke-dasharray:none}
 }
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","name":"Sauna Map Berlin","url":"https://jommi.fi/sauna/berlin/","description":"21 Berlin saunas and spas, priced and plotted on one map, with a Finn's notes on the loyly.","numberOfItems":21,"itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"Place","name":"Vabali","url":"https://www.vabali.de/berlin/","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.5284,"longitude":13.35889}}},{"@type":"ListItem","position":2,"item":{"@type":"Place","name":"Grand Hyatt \u2014 Club Olympus","url":"https://www.hyatt.com/de-DE/spas/Club-Olympus-Berlin/day-spa","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.50819,"longitude":13.37248}}},{"@type":"ListItem","position":3,"item":{"@type":"Place","name":"Hilton Berlin \u2014 LivingWell","url":"https://urbansportsclub.com/de/venues/hilton-berlin-living-well-health-club?view=new","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.5121,"longitude":13.39253}}},{"@type":"ListItem","position":4,"item":{"@type":"Place","name":"Steigenberger \u2014 Sky Spa","url":"https://www.sky-spa-fitnesslounge.de/day-spa/","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.52366,"longitude":13.36747}}},{"@type":"ListItem","position":5,"item":{"@type":"Place","name":"Hotel de Rome \u2014 De Rome Spa","url":"https://www.visitberlin.de/de/berlins-beste-sauna","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.51579,"longitude":13.39406}}},{"@type":"ListItem","position":6,"item":{"@type":"Place","name":"Hotel Adlon Kempinski","url":"https://www.kempinski.com/de/hotel-adlon/luxus-spa/mitgliedschaften/tagespass-und-mitgliedschaften","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.51557,"longitude":13.38006}}},{"@type":"ListItem","position":7,"item":{"@type":"Place","name":"Hotel Palace \u2014 Palace Spa","url":"https://www.palace.de/hotel/palace-spa-fitness","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.50491,"longitude":13.33884}}},{"@type":"ListItem","position":8,"item":{"@type":"Place","name":"Titanic Gendarmenmarkt \u2014 BeFine","url":"https://www.titanic.com.tr/de/titanic-gendarmenmarkt-berlin/befine-spa/sauna","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.5149,"longitude":13.39451}}},{"@type":"ListItem","position":9,"item":{"@type":"Place","name":"Park Inn Alexanderplatz \u2014 Gezer Spa","url":"https://urbansportsclub.com/de/venues/gezer-spa-fitness-1","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.52284,"longitude":13.41278}}},{"@type":"ListItem","position":10,"item":{"@type":"Place","name":"InterContinental Berlin","url":"https://www.berlin.intercontinental.com/wellness/","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.50727,"longitude":13.3454}}},{"@type":"ListItem","position":11,"item":{"@type":"Place","name":"The Westin Grand \u2014 Gezer Spa","url":"https://urbansportsclub.com/en/venues/gezer-spa-fitness?view=new","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.51587,"longitude":13.3886}}},{"@type":"ListItem","position":12,"item":{"@type":"Place","name":"sly Berlin","url":"https://www.sly-berlin.com/en/spa-and-gym","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.52492,"longitude":13.44815}}},{"@type":"ListItem","position":13,"item":{"@type":"Place","name":"KIEZ SAUNA Friedrichshain","url":"https://www.kiezsauna.de/%C3%B6ffnungszeiten/","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.51545,"longitude":13.44865}}},{"@type":"ListItem","position":14,"item":{"@type":"Place","name":"Olivin","url":"https://olivin-berlin.com/facts/","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.5316,"longitude":13.41116}}},{"@type":"ListItem","position":15,"item":{"@type":"Place","name":"LIQUIDROM","url":"https://www.liquidrom-berlin.de/en/info.php","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.50118,"longitude":13.3814}}},{"@type":"ListItem","position":16,"item":{"@type":"Place","name":"Saunabad Prenzlauer Berg","url":"https://www.saunabad-berlin.de/","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.53578,"longitude":13.42035}}},{"@type":"ListItem","position":17,"item":{"@type":"Place","name":"L\u00fctzow Sauna","url":"https://www.luetzow-sauna.de/start","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.50154,"longitude":13.3689}}},{"@type":"ListItem","position":18,"item":{"@type":"Place","name":"ANTI SPA","url":"https://www.antispaces.com/spa/welcome-pass","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.53125,"longitude":13.40084}}},{"@type":"ListItem","position":19,"item":{"@type":"Place","name":"Fitness Company Berlin","url":"https://www.fitnesscompany-berlin.de/sauna.html","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.5129,"longitude":13.44068}}},{"@type":"ListItem","position":20,"item":{"@type":"Place","name":"Stadtbad Neuk\u00f6lln","url":"https://www.berlinerbaeder.de/baeder/detail/stadtbad-neukoelln/","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.47919,"longitude":13.43973}}},{"@type":"ListItem","position":21,"item":{"@type":"Place","name":"Finnland Zentrum","url":"https://www.finnlandzentrum.de/sauna/","address":{"@type":"PostalAddress","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.48963,"longitude":13.39737}}}]}</script>
@@ -942,6 +961,7 @@ body{letter-spacing:0}
       <div class="inner">
         <div class="mapbox">
           <svg class="map" id="map" role="img" aria-label="Map of central Berlin showing 21 sauna and spa locations"></svg>
+          <div class="loading" role="status"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M20 50 q-6 -8 0 -16 q6 -8 0 -16"/><path d="M32 52 q-6.5 -9 0 -18 q6.5 -9 0 -18"/><path d="M44 50 q-6 -8 0 -16 q6 -8 0 -16"/></svg><span>heating up</span></div>
           <div class="peek" id="peek" hidden>
             <button class="peek-x" id="peek-x" aria-label="Clear selection">&times;</button>
             <div class="peek-thumb" id="peek-thumb"></div>
@@ -1514,7 +1534,7 @@ const STYLE = {
     icon: FLAGBOX(`<rect width="18" height="3.67" fill="#000000"></rect><rect y="3.67" width="18" height="3.67" fill="#DD0000"></rect><rect y="7.33" width="18" height="3.67" fill="#FFCE00"></rect>`) },
   russian: { label: "banya", title: "Russian banya: you throw your own water, banya-style",
     icon: FLAGBOX(`<rect width="18" height="3.67" fill="#FFFFFF"></rect><rect y="3.67" width="18" height="3.67" fill="#0039A6"></rect><rect y="7.33" width="18" height="3.67" fill="#D52B1E"></rect>`) },
-  none:    { label: "no l\u00f6yly", title: "No l\u00f6yly: a machine doses the water and nobody may throw it. Not a real sauna by Finnish standards.",
+  none:    { label: "no l\u00f6yly", title: "No l\u00f6yly: nobody may throw water here, because a machine doses it or the stove takes none. Not a real sauna by Finnish standards.",
     icon: `<svg class="flagi nodrop" width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.6C5 4.4 3.4 6.4 3.4 8.4a3.6 3.6 0 0 0 7.2 0C10.6 6.4 9 4.4 7 1.6Z" fill="none" stroke="currentColor" stroke-width="1.4"></path><path d="M2 12.5 12 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>` },
   unknown: { label: "not known", title: "Not known yet who throws the water here", icon: "" },
 };
@@ -1619,7 +1639,14 @@ function revealCard(id){
 /* A picked sauna has its own address: the page's, with the sauna's name after a #. Picking one
    writes it to the address bar, and opening such a link picks that sauna. */
 const slugOf = v => v.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-const linkTo = v => location.origin + location.pathname + location.search + "#" + slugOf(v);
+/* What "share" hands out. A link preview is made by a robot that never sees what follows a #, so on
+   the website each sauna also has a small page of its own, s/<slug>/, which carries that sauna's
+   name and picture for the preview and sends a person on to the map with the sauna picked. The
+   artifact is one file and has no such pages, so there the link is the # address itself. */
+const PAGES = true;
+const linkTo = v => PAGES && /^https?:$/.test(location.protocol)
+  ? location.origin + location.pathname.replace(/index\.html$/, "").replace(/([^/])$/, "$1/") + "s/" + slugOf(v) + "/"
+  : location.origin + location.pathname + location.search + "#" + slugOf(v);
 function fromHash(){
   const want = decodeURIComponent(location.hash.slice(1)), v = want && V.find(x => slugOf(x) === want);
   if (v && sel !== v.id){ choose(v.id, true); if (isMobile()) cardOf.get(v.id).scrollIntoView({ block: "nearest" }); }
@@ -1894,7 +1921,26 @@ CITIES.forEach(c => {
   cityM.appendChild(row);
 });
 cityM.insertAdjacentHTML("beforeend", `<hr><a class="all" href="${HUB}">all sauna maps</a>`);
-const showCities = on => { cityM.hidden = !on; cityB.setAttribute("aria-expanded", String(on)); };
+/* Swapping cities is a new page, half a megabyte of map. So the others are fetched ahead: when the
+   pointer nears the switcher or it opens, each city it links to is prefetched, and a browser that
+   can (Chrome's speculation rules) starts rendering one as soon as its row is pressed or hovered. */
+let fetchedAhead = false;
+function fetchAhead(){
+  if (fetchedAhead || (navigator.connection && navigator.connection.saveData)) return;
+  fetchedAhead = true;
+  cityM.querySelectorAll("a[href]:not([aria-current]):not(.all)").forEach(a => {
+    const l = document.createElement("link"); l.rel = "prefetch"; l.as = "document"; l.href = a.href; document.head.appendChild(l);
+  });
+}
+cityB.addEventListener("pointerenter", fetchAhead);
+cityB.addEventListener("focus", fetchAhead);
+cityB.addEventListener("touchstart", fetchAhead, { passive: true });
+if (HTMLScriptElement.supports && HTMLScriptElement.supports("speculationrules")){
+  const rules = document.createElement("script"); rules.type = "speculationrules";
+  rules.textContent = JSON.stringify({ prerender: [{ where: { selector_matches: ".city-m a:not([aria-current]):not(.all)" }, eagerness: "moderate" }] });
+  document.head.appendChild(rules);
+}
+const showCities = on => { if (on) fetchAhead(); cityM.hidden = !on; cityB.setAttribute("aria-expanded", String(on)); };
 cityB.addEventListener("click", () => showCities(cityM.hidden));
 document.getElementById("appicon").addEventListener("click", e => { e.stopPropagation(); showCities(cityM.hidden); });
 cityM.addEventListener("click", e => { if (e.target.closest("[aria-current]")){ e.preventDefault(); showCities(false); } });
@@ -1964,6 +2010,7 @@ const showHottest = () => { if (HOTTEST) document.getElementById("stat-hot").tex
 })();
 run();
 fromHash();                                   // a link to one sauna opens on that sauna
+document.getElementById("wrap").classList.add("ready");
 addEventListener("hashchange", fromHash);
 
 /* ---------- the Celsius / Fahrenheit switch ---------- */

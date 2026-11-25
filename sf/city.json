@@ -2,7 +2,7 @@
   "name": "San Francisco",
   "country": "US",
   "timezone": "America/Los_Angeles",
-  "bbox": [-122.52, 37.7, -122.355, 37.878],
+  "bbox": [-122.52, 37.7, -122.285, 37.98],
   "icon": "<path d='M22 19 q-3.2 -3 0 -6 q3.2 -3 0 -6 M32 20 q-3.4 -3.4 0 -6.8 q3.4 -3.4 0 -6.8 M42 19 q-3.2 -3 0 -6 q3.2 -3 0 -6' fill='none' stroke='#fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/><path d='M20 25 V50 M44 25 V50' fill='none' stroke='#fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/><path d='M7 40 Q15.5 37 20 26 Q32 48 44 26 Q48.5 37 57 40' fill='none' stroke='#fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><path d='M7 43 H57' fill='none' stroke='#fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/>",
   "iconFull": true,
   "lede": "From a Russian banya on the bay to a floating sauna across the Golden Gate.",

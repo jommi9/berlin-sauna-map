@@ -10,5 +10,10 @@
 !/*/img/
 !/*/img/card/
 !/*/img/card/*.webp
-!/*/fonts/
-!/*/fonts/*.woff2
+!/*/og/
+!/*/og/*.jpg
+!/*/s/
+!/*/s/*/
+!/*/s/*/index.html
+!/fonts/
+!/fonts/*.woff2
