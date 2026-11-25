@@ -195,6 +195,10 @@ coherent:
   the header changes (`node engine/og.js <city> ...`, which also does Berlin's collage).
 - The city in the title is drawn as a button (tint text on `--tint-soft`, with a chevron) so it
   reads as something to tap. The footer carries the link to the repository with GitHub's mark.
+- "open now" and "closed now" are as of this minute in the city's own time, so their dot
+  pulses. When the change is three hours away or less the tag adds "closes in 50 min" or "opens
+  in 2 h 30 min" (`statusText`), worked out from the same weekly hours. A window that ends at
+  last entry therefore counts down to last entry.
 - A place is a compact row (thumbnail, name, status) until it is picked; only
   the picked one opens into the full card. That keeps several places in view,
   which is what shows the list scrolls; a soft fade at its bottom edge and a
@@ -343,8 +347,14 @@ way Sauna Ikitai shows them ("90° / 14°") and offered as sorts. `hot` is deriv
 from the highest temperature the venue's own heat text names, so the number and the prose
 cannot disagree. `plunge` is the city's `PLUNGE` table, filled only where a venue states a
 figure; Lützow's 14°C is the only one in Berlin so far. A city with `"temp": "F"` in its
-`city.json` shows both in Fahrenheit, and visitors type theirs in Fahrenheit there too, but
-everything is stored in °C.
+`city.json` shows both in Fahrenheit first, and everything is stored in °C (a Fahrenheit figure
+keeps one decimal there, so 220°F comes back as 220 and not 219).
+
+The °C / °F switch beside the search overrides the city's unit on that device, for every city
+(`localStorage`, key `sauna.unit`). It changes the row tags, the hottest figure, visitors'
+figures and the note form, and it rewrites the temperatures inside a venue's own prose
+(`tempText`), so write those with the degree sign and the unit letter ("190°F", "80–100°C"). A
+bare number in prose ("ranging from 180 to 200") cannot be converted, so avoid it.
 
 ## Löyly, the Finnish score, and the Aufguss rating
 

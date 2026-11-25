@@ -263,6 +263,13 @@ svg.map.dragging{cursor:grabbing}
   transition:background .15s, box-shadow .15s;
 }
 .find input::placeholder{color:var(--label-3)}
+/* The Celsius / Fahrenheit switch, beside the search. */
+.unit{display:inline-flex; flex:none; gap:2px; height:40px; padding:3px; border-radius:var(--r-sm); background:var(--fill)}
+.unit button{
+  min-width:36px; padding:0 6px; border:0; border-radius:3px; background:none; cursor:pointer;
+  color:var(--label-2); font:600 13.5px var(--font);
+}
+.unit button[aria-pressed="true"]{background:var(--surface); color:var(--label); box-shadow:var(--shadow)}
 .find input:focus{outline:none; background:var(--surface); box-shadow:0 0 0 3px var(--tint-soft), inset 0 0 0 1px var(--tint)}
 .find input::-webkit-search-cancel-button{opacity:.5}
 .find svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--label-3); pointer-events:none}
@@ -365,6 +372,9 @@ svg.map.dragging{cursor:grabbing}
 .status.open{color:var(--green); background:var(--green-soft)}
 .status.shut{color:var(--red); background:var(--red-soft)}
 .status.unk{color:var(--label-2); background:var(--fill)}
+/* Open and closed are as of this minute, so their dot pulses like a live light. */
+.status.open::before, .status.shut::before{animation:live 1.8s ease-in-out infinite}
+@keyframes live{0%, 100%{opacity:1; transform:scale(1)} 50%{opacity:.2; transform:scale(.65)}}
 .price{color:var(--label); background:var(--fill); font-variant-numeric:tabular-nums}
 .pick-tag{color:var(--ember); background:var(--ember-soft)}
 /* the hottest cabin and the cold plunge, numbers first the way a sauna-goer reads them */
@@ -772,6 +782,10 @@ button.btn{border:0; cursor:pointer}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
           <input type="search" id="q" placeholder="search saunas" aria-label="Search saunas" autocomplete="off">
         </label>
+        <div class="unit" id="unit" role="group" aria-label="Temperature unit">
+          <button type="button" data-u="C" aria-pressed="false" title="Show temperatures in Celsius">&deg;C</button>
+          <button type="button" data-u="F" aria-pressed="false" title="Show temperatures in Fahrenheit">&deg;F</button>
+        </div>
         <div class="acct" id="acct" hidden></div>
       </div>
       <div class="filters">
@@ -930,10 +944,22 @@ button.btn{border:0; cursor:pointer}
 const GEO = /*__GEO__*/;
 const V = /*__VENUES__*/;
 /* From the city's city.json: its currency sign, and whether Urban Sports Club exists there. */
-const CUR = "__CUR__", USC = __USC__, TU = "__TU__";
+const CUR = "__CUR__", USC = __USC__;
+/* Temperatures are kept in Celsius. The city decides which unit a visitor sees first, and the
+   switch beside the search overrides it on this device, for every city. */
+let TU = "__TU__";
+try { const u = localStorage.getItem("sauna.unit"); if (u === "C" || u === "F") TU = u; } catch {}
 /* Temperatures are kept in \u00b0C and shown in the city's own unit. */
 const toUnit = c => TU === "F" ? Math.round(c * 9 / 5 + 32) : Math.round(c * 10) / 10;
-const fmtT = c => c == null ? "" : `${toUnit(c)}\u00b0${TU === "F" ? "F" : ""}`;
+const fmtT = c => c == null ? "" : `${Math.round(toUnit(c))}\u00b0${TU === "F" ? "F" : ""}`;
+/* A venue's own words name temperatures in its own unit ("90\u00b0C", "170\u2013210\u00b0F"). This says
+   them in the unit chosen. */
+const tempText = s => !s ? s : s.replace(/(\d{2,3})(?:(\s*[\u2013-]\s*)(\d{2,3}))?\s*\u00b0\s*([CF])\b/g, (m, a, dash, b, u) => {
+  if (u === TU) return m;
+  const cv = n => u === "C" ? Math.round(n * 9 / 5 + 32) : Math.round((n - 32) * 5 / 9);
+  return `${cv(+a)}${b ? dash + cv(+b) : ""}\u00b0${TU}`;
+});
+const tempTag = v => v.hot == null ? "" : `${fmtT(v.hot)}${v.plunge != null ? `<i>/</i><span class="pl">${fmtT(v.plunge)}</span>` : ""}`;
 if (!USC) document.getElementById("wrap").classList.add("no-usc");
 const IMG = /*__IMAGES__*/;
 const NS = "http://www.w3.org/2000/svg";
@@ -1010,6 +1036,31 @@ const AUFGUSS = { scheduled: "Run to a schedule", self: "Pour your own", request
                   auto: "Automatic aroma", unknown: "Not known" };
 const STATUS_TEXT = { open: "open now", shut: "closed now", unknown: "check hours" };
 const STATUS_CLASS = { open: "open", shut: "shut", unknown: "unk" };
+/* Minutes until an open place closes or a closed one opens, from the same weekly hours as
+   openState; null when the hours are unknown, a dated closure is in force, or it never closes. */
+function untilChange(v, now){
+  const o = v.open;
+  if (!o || (o.closedUntil && now.date <= o.closedUntil)) return null;
+  const md = now.date.slice(5);
+  const season = (o.seasons || []).find(s => s.from <= s.to ? (md >= s.from && md <= s.to) : (md >= s.from || md <= s.to));
+  const week = season ? season.weekly : o.weekly;
+  if (!week) return null;
+  const m = now.minutes, today = week[now.day], next = week[(now.day + 1) % 7];
+  if (openState(v, now) === "open"){
+    let end = today[1];
+    if (end > 1440 && m < end - 1440) end -= 1440;                  // the tail of a late night
+    else if (end === 1440 && next && next[0] === 0) return null;     // open round the clock
+    return end - m;
+  }
+  if (today && m < today[0]) return today[0] - m;
+  return next ? next[0] + 1440 - m : null;
+}
+const spanText = n => n < 60 ? `${n} min` : `${Math.floor(n / 60)} h${n % 60 ? ` ${n % 60} min` : ""}`;
+/* "open now", and when the change is three hours away or less, how long until it. */
+function statusText(v, now){
+  const st = openState(v, now), n = st === "unknown" ? null : untilChange(v, now);
+  return STATUS_TEXT[st] + (n != null && n > 0 && n <= 180 ? ` \u00b7 ${st === "open" ? "closes" : "opens"} in ${spanText(n)}` : "");
+}
 
 /* ---------- map ---------- */
 const map = document.getElementById("map");
@@ -1398,10 +1449,9 @@ V.forEach(v => {
       ${styleBadge(v)}
     </div>
     <div class="tags">
-      <span class="status ${STATUS_CLASS[st]}" data-status>${STATUS_TEXT[st]}</span>
+      <span class="status ${STATUS_CLASS[st]}" data-status title="As of this minute, __CITY__ time">${statusText(v, cityNow())}</span>
       <span class="price">${priceShort(v)}</span>
-      ${v.hot != null ? `<span class="temp" title="hottest sauna${v.plunge != null ? " / cold plunge" : ""}">${fmtT(v.hot)}${
-        v.plunge != null ? `<i>/</i><span class="pl">${fmtT(v.plunge)}</span>` : ""}</span>` : ""}
+      ${v.hot != null ? `<span class="temp" data-temp title="hottest sauna${v.plunge != null ? " / cold plunge" : ""}">${tempTag(v)}</span>` : ""}
       ${v.badge ? `<span class="pick-tag" title="Picked by ${CURATOR.name}"><i class="av" aria-hidden="true">${CURATOR.name[0]}</i>${lower(v.badge)}</span>` : ""}
     </div>
     <dl class="rows">
@@ -1409,16 +1459,16 @@ V.forEach(v => {
       ${USC ? `<dt>USC</dt><dd>${v.uscLabel}
         ${v.usc !== "no" ? `<span class="tiers">${["Classic","Premium","Max"]
           .map(t => `<span class="tier${v.uscTiers.includes(t) ? "" : " off"}">${t}</span>`).join("")}</span>` : ""}</dd>` : ""}
-      <dt>heat</dt><dd>${v.sauna}</dd>
+      <dt>heat</dt><dd data-tp="sauna">${tempText(v.sauna)}</dd>
       <dt>l\u00f6yly</dt><dd><span class="ly ly-${v.loyly}">${v.loylyText}</span>${
         v.aufgussScore != null ? `<span class="augrade">Aufguss ${v.aufgussScore}<i>/10</i></span>` : ""}${
-        v.aufgussNote ? `<span class="src2">${v.aufgussNote}</span>` : ""}</dd>
-      <dt>water</dt><dd>${v.pool}</dd>
+        v.aufgussNote ? `<span class="src2" data-tp="aufgussNote">${tempText(v.aufgussNote)}</span>` : ""}</dd>
+      <dt>water</dt><dd data-tp="pool">${tempText(v.pool)}</dd>
       <dt>open</dt><dd>${hoursText(v, cityNow())}${v.open && SRC_NOTE[v.open.src]
         ? ` <span class="src">${SRC_NOTE[v.open.src]}</span>` : ""}</dd>
       <dt>best for</dt><dd>${v.bestFor}</dd>
     </dl>
-    ${v.flag ? `<p class="alert"><b>heads up</b>${v.flag}</p>` : ""}
+    ${v.flag ? `<p class="alert"><b>heads up</b><span data-tp="flag">${tempText(v.flag)}</span></p>` : ""}
     ${v.reviews.length ? `<div class="revs"><p class="revs-h">reviews <span class="score">${v.rating}<em>/5</em></span></p>${v.reviews.map(r => `
       <blockquote class="rev">
         <p class="rev-t">${r.text}</p>
@@ -1572,7 +1622,7 @@ setInterval(() => {
   const now = cityNow();
   V.forEach(v => {
     const el2 = cardOf.get(v.id).querySelector("[data-status]"), st = openState(v, now);
-    el2.textContent = STATUS_TEXT[st]; el2.className = "status " + STATUS_CLASS[st];
+    el2.textContent = statusText(v, now); el2.className = "status " + STATUS_CLASS[st];
   });
   if (F.openNow) run();
 }, 60000);
@@ -1756,6 +1806,9 @@ if (!TRAPS.length) document.getElementById("note-traps").hidden = true;
 if (!document.querySelector("#note-practical p").textContent.trim()) document.getElementById("note-practical").hidden = true;
 
 /* The cover figures are computed from the venues, so they cannot drift. */
+/* The hottest sauna in the header, said in the unit chosen. */
+let HOTTEST = 0;
+const showHottest = () => { if (HOTTEST) document.getElementById("stat-hot").textContent = TU === "F" ? fmtT(HOTTEST) : `${Math.round(HOTTEST)}\u00b0C`; };
 (() => {
   /* "Park Inn Alexanderplatz \u2014 Gezer Spa" becomes "Park Inn" in a tile this narrow. */
   const short = n => { const s = n.split(" \u2014 ")[0]; return s.length > 16 ? s.split(" ").slice(0, 2).join(" ") : s; };
@@ -1782,11 +1835,32 @@ if (!document.querySelector("#note-practical p").textContent.trim()) document.ge
   const stats = document.querySelector(".stats"), shown = [...stats.children].filter(d => !d.hidden && getComputedStyle(d).display !== "none").length;
   stats.classList.toggle("n3", shown === 3); stats.classList.toggle("n2", shown === 2);
   if (hot){
-    document.getElementById("stat-hot").textContent = TU === "F" ? fmtT(hot) : `${hot}\u00b0C`;
+    HOTTEST = hot; showHottest();
     document.getElementById("stat-hot-s").textContent = at.length > 1 ? `at ${at.length} places` : short(at[0].name);
   }
 })();
 run();
+
+/* ---------- the Celsius / Fahrenheit switch ---------- */
+const unitBox = document.getElementById("unit");
+function showUnit(){
+  unitBox.querySelectorAll("[data-u]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.u === TU)));
+  showHottest();
+  V.forEach(v => {
+    const card = cardOf.get(v.id), tag = card.querySelector("[data-temp]");
+    if (tag) tag.innerHTML = tempTag(v);
+    card.querySelectorAll("[data-tp]").forEach(n => { n.innerHTML = tempText(v[n.dataset.tp]); });
+  });
+}
+unitBox.addEventListener("click", e => {
+  const b = e.target.closest("[data-u]");
+  if (!b || b.dataset.u === TU) return;
+  TU = b.dataset.u;
+  try { localStorage.setItem("sauna.unit", TU); } catch {}
+  showUnit();
+  if (SOC.on) V.forEach(v => { drawLogs(v); drawMine(v); });   // visitors' figures and the note form
+});
+showUnit();
 /* ---------- the social layer ----------
    Sign in with X or GitHub, saved spots, logged visits, the leaderboard and the review panel. It lives in
    the jommi.fi Worker under /sauna/api/ (repo jommi9/jommi-fi, worker/sauna-api.js), on the same
