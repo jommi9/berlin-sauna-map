@@ -11,7 +11,7 @@ Two outputs from one template, and they must not be merged:
     <meta name="viewport"> phones lay the page out at 980px and shrink-to-fit,
     which makes every bit of text unreadable.
 """
-import base64, html, json, os, re, shutil, sys
+import base64, html, json, os, re, shutil, sys, unicodedata
 import city
 CITY = city.enter()
 NAME = CITY['name']
@@ -36,7 +36,8 @@ cities = json.dumps([{"slug": s, "name": c["name"], "live": bool(c.get("live")),
                     separators=(',', ':'), ensure_ascii=True)
 
 # The two typefaces, both under the SIL Open Font License (engine/fonts). The website loads them
-# from the city's own fonts/ folder, so no visitor's browser calls a font service; the Artifact is
+# from one fonts/ folder beside the cities (../fonts/ from a city's page), so no visitor's browser
+# calls a font service and a visitor who swaps cities does not fetch them again; the Artifact is
 # one file, so it carries them inline and leaves out the extended-Latin file it rarely needs.
 LATIN = ("U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,"
          "U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD")
@@ -52,13 +53,70 @@ def fontfaces(inline):
         if inline and not core:
             continue
         path = os.path.join(city.ENGINE, "fonts", name)
-        src = ("data:font/woff2;base64," + base64.b64encode(open(path, "rb").read()).decode()) if inline else f"fonts/{name}"
+        src = ("data:font/woff2;base64," + base64.b64encode(open(path, "rb").read()).decode()) if inline else f"../fonts/{name}"
         out.append(f"@font-face{{font-family:'{family}'; font-style:normal; font-weight:{weight}; font-display:swap; "
                    f"src:url({src}) format('woff2'); unicode-range:{span}}}")
     return "\n".join(out)
-os.makedirs("fonts", exist_ok=True)
+os.makedirs(os.path.join(city.ROOT, "fonts"), exist_ok=True)
 for _family, _weight, _name, _span, _core in FONTS:
-    shutil.copyfile(os.path.join(city.ENGINE, "fonts", _name), os.path.join("fonts", _name))
+    shutil.copyfile(os.path.join(city.ENGINE, "fonts", _name), os.path.join(city.ROOT, "fonts", _name))
+# The two files the first screen is set in, fetched before the stylesheet asks for them.
+PRELOAD = ("inter-tight-latin-wght-normal.woff2", "ibm-plex-mono-latin-500-normal.woff2")
+
+def slug_of(name):
+    """A venue's name as its address, the same way slugOf() in the template makes it."""
+    s = re.sub(r"[\u0300-\u036f]", "", unicodedata.normalize("NFD", name.lower()))
+    return re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+
+def stubs():
+    """A small page per sauna, s/<slug>/index.html, for link previews.
+
+    Whatever makes a preview (a chat app, a social network) fetches the address and reads its Open
+    Graph tags without running any script and without ever seeing what follows a #. So a link to
+    one sauna on the map cannot preview as that sauna. These pages can: each carries the sauna's
+    name, a line about it and its picture (og/<slug>.jpg, drawn by engine/og.js --venues, or the
+    city's own share image until that exists), and sends a person straight on to the map with the
+    sauna picked. The page's "share" button hands out these addresses."""
+    SITE, cur = CITY['site'], CITY.get('currency', '€')
+    shutil.rmtree("s", ignore_errors=True)
+    seen = {}
+    for v in venues:
+        slug = slug_of(v["name"])
+        assert slug and slug not in seen, f"{v['name']} and {seen.get(slug)} would share the address {slug!r}"
+        seen[slug] = v["name"]
+        own = os.path.isfile(os.path.join("og", slug + ".jpg"))
+        image = f"{SITE}og/{slug}.jpg" if own else f"{SITE}og.png"
+        title = text(f"{v['name']} · Sauna Map {NAME}")
+        line = f"{v['kind']} in {v['district']}" if v.get('district') else v['kind']
+        if v.get('price') is not None:
+            line += f", from {cur}{v['price']:g}"
+        desc = text(f"{line}. Hours, prices and heat on the sauna map of {NAME}.")
+        to = f"../../#{slug}"
+        page = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
+                '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+                f'<title>{title}</title>\n'
+                f'<meta name="description" content="{desc}">\n'
+                '<meta name="robots" content="noindex, follow">\n'
+                f'<link rel="canonical" href="{SITE}">\n'
+                '<meta property="og:type" content="website">\n'
+                f'<meta property="og:site_name" content="{text("Sauna Map " + NAME)}">\n'
+                f'<meta property="og:title" content="{title}">\n'
+                f'<meta property="og:description" content="{desc}">\n'
+                f'<meta property="og:url" content="{SITE}s/{slug}/">\n'
+                f'<meta property="og:image" content="{image}">\n'
+                '<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n'
+                '<meta name="twitter:card" content="summary_large_image">\n'
+                f'<meta name="twitter:title" content="{title}">\n'
+                f'<meta name="twitter:description" content="{desc}">\n'
+                f'<meta name="twitter:image" content="{image}">\n'
+                f'<script>location.replace("{to}")</script>\n'
+                '</head>\n<body>\n'
+                f'<p><a href="{to}">{text(v["name"])} on the sauna map of {text(NAME)}</a></p>\n'
+                '</body>\n</html>\n')
+        assert page.isascii()
+        os.makedirs(os.path.join("s", slug), exist_ok=True)
+        open(os.path.join("s", slug, "index.html"), "w", encoding="ascii").write(page)
+    print(f"s/: {len(seen)} link-preview pages, {sum(os.path.isfile(os.path.join('og', s + '.jpg')) for s in seen)} with their own picture")
 
 def assemble(TPL, OUT):
     artifact = OUT.endswith('artifact.html')
@@ -145,6 +203,7 @@ def document(doc):
             f'<meta name="description" content="{DESC}">\n'
             f'<link rel="canonical" href="{SITE}">\n'
             f'<link rel="icon" href="{icon}">\n'
+            + ''.join(f'<link rel="preload" href="../fonts/{f}" as="font" type="font/woff2" crossorigin>\n' for f in PRELOAD) +
             '<meta property="og:type" content="website">\n'
             f'<meta property="og:site_name" content="{TITLE}">\n'
             f'<meta property="og:title" content="{TITLE}">\n'
@@ -168,5 +227,6 @@ if len(sys.argv) == 3:
 elif len(sys.argv) == 1:
     assemble('template.html', 'index.html')
     assemble('template.html', 'artifact.html')
+    stubs()
 else:
     raise SystemExit("usage: assemble.py <city> [<template> <out>]")

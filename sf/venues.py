@@ -33,7 +33,19 @@ Left out, and why:
   included in a booked treatment.
 - Civic Center Sauna & Hot Tub (15 Fell Street) has no site of its own that
   could be found.
-- Oakland, Berkeley and Richmond are outside the frame.
+- Perspire Sauna Studio in Berkeley is in OpenStreetMap but is an infrared studio
+  chain and was not looked at. Oakland is still outside the frame.
+
+Added later on 25 November, at the owner's request, with the frame extended east and
+north to take in the East Bay shore: Albany Sauna (1002 Solano Avenue, Albany) and
+Good Hot (Terminal 4, Point San Pablo, Richmond). Both are their own nodes in
+OpenStreetMap. Albany Sauna's site is a Square Online page that renders by script, so
+its markup holds 58 characters of text; its facts were read out of the page data the
+site ships (the same text a browser shows), which the verifier now reads too. Its home page still carries
+an older "Location & Hours" block (Monday 10:30-7, Tuesday closed) that disagrees
+with its sauna page and its booking notice, which both say the sauna opens every day
+from 12:00 with the last appointment at 21:00; those are the hours used. Good Hot asks
+guests not to put water on the rocks, which is the "dry" kind in HEAT.
 
 Still empty: who throws the water at Kabuki, Alchemy Springs, Onsen and
 Dogpatch Paddle (their pages do not say); a plunge temperature for Archimedes Banya, Onsen and Fjord
@@ -69,6 +81,14 @@ V = [
   "Two Finnish-style saunas on a floating platform in a marina, six people each","No pool: you plunge in the Bay inside a marked zone, or cool off under the outdoor showers","Open daily 08:00–20:30, Tuesdays 14:00–20:30 · sessions are booked ahead; the calendar opens Sundays at 09:00 with a new week, two weeks out","Sauna and a plunge in the Bay",None,
   "Bathing attire is required at all times. Bring at least two towels, water and footwear. No soap in the showers. Minimum age 14, with an adult in the group. Free Open Access sessions run every two weeks.",
   "https://www.thisisfjord.com/"],
+ ["Albany Sauna",37.88986,-122.300434,"Private Finnish sauna rooms","Albany",30,"$30 for 30 min, one person · 45 min $45, or $70 for two · 60 min $60, or $85 for two · each further person $25","no","",
+  "Four private sauna rooms around one central brick furnace, built in 1934; each room seats up to four and you set your own heat and steam","No pool: water buckets and an overhead waterfall above the bench, and a shower in each room. The outdoor hot tubs are under construction","The sauna opens every day from 12:00, last appointment 21:00 · by reservation, with a signed waiver","A private room where you make your own steam",None,
+  "Reservations by phone or text, not online. Staff show first-timers how to work the damper and the water valve: the four rooms share one furnace, so steam you make reaches the others. Towels are included. An older hours block on the same site lists other times; the sauna page and the booking notice agree on the ones given here.",
+  "https://www.albanysauna.com/sauna"],
+ ["Good Hot",37.962153,-122.427289,"Bayside sauna rental","Point San Pablo, Richmond",30,"$30 a seat in the quiet communal sauna (first and last slots on Mon, Thu and Fri, first slot at weekends) · private sauna $130 for 1½ h, up to 6 people · $150 for the two larger ones, up to 8 · $20 off on Mon and Thu","no","",
+  "Five small saunas rented privately and a communal one with six seats, on the shore at Terminal 4; the heat is adjustable up to about 180°F","No pool: a small beach beside the saunas for a plunge in the Bay, and two cold rinse showers","Thu–Mon, generally 09:30–20:15 · closed Tue–Wed · by reservation only, up to 21 days ahead","A private sauna and a dip in the Bay",None,
+  "No drop-in bathing: every visit is booked, and the gate code and directions come with the confirmation. 18 and over, no dogs. Wear swimsuit bottoms or a wrap outside the saunas. Sandals or water shoes are required for the water, which is out of reach at very low tide.",
+  "https://www.good-hot.com/info"],
 ]
 
 OPEN = {
@@ -81,6 +101,10 @@ OPEN = {
  "Fjord": {"weekly": [[480, 1230], [840, 1230]] + [[480, 1230]] * 5, "src": "venue"},
  # ends at the last public sauna, 16:00
  "Dogpatch Paddle": {"weekly": [None] + [[540, 960]] * 6, "src": "venue"},
+ # sauna from 12:00, last appointment 21:00, every day
+ "Albany Sauna": {"weekly": [[720, 1260]] * 7, "src": "venue"},
+ # "generally" 9:30 to 8:15, Thursday through Monday; the whole site shuts at 8:15
+ "Good Hot": {"weekly": [[570, 1215], None, None, [570, 1215], [570, 1215], [570, 1215], [570, 1215]], "src": "venue"},
 }
 
 # --- Only where the venue's own page says who throws the water. Archimedes Banya's
@@ -91,6 +115,10 @@ HEAT = {
    "self", "Ask the room before adding steam in the Russian sauna; never water in the Finnish dry sauna. Staff also run a free aromatherapy Aufguss in the Russian sauna at 15:00, 19:00 and 21:00 (their home page adds 17:00 at weekends)"),
  "Fjord": ("Two traditional Finnish-style saunas kept at a target of 190°F, six people each, on a floating platform in a marina",
    "self", "Löyly is allowed: pour small amounts of water over the hot stones"),
+ "Albany Sauna": ("Four private sauna rooms sharing one central brick furnace filled with several tons of river rocks, built in 1934; each room seats up to four",
+   "self", "You open the damper for heat and pull the water valve to put water on the rocks inside the furnace. Wait at least 30 seconds between pulls, because the steam reaches all four rooms"),
+ "Good Hot": ("Five small saunas rented privately and a communal one with six seats, on the shore at Terminal 4; the heat is adjustable up to about 180°F",
+   "dry", "Guests are asked not to add water to the rocks: the heaters are sensitive to water"),
 }
 HEAT_SOURCE = "read off the venues' own pages, 25 Nov 2026"
 
@@ -110,6 +138,8 @@ BANYA = {"Archimedes Banya"}
 STOVE = {
  "Alchemy Springs": ("gas", None, "Two gas stoves heat the sauna. Its own site does not describe them", "editor"),
  "Archimedes Banya": (None, None, "Each Russian sauna is built around a 22,000 lb stove faced in handmade ceramic tiles from Russia", "venue"),
+ "Albany Sauna": ("gas", None, "One central brick furnace holding several tons of river rocks, gas-fired for five hours each morning and then shut with the chimney closed, so the rocks stay hot through the day", "venue"),
+ "Good Hot": (None, None, "Commercial heaters that take no water on the rocks", "venue"),
 }
 
 LAST_CHECKED = "25 November 2026"

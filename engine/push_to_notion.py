@@ -128,8 +128,11 @@ out.append("**Aufguss rating** applies only where someone throws for you; it is 
 n_staff = sum(1 for v in V if v["loyly"] == "staff")
 n_self = sum(1 for v in V if v["loyly"] == "self")
 n_mach = sum(1 for v in V if v["loyly"] == "machine")
+n_dry = sum(1 for v in V if v["loyly"] == "dry")
 out.append(f"Of the {len(V)} venues, {n_staff} run a staff Aufguss, {n_self} let you throw your "
-           f"own, {n_mach} only dose aroma automatically, and the rest have not said.")
+           f"own, {n_mach} only dose aroma automatically, "
+           + (f"{n_dry} allow no water on the stones, " if n_dry else "")
+           + "and the rest have not said.")
 out.append("## Reviews")
 n = sum(len(v.get("reviews", [])) for v in V)
 who = ", ".join(r["name"] for r in M["reviewers"].values())

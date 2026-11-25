@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Cut a city's base-map layers out of an OpenStreetMap .osm.pbf extract.
 
-    python3 engine/osm_extract.py <city> <extract.osm.pbf>
+    python3 engine/osm_extract.py <city> <extract.osm.pbf> [<another.osm.pbf> ...]
+
+A frame wider than one extract takes several: San Francisco with the East Bay is the
+SanFrancisco and Berkeley extracts read together, and what both hold is kept once.
 
 This stands in for engine/fetch.sh where Overpass cannot be reached (a cloud
 session's network resets every Overpass connection). It writes the same files
@@ -62,17 +65,18 @@ pool.Add(fdp)
 M = {n: message_factory.GetMessageClass(pool.FindMessageTypeByName("osm." + n))
      for n in ("BlobHeader", "Blob", "PrimitiveBlock")}
 
-def blocks(path):
-    """Every PrimitiveBlock in the file, with its string table decoded."""
-    with open(path, "rb") as f:
-        while head := f.read(4):
-            header = M["BlobHeader"].FromString(f.read(struct.unpack(">I", head)[0]))
-            blob = M["Blob"].FromString(f.read(header.datasize))
-            if header.type != "OSMData":
-                continue
-            data = zlib.decompress(blob.zlib_data) if blob.HasField("zlib_data") else blob.raw
-            block = M["PrimitiveBlock"].FromString(data)
-            yield block, [s.decode("utf-8", "replace") for s in block.stringtable.s]
+def blocks(paths):
+    """Every PrimitiveBlock in the files, with its string table decoded."""
+    for path in paths:
+        with open(path, "rb") as f:
+            while head := f.read(4):
+                header = M["BlobHeader"].FromString(f.read(struct.unpack(">I", head)[0]))
+                blob = M["Blob"].FromString(f.read(header.datasize))
+                if header.type != "OSMData":
+                    continue
+                data = zlib.decompress(blob.zlib_data) if blob.HasField("zlib_data") else blob.raw
+                block = M["PrimitiveBlock"].FromString(data)
+                yield block, [s.decode("utf-8", "replace") for s in block.stringtable.s]
 
 def tags(keys, vals, st):
     return {st[k]: st[v] for k, v in zip(keys, vals)}
@@ -106,9 +110,9 @@ def is_candidate(t):
 
 def main():
     cfg = city.enter()
-    if len(sys.argv) != 2:
-        raise SystemExit("usage: osm_extract.py <city> <extract.osm.pbf>")
-    path = sys.argv[1]
+    if len(sys.argv) < 2:
+        raise SystemExit("usage: osm_extract.py <city> <extract.osm.pbf> [<another.osm.pbf> ...]")
+    path = sys.argv[1:]
     W, S, E, N = cfg["bbox"]
     # a margin, so a road or a coast that leaves the frame and comes back is kept whole
     mx, my = (E - W) * 0.08, (N - S) * 0.08
@@ -138,6 +142,7 @@ def main():
                             want_ways.setdefault(int(m), "parks")
                 elif is_candidate(t):
                     pass                       # a sauna mapped as a relation is rare; skipped
+    mp_water = [list(o) for o in dict.fromkeys(tuple(o) for o in mp_water)]      # a relation in two extracts, once
     print(f"pass 1: {len(want_ways)} member ways wanted, {len(mp_water)} water relations")
 
     # pass 2: ways
@@ -192,6 +197,8 @@ def main():
                 la, lo = (lato + g * n.lat) * 1e-9, (lono + g * n.lon) * 1e-9
                 if n.id in need:
                     coord[n.id] = (round(la, 7), round(lo, 7))
+    places = list({(p["name"], p["lat"], p["lon"]): p for p in places}.values())   # a node in two extracts, once
+    cand = list({c["osm"]: c for c in cand}.values())
     print(f"pass 3: {len(coord)} nodes placed, {len(places)} place names, {len(cand)} candidate nodes")
 
     def geometry(refs):
