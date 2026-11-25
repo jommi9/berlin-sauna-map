@@ -8,7 +8,7 @@ the workflow comments on the issue rather than committing something wrong:
   * a review must name a venue that exists, spelled as the map spells it; the
     city it belongs to is the one whose map lists that name;
   * a review is only accepted from a handle already in reviewers.json;
-  * ratings must be 1-5 and dates must be real ISO dates;
+  * ratings must be 0.5-5 in halves and dates must be real ISO dates;
   * free text is length-capped and stripped of anything but plain text, because
     it lands in a page rendered with innerHTML.
 
@@ -74,10 +74,11 @@ elif "review" in labels:
              f"venue names have to be unique across the maps before this can be filed")
     home = homes[0]
     try:
-        rating = int(field("Rating out of 5"))
-        assert 1 <= rating <= 5
+        rating = float(field("Rating out of 5"))
+        assert 0.5 <= rating <= 5 and rating * 2 == int(rating * 2)
+        rating = int(rating) if rating == int(rating) else rating
     except Exception:
-        fail("rating must be a whole number from 1 to 5")
+        fail("rating must be from 0.5 to 5, in whole or half stars")
     try:
         visited = datetime.date.fromisoformat(field("When did you go?").strip()).isoformat()
     except Exception:

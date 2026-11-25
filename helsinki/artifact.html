@@ -564,12 +564,24 @@ button.btn{border:0; cursor:pointer}
 .day i{font-style:normal; color:var(--label-3); padding:0 3px}
 .day:hover i{color:var(--red)}
 .wr{display:flex; flex-direction:column; gap:8px; padding:12px; border-radius:var(--r-sm); background:var(--surface-2)}
-.stars{display:flex; gap:2px}
-.stars button{
-  width:34px; height:34px; padding:0; border:0; background:none; cursor:pointer;
-  color:var(--fill-2); font:400 24px/1 var(--font);
+/* Ratings go in halves. Both the picker and the read-only row draw five grey stars and lay an
+   ember copy over them, cut off at the rating's width, so half a star is half a star. */
+.pickrow{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.stars{display:inline-flex; gap:2px; border-radius:var(--r-sm); cursor:pointer; touch-action:manipulation}
+.stars .st{
+  position:relative; width:34px; height:34px; display:grid; place-items:center;
+  color:var(--fill-2); font:400 26px/1 var(--font);
 }
-.stars button.lit{color:var(--ember)}
+.stars .st::before, .stars .st i::before{content:"\2605"}
+.stars .st i{
+  position:absolute; inset:0 auto 0 0; width:0; overflow:hidden; display:grid; place-items:center;
+  color:var(--ember); font-style:normal; pointer-events:none;
+}
+.stars .st i::before{width:34px; flex:none; text-align:center}
+.stars-n{color:var(--label-2); font:500 13px/1.3 var(--font); font-variant-numeric:tabular-nums}
+.rate{position:relative; display:inline-block; white-space:nowrap; letter-spacing:.08em; color:var(--fill-2)}
+.rate::before, .rate i::before{content:"\2605\2605\2605\2605\2605"}
+.rate i{position:absolute; inset:0 auto 0 0; overflow:hidden; color:var(--ember); font-style:normal}
 .wr textarea, .join textarea{
   width:100%; min-height:88px; padding:10px 12px; border:0; border-radius:var(--r-sm); resize:vertical;
   background:var(--surface); box-shadow:inset 0 0 0 1px var(--sep); color:var(--label); font:400 15px/1.5 var(--font);
@@ -1326,6 +1338,8 @@ function ok(v){
 
 /* ---------- venue cards ---------- */
 const lower = t => t.toLowerCase().replace(/\busc\b/g, "USC");   // the voice is lowercase; acronyms stay
+/* A rating out of five as a row of stars, halves included. */
+const starRow = r => `<span class="rate" role="img" aria-label="${+r} of 5 stars"><i style="width:${Math.max(0, Math.min(5, +r)) * 20}%"></i></span>`;
 /* The picks are one person's, so they carry that person's initial, the way a
    saved list on a places app shows who saved it. */
 const CURATOR = (([h, r]) => ({ handle: h, name: r ? r.name : "the editor" }))(
@@ -1408,7 +1422,7 @@ V.forEach(v => {
     ${v.reviews.length ? `<div class="revs"><p class="revs-h">reviews <span class="score">${v.rating}<em>/5</em></span></p>${v.reviews.map(r => `
       <blockquote class="rev">
         <p class="rev-t">${r.text}</p>
-        <footer><span class="rev-w">${r.by}</span> <span class="rev-m">${"\u2605".repeat(r.rating)}${"\u2606".repeat(5 - r.rating)} \u00b7 visited ${r.visited}</span></footer>
+        <footer><span class="rev-w">${r.by}</span> <span class="rev-m">${starRow(r.rating)} \u00b7 visited ${r.visited}</span></footer>
       </blockquote>`).join("")}</div>` : ""}
     <div class="revs" data-live hidden></div>
     <div class="revs" data-logs hidden></div>
@@ -2018,8 +2032,11 @@ function drawWriter(v){
   let rating = mine ? mine.rating : 0;
   box.innerHTML = `
     <div class="wr">
-      <div class="stars" role="radiogroup" aria-label="Your rating">${[1, 2, 3, 4, 5].map(i =>
-        `<button type="button" role="radio" data-star="${i}" aria-label="${plural(i, "star")}">\u2605</button>`).join("")}</div>
+      <div class="pickrow">
+        <div class="stars" role="slider" tabindex="0" aria-label="Your rating, in half stars" aria-valuemin="0.5" aria-valuemax="5">${[1, 2, 3, 4, 5].map(i =>
+          `<span class="st" data-star="${i}"><i></i></span>`).join("")}</div>
+        <span class="stars-n" aria-hidden="true"></span>
+      </div>
       <textarea maxlength="800" placeholder="the heat, the l\u00f6yly, the crowd, when to go"></textarea>
       <p class="err" hidden></p>
       <div class="row">
@@ -2029,11 +2046,28 @@ function drawWriter(v){
       </div>
     </div>`;
   const ta = box.querySelector("textarea"); ta.value = mine ? mine.text : "";
-  const light = () => box.querySelectorAll("[data-star]").forEach(b => {
-    b.classList.toggle("lit", +b.dataset.star <= rating); b.setAttribute("aria-checked", String(+b.dataset.star === rating));
-  });
+  const picker = box.querySelector(".stars"), readout = box.querySelector(".stars-n");
+  const light = () => {
+    box.querySelectorAll("[data-star]").forEach(s => {
+      s.firstChild.style.width = `${Math.max(0, Math.min(1, rating - (+s.dataset.star - 1))) * 100}%`;
+    });
+    picker.setAttribute("aria-valuenow", rating);
+    picker.setAttribute("aria-valuetext", rating ? `${rating} of 5 stars` : "no rating yet");
+    readout.textContent = rating ? `${rating} / 5` : "tap a star, or its left half for a half";
+  };
   light();
-  box.querySelector(".stars").addEventListener("click", e => { const b = e.target.closest("[data-star]"); if (b){ rating = +b.dataset.star; light(); } });
+  // The left half of a star is the half star below it.
+  picker.addEventListener("click", e => {
+    const s = e.target.closest("[data-star]"); if (!s) return;
+    const r = s.getBoundingClientRect();
+    rating = +s.dataset.star - (e.clientX - r.left < r.width / 2 ? .5 : 0); light();
+  });
+  picker.addEventListener("keydown", e => {
+    const step = { ArrowRight: .5, ArrowUp: .5, ArrowLeft: -.5, ArrowDown: -.5 }[e.key];
+    if (e.key === "Home") rating = .5; else if (e.key === "End") rating = 5;
+    else if (step) rating = Math.min(5, Math.max(.5, rating + step)); else return;
+    e.preventDefault(); light();
+  });
   box.querySelector("[data-post]").addEventListener("click", async e => {
     const err = box.querySelector(".err");
     if (!rating){ err.textContent = "pick a rating"; err.hidden = false; return; }
@@ -2060,7 +2094,7 @@ function drawLive(v){
     <blockquote class="rev">
       <p class="rev-t">${esc(r.text)}</p>
       <footer>${avatar(r, true)}<span class="rev-w">${xLink(r, esc(r.name))}</span>
-        <span class="rev-m">${"\u2605".repeat(r.rating)}${"\u2606".repeat(5 - r.rating)} \u00b7 ${dayText(r.day)}</span></footer>
+        <span class="rev-m">${starRow(r.rating)} \u00b7 ${dayText(r.day)}</span></footer>
     </blockquote>`).join("");
 }
 async function logVisit(v, day, on){
