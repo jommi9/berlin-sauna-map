@@ -5,8 +5,8 @@
 //   python3 -m http.server 8765 &
 //   node engine/og.js helsinki nyc sf
 //
-// Retake it when the header or the venues change. Berlin's own og.png has a photo collage and was
-// taken by hand; this does not reproduce that.
+// Retake it when the header or the venues change. A city whose header has a photo collage (Berlin)
+// gets a card the width of the image with the collage in it, and its venues in the strip below.
 const { chromium } = require('playwright');
 (async () => {
   const b = await chromium.launch();
@@ -17,12 +17,14 @@ const { chromium } = require('playwright');
     await p.evaluate(() => {
       const wrap = document.getElementById('wrap');
       const map = document.getElementById('map').cloneNode(true);
-      // venues fitted into the right-hand part of the image (x 660..1170), the card on the left
+      const photos = document.querySelectorAll('header.top .collage .snap').length > 0;
+      // venues fitted into the right-hand part of the image (x 660..1170), the card on the left;
+      // with a collage the card is the full width, so they go in the strip under it (y 380..610)
       const [ex, ey, ew, eh] = EXTENT;
-      let u = Math.max(ew / 510, eh / 560) * 1.08;              // map units per image pixel
+      let u = (photos ? Math.max(ew / 1100, eh / 230) : Math.max(ew / 510, eh / 560)) * 1.08;   // map units per image pixel
       u = Math.min(u, GEO.w / 1200, GEO.h / 630);                // never wider or taller than the map
       const w = 1200 * u, h = 630 * u;
-      let x0 = ex + ew / 2 - 915 * u, y0 = ey + eh / 2 - 315 * u;
+      let x0 = ex + ew / 2 - (photos ? 600 : 915) * u, y0 = ey + eh / 2 - (photos ? 495 : 315) * u;
       x0 = Math.max(0, Math.min(GEO.w - w, x0)); y0 = Math.max(0, Math.min(GEO.h - h, y0));
       map.setAttribute('viewBox', `${x0} ${y0} ${w} ${h}`);
       const k = Math.max(1, u * 1.25);
@@ -31,16 +33,18 @@ const { chromium } = require('playwright');
       Object.assign(map.style, { position: 'fixed', left: 0, top: 0, width: '1200px', height: '630px', background: 'var(--land)', borderRadius: 0 });
       const hero = document.querySelector('header.top');
       hero.querySelectorAll('.stats').forEach(n => n.remove());
-      hero.querySelectorAll('.city-b svg, .city-m').forEach(n => n.remove());   // a picture has no switcher
+      hero.querySelectorAll('.city-m').forEach(n => n.remove());                // a picture has no switcher,
+      hero.querySelectorAll('.city-b').forEach(b => b.replaceWith(b.textContent));   // so the city is plain text
       wrap.innerHTML = '';
       wrap.appendChild(map);
       const card = document.createElement('div');
-      Object.assign(card.style, { position: 'fixed', left: '44px', top: '52px', width: '590px', boxSizing: 'border-box',
-        padding: '44px 34px 40px', borderRadius: '22px', background: 'rgba(246,245,242,.86)',
+      Object.assign(card.style, { position: 'fixed', left: '44px', top: '52px', width: photos ? '1112px' : '590px', boxSizing: 'border-box',
+        padding: photos ? '30px 34px 30px' : '44px 34px 40px', borderRadius: '22px', background: 'rgba(246,245,242,.86)',
         backdropFilter: 'blur(14px)', boxShadow: '0 18px 50px rgba(0,0,0,.12)' });
       card.appendChild(hero);
-      hero.style.margin = '0'; hero.style.padding = '0'; hero.style.display = 'block';
-      hero.querySelectorAll('.collage').forEach(n => n.remove());
+      hero.style.margin = '0'; hero.style.padding = '0';
+      if (photos) hero.style.gridTemplateColumns = 'minmax(0,1fr) 410px';
+      else { hero.style.display = 'block'; hero.querySelectorAll('.collage').forEach(n => n.remove()); }
       hero.querySelectorAll('.intro, .lede').forEach(n => { n.style.maxWidth = 'none'; n.style.width = '100%'; });
       wrap.appendChild(card);
       document.querySelectorAll('.eyebrow .crumb').forEach(a => { a.nextSibling.textContent = a.nextSibling.textContent.replace(/^\s*\/\s*/, ''); a.remove(); });

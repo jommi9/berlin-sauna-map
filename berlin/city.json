@@ -3,6 +3,7 @@
   "country": "DE",
   "timezone": "Europe/Berlin",
   "bbox": [13.3, 52.462, 13.49, 52.547],
+  "icon": "<path d='M30 51 L31.2 31 h1.6 L34 51 z' fill='#fff'/><circle cx='32' cy='26' r='6.6' fill='#fff'/><path d='M32 19 V9.5' stroke='#fff' stroke-width='2.4' stroke-linecap='round'/>",
   "lede": "Hotel day spas, proper neighbourhood saunas, and the ones you can walk into on an Urban Sports Club card.",
   "notionIntro": "Berlin sauna shortlist combining hotel day spas, Urban Sports Club options, and regular standalone saunas.",
   "currency": "€",

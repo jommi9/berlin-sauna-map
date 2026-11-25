@@ -132,13 +132,13 @@ button{font:inherit; color:inherit}
 /* The city in the title is the switcher: tap it for every other map. */
 .cityp{position:relative}
 .city-b{
-  display:inline-flex; align-items:center; gap:.16em; margin:0; padding:0; border:0; background:none;
-  color:inherit; font:inherit; letter-spacing:inherit; cursor:pointer;
+  display:inline-flex; align-items:center; gap:.2em; margin:0 .08em 0 0; padding:.05em .22em .09em .26em;
+  border:0; border-radius:var(--r-lg); background:var(--tint-soft); color:var(--tint);
+  font:inherit; letter-spacing:inherit; cursor:pointer; transition:box-shadow .2s var(--ease);
 }
-.city-b svg{
-  flex:none; width:.62em; height:.62em; margin-top:.1em; padding:.1em; border-radius:50%;
-  color:var(--tint); background:var(--fill); transition:transform .25s var(--ease);
-}
+.city-b:hover, .city-b[aria-expanded="true"]{box-shadow:inset 0 0 0 1.5px var(--tint)}
+.city-b svg{flex:none; width:.52em; height:.52em; margin-top:.08em; transition:transform .25s var(--ease)}
+#appicon{cursor:pointer}
 .city-b[aria-expanded="true"] svg{transform:rotate(180deg)}
 .city-m{
   position:absolute; top:calc(100% + 8px); left:0; z-index:30; min-width:236px; padding:6px;
@@ -146,16 +146,19 @@ button{font:inherit; color:inherit}
   display:flex; flex-direction:column; font:500 15px/1.2 var(--font);
 }
 .city-m a, .city-m .soon{
-  display:flex; align-items:center; justify-content:space-between; gap:18px; padding:10px 12px;
+  display:flex; align-items:center; gap:11px; padding:7px 12px 7px 8px;
   border-radius:var(--r-sm); color:var(--label); text-decoration:none;
 }
+.city-m .ci{flex:none; width:30px; height:30px; border-radius:7px}
+.city-m .nm{flex:1; min-width:0}
+.city-m .soon .ci{opacity:.45}
 .city-m a:hover, .city-m a:focus-visible{background:var(--fill)}
 .city-m a[aria-current]{font-weight:600}
-.city-m a[aria-current] svg{width:16px; height:16px; color:var(--tint)}
+.city-m a[aria-current] .city-tick{width:16px; height:16px; color:var(--tint)}
 .city-m .soon{color:var(--label-3)}
 .city-m .soon i{font:500 12px/1 var(--font); font-style:normal; padding:4px 7px; border-radius:3px; background:var(--fill)}
 .city-m hr{margin:6px 12px; border:0; border-top:1px solid var(--sep)}
-.city-m a.all{color:var(--tint)}
+.city-m a.all{padding:10px 12px; color:var(--tint)}
 .lede{margin:14px 0 0; max-width:54ch; color:var(--label-2); font-size:16px; line-height:1.5}
 .stats{
   display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); margin:0;
@@ -641,6 +644,13 @@ button.btn{border:0; cursor:pointer}
   border-top:1px solid var(--sep); color:var(--label-2); font-size:13px;
 }
 .sign .appicon{width:36px; height:36px; border-radius:8px; box-shadow:none}
+.sign .src{
+  display:inline-flex; align-items:center; gap:8px; margin-left:auto; padding:8px 12px; flex:none;
+  border-radius:var(--r-sm); background:var(--fill); color:var(--label); font:500 14px/1 var(--font); white-space:nowrap;
+}
+.sign .src:hover{background:var(--fill-2)}
+.sign > div{flex:1; min-width:0}
+@media (max-width:560px){ .sign{flex-wrap:wrap} .sign > div{flex-basis:200px} .sign .src{margin-left:50px} }
 .sign b{display:block; color:var(--label); font:600 17px/1.2 var(--font-display); letter-spacing:-.012em}
 
 /* ---------------- phone and small tablet: map first, list as a sheet ---------------- */
@@ -720,16 +730,15 @@ button.btn{border:0; cursor:pointer}
   <header class="top">
     <div class="intro">
       <div class="brand">
-        <svg class="appicon" viewBox="0 0 64 64" aria-hidden="true">
+        <svg class="appicon" id="appicon" viewBox="0 0 64 64" aria-hidden="true">
           <defs><linearGradient id="aig" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9A462"/><stop offset="1" stop-color="#B3502A"/></linearGradient></defs>
           <rect width="64" height="64" rx="15" fill="url(#aig)"/>
-          <path d="M21 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11 M32 45 q-5 -6.5 0 -13 q5 -6.5 0 -13 M43 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
-          <path d="M15 52 h34" stroke="#FFFFFF" stroke-opacity=".6" stroke-width="4" stroke-linecap="round"/>
+          <path d='M15.5 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11 M48.5 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11' fill='none' stroke='#fff' stroke-width='4' stroke-linecap='round'/><path d='M23 51 V40 h18 V51 z M26.5 40 V34 h11 V40 z' fill='#fff'/><path d='M25.5 34 a6.5 7.5 0 0 1 13 0 z' fill='#fff'/><path d='M32 26 V14 M29 18 h6' stroke='#fff' stroke-width='2.4' stroke-linecap='round'/><path d='M15 52 h34' stroke='#fff' stroke-opacity='.6' stroke-width='4' stroke-linecap='round'/>
         </svg>
         <div>
           <p class="eyebrow"><a class="crumb" href="https://jommi.fi/sauna/">sauna maps</a> / helsinki &middot; checked <time id="stamp-date">15.11.2026</time></p>
           <div class="cityp">
-            <h1 class="title"><button class="city-b" id="city-b" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="city-m" title="Switch city">helsinki<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button> sauna map</h1>
+            <h1 class="title"><button class="city-b" id="city-b" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="city-m" title="Change city">helsinki<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button> sauna map</h1>
             <nav class="city-m" id="city-m" aria-label="Sauna maps of other cities" hidden></nav>
           </div>
         </div>
@@ -901,6 +910,7 @@ button.btn{border:0; cursor:pointer}
       <path d="M15 52 h34" stroke="#FFFFFF" stroke-opacity=".6" stroke-width="4" stroke-linecap="round"/>
     </svg>
     <div><b lang="fi">Hyv&auml;t l&ouml;ylyt.</b>What Finns wish each other on the way into the sauna.</div>
+    <a class="src" href="https://github.com/jommi9/sauna-maps" target="_blank" rel="noopener noreferrer"><svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/></svg><span>the maps on GitHub</span></a>
   </footer>
 </div>
 
@@ -1678,19 +1688,20 @@ document.getElementById("q").addEventListener("focus", () => { if (isMobile() &&
 /* The city switcher in the title. It lists every map the engine builds. The copy on GitHub Pages
    has all of them side by side, so there each one is a link; on jommi.fi and in the artifact only
    the cities open on the hub can be switched to, and the others say they are coming. */
-const CITIES = [{"slug":"berlin","name":"Berlin","live":true},{"slug":"helsinki","name":"Helsinki","live":false},{"slug":"nyc","name":"New York","live":false},{"slug":"sf","name":"San Francisco","live":false}], HERE = "helsinki", HUB = "https://jommi.fi/sauna/";
+const CITIES = [{"slug":"berlin","name":"Berlin","live":true,"icon":"<path d='M15.5 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11 M48.5 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11' fill='none' stroke='#fff' stroke-width='4' stroke-linecap='round'/><path d='M30 51 L31.2 31 h1.6 L34 51 z' fill='#fff'/><circle cx='32' cy='26' r='6.6' fill='#fff'/><path d='M32 19 V9.5' stroke='#fff' stroke-width='2.4' stroke-linecap='round'/><path d='M15 52 h34' stroke='#fff' stroke-opacity='.6' stroke-width='4' stroke-linecap='round'/>"},{"slug":"helsinki","name":"Helsinki","live":false,"icon":"<path d='M15.5 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11 M48.5 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11' fill='none' stroke='#fff' stroke-width='4' stroke-linecap='round'/><path d='M23 51 V40 h18 V51 z M26.5 40 V34 h11 V40 z' fill='#fff'/><path d='M25.5 34 a6.5 7.5 0 0 1 13 0 z' fill='#fff'/><path d='M32 26 V14 M29 18 h6' stroke='#fff' stroke-width='2.4' stroke-linecap='round'/><path d='M15 52 h34' stroke='#fff' stroke-opacity='.6' stroke-width='4' stroke-linecap='round'/>"},{"slug":"nyc","name":"New York","live":false,"icon":"<path d='M15.5 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11 M48.5 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11' fill='none' stroke='#fff' stroke-width='4' stroke-linecap='round'/><path d='M25 51 V37 h3 V27 h2.4 V20 h3.2 V27 H36 V37 h3 V51 z' fill='#fff'/><path d='M32 20 V9.5' stroke='#fff' stroke-width='2.4' stroke-linecap='round'/><path d='M15 52 h34' stroke='#fff' stroke-opacity='.6' stroke-width='4' stroke-linecap='round'/>"},{"slug":"sf","name":"San Francisco","live":false,"icon":"<path d='M15.5 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11 M48.5 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11' fill='none' stroke='#fff' stroke-width='4' stroke-linecap='round'/><path d='M27.5 51 V14 M36.5 51 V14' stroke='#fff' stroke-width='3.4' stroke-linecap='round'/><path d='M27.5 20 h9 M27.5 30 h9' stroke='#fff' stroke-width='2.6'/><path d='M26 14 Q24.5 33 20.5 41.5 M38 14 Q39.5 33 43.5 41.5' fill='none' stroke='#fff' stroke-width='1.9' stroke-linecap='round'/><path d='M20 42.5 h24' stroke='#fff' stroke-width='3.2' stroke-linecap='round'/><path d='M15 52 h34' stroke='#fff' stroke-opacity='.6' stroke-width='4' stroke-linecap='round'/>"}], HERE = "helsinki", HUB = "https://jommi.fi/sauna/";
 const cityB = document.getElementById("city-b"), cityM = document.getElementById("city-m");
 const besideEachOther = false && !location.pathname.startsWith("/sauna/");
 CITIES.forEach(c => {
   const here = c.slug === HERE, open = here || c.live || besideEachOther;
   const row = document.createElement(open ? "a" : "span");
-  row.textContent = c.name.toLowerCase();
+  row.innerHTML = `<svg class="ci" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="url(#aig)"/>${c.icon}</svg><span class="nm"></span>`;
+  row.querySelector(".nm").textContent = c.name.toLowerCase();
   if (!open){ row.className = "soon"; row.insertAdjacentHTML("beforeend", "<i>soon</i>"); }
   else {
     row.href = here ? "#" : besideEachOther ? `../${c.slug}/` : `${HUB}${c.slug}/`;
     if (here){
       row.setAttribute("aria-current", "page");
-      row.insertAdjacentHTML("beforeend", `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>`);
+      row.insertAdjacentHTML("beforeend", `<svg class="city-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>`);
     }
   }
   cityM.appendChild(row);
@@ -1698,6 +1709,7 @@ CITIES.forEach(c => {
 cityM.insertAdjacentHTML("beforeend", `<hr><a class="all" href="${HUB}">all sauna maps</a>`);
 const showCities = on => { cityM.hidden = !on; cityB.setAttribute("aria-expanded", String(on)); };
 cityB.addEventListener("click", () => showCities(cityM.hidden));
+document.getElementById("appicon").addEventListener("click", e => { e.stopPropagation(); showCities(cityM.hidden); });
 cityM.addEventListener("click", e => { if (e.target.closest("[aria-current]")){ e.preventDefault(); showCities(false); } });
 document.addEventListener("click", e => { if (!cityM.hidden && !e.target.closest(".cityp")) showCities(false); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !cityM.hidden){ showCities(false); cityB.focus(); } });
