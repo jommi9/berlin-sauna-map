@@ -227,6 +227,9 @@ coherent:
   the header changes (`node engine/og.js <city> ...`, which also does Berlin's collage).
 - The city in the title is the switcher: underlined, with a red chevron after it. The footer
   carries the link to the repository with GitHub's mark.
+- The disclaimer and the data credit (OpenStreetMap's attribution among it) are small print
+  under the footer at the bottom right (`.fine`), not cards. "before you go" holds only the
+  city's own notes, benchmarks and traps, and is hidden in a city that has neither.
 - The °C / °F switch stands at the right end of the filter bar, in line with the map's right
   edge, on a computer and on a phone.
 - A picked sauna has its own address, the page's with `#<name-as-a-slug>` after it (`slugOf`).
