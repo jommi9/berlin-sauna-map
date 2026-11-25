@@ -11,7 +11,7 @@ Two outputs from one template, and they must not be merged:
     <meta name="viewport"> phones lay the page out at 980px and shrink-to-fit,
     which makes every bit of text unreadable.
 """
-import html, json, os, re, sys
+import base64, html, json, os, re, shutil, sys
 import city
 CITY = city.enter()
 NAME = CITY['name']
@@ -34,6 +34,31 @@ picks = json.dumps(meta['picks'], separators=(',', ':'), ensure_ascii=True)
 cities = json.dumps([{"slug": s, "name": c["name"], "live": bool(c.get("live")), "icon": city.icon(c)}
                      for s, c in ((s, city.load(s)) for s in city.slugs())],
                     separators=(',', ':'), ensure_ascii=True)
+
+# The two typefaces, both under the SIL Open Font License (engine/fonts). The website loads them
+# from the city's own fonts/ folder, so no visitor's browser calls a font service; the Artifact is
+# one file, so it carries them inline and leaves out the extended-Latin file it rarely needs.
+LATIN = ("U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,"
+         "U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD")
+LATIN_EXT = ("U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,"
+             "U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF")
+FONTS = [("Inter Tight", "100 900", "inter-tight-latin-wght-normal.woff2", LATIN, True),
+         ("Inter Tight", "100 900", "inter-tight-latin-ext-wght-normal.woff2", LATIN_EXT, False),
+         ("IBM Plex Mono", "400", "ibm-plex-mono-latin-400-normal.woff2", LATIN, True),
+         ("IBM Plex Mono", "500", "ibm-plex-mono-latin-500-normal.woff2", LATIN, True)]
+def fontfaces(inline):
+    out = []
+    for family, weight, name, span, core in FONTS:
+        if inline and not core:
+            continue
+        path = os.path.join(city.ENGINE, "fonts", name)
+        src = ("data:font/woff2;base64," + base64.b64encode(open(path, "rb").read()).decode()) if inline else f"fonts/{name}"
+        out.append(f"@font-face{{font-family:'{family}'; font-style:normal; font-weight:{weight}; font-display:swap; "
+                   f"src:url({src}) format('woff2'); unicode-range:{span}}}")
+    return "\n".join(out)
+os.makedirs("fonts", exist_ok=True)
+for _family, _weight, _name, _span, _core in FONTS:
+    shutil.copyfile(os.path.join(city.ENGINE, "fonts", _name), os.path.join("fonts", _name))
 
 def assemble(TPL, OUT):
     artifact = OUT.endswith('artifact.html')
@@ -67,6 +92,7 @@ def assemble(TPL, OUT):
               .replace('__USC__', 'true' if CITY.get('usc') else 'false')
               .replace('__TU__', 'F' if CITY.get('temp') == 'F' else 'C')
               .replace('/*__COVER__*/', json.dumps(meta['cover'], separators=(',', ':'), ensure_ascii=True))
+              .replace('/*__FONTFACES__*/', fontfaces(artifact))
               .replace('__APPICON__', city.icon(CITY)).replace('/*__CITIES__*/', cities).replace('__SLUG__', CITY['slug'])
               .replace('__SIBLINGS__', 'false' if artifact else 'true')
               .replace('/*__CONTRIBUTORS__*/', json.dumps(meta['contributors'], separators=(',', ':'), ensure_ascii=True))
@@ -86,7 +112,7 @@ def document(doc):
     # The public address. GitHub Pages builds and serves the page; jommi.fi/sauna/<city>/ is the
     # same page passed through the jommi.fi Worker, and it is the one links and search should use.
     SITE = CITY['site']
-    TITLE = text(f"{NAME} Sauna Map")
+    TITLE = text(f"Sauna Map {NAME}")
     PLAIN = f"{meta['count']} {NAME} saunas and spas, priced and plotted on one map, with a Finn's notes on the loyly."
     DESC = text(PLAIN)
     # The app icon from the header, as the tab icon: steam rising beside the city's landmark.
@@ -99,7 +125,7 @@ def document(doc):
             '</svg>').replace('"', "'").replace('<', '%3C').replace('>', '%3E').replace('#', '%23')
     # Structured data: the list of places, so a search engine sees twenty named
     # venues with coordinates rather than one opaque page.
-    ld = {"@context": "https://schema.org", "@type": "ItemList", "name": f"{NAME} Sauna Map",
+    ld = {"@context": "https://schema.org", "@type": "ItemList", "name": f"Sauna Map {NAME}",
           "url": SITE, "description": PLAIN, "numberOfItems": meta['count'],
           "itemListElement": [
               {"@type": "ListItem", "position": i + 1, "item": {
