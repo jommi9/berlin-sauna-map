@@ -279,6 +279,13 @@ PRACTICAL = ("For a normal sauna session rather than a luxury spa day, **KIEZ SA
              "more sense when the pool, terrace, relaxation area, or USC access is part of what "
              "you want.")
 
+# --- What heats the sauna: (fuel, brand, note, source). Fuel is wood, smoke, pellet, electric,
+#     gas or infrared, or None where that is not known; brand is the stove's maker, or None.
+#     Source is "venue" for what its own site says and "editor" for the owner's own knowledge.
+STOVE = {
+ "sly Berlin": ("electric", None, None, "venue"),
+}
+
 LAST_CHECKED = "8 October 2026"
 
 # --- The "two traps" box: a venue and one sentence, no dates. When the venue

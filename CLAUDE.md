@@ -361,6 +361,17 @@ figures and the note form, and it rewrites the temperatures inside a venue's own
 (`tempText`), so write those with the degree sign and the unit letter ("190°F", "80–100°C"). A
 bare number in prose ("ranging from 180 to 200") cannot be converted, so avoid it.
 
+## The stove
+
+Every card has a "stove" row: what heats the sauna and, where it is known, who made the stove.
+It comes from the city's `STOVE` table, `name: (fuel, brand, note, source)`. Fuel is `wood`,
+`smoke`, `pellet`, `electric`, `gas` or `infrared`, or `None`; brand is the maker (IKI, Harvia)
+or `None`. A venue missing from the table shows "not known", which is the honest state for most
+of them. Source is `"venue"` for what its own site says and `"editor"` for the owner's own
+knowledge of the place, and the card says which. Alchemy Springs' two gas stoves are the
+editor's word: its site does not mention them. The "wood-fired" chip matches `wood` and
+`smoke`. Never guess a fuel from the kind of place.
+
 ## Löyly, the Finnish score, and the Aufguss rating
 
 Three related things, deliberately kept apart.

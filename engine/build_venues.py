@@ -41,6 +41,11 @@ GROUP_PRICED = table("GROUP_PRICED", set())
 HEAT = table("HEAT", {})
 HEAT_SOURCE = table("HEAT_SOURCE", None)
 PLUNGE = table("PLUNGE", {})    # cold plunge °C, only where the venue states a figure
+# What heats the sauna: name -> (fuel, brand, note, source). Fuel is one of FUELS or None, brand is
+# the stove's maker or None, source is "venue" (read off its own site) or "editor" (the owner's
+# own knowledge of the place). A venue missing here shows "not known".
+STOVE = table("STOVE", {})
+FUELS = {"wood", "smoke", "pellet", "electric", "gas", "infrared"}
 BANYA = table("BANYA", set())
 FINNISH = table("FINNISH", {})
 AUFGUSS_SCORE = table("AUFGUSS_SCORE", {})
@@ -119,6 +124,13 @@ for i, row in enumerate(V):
     if t: d["sauna"] = t
     d["aufguss"], d["aufgussNote"] = a, note
     d["loyly"] = LOYLY_OF[a]
+    if d["name"] in STOVE:
+        fuel, brand, stove_note, src = STOVE[d["name"]]
+        assert fuel is None or fuel in FUELS, f"{d['name']}: stove fuel {fuel!r} is not one of {sorted(FUELS)}"
+        assert src in ("venue", "editor"), f"{d['name']}: a stove's source is 'venue' or 'editor'"
+        d["stove"] = {"fuel": fuel, "brand": brand, "note": stove_note, "src": src}
+    else:
+        d["stove"] = None
     d["loylyText"] = LOYLY_TEXT[d["loyly"]]
     d["style"] = style_of(d["name"], d["loyly"])
     d["finnish"] = FINNISH.get(d["name"])
@@ -152,7 +164,7 @@ for i, row in enumerate(V):
     d["id"] = i
     venues.append(d)
 _names = {v["name"] for v in venues}
-for _n in list(FINNISH) + list(AUFGUSS_SCORE) + list(BANYA) + list(PLUNGE) + list(COVER) + [p[1] for p in PICKS] + [t[0] for t in TRAPS]:
+for _n in list(FINNISH) + list(AUFGUSS_SCORE) + list(BANYA) + list(PLUNGE) + list(STOVE) + list(COVER) + [p[1] for p in PICKS] + [t[0] for t in TRAPS]:
     assert _n in _names, f"{_n!r} is scored or tagged but is not a venue name"
 json.dump(venues, open('venues.json','w'), separators=(',',':'), ensure_ascii=False)
 json.dump({"picks": [list(p) for p in PICKS], "cover": COVER, "practical": PRACTICAL, "lastChecked": LAST_CHECKED,
