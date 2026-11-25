@@ -62,7 +62,7 @@ V = [
   "Monday is men only and Wednesday 14:00–18:00 women only, both bathing suit optional; a bathing suit is required at all co-ed times. 18 and over, four guests at most per reservation.",
   "https://www.onsensf.com/bathing"],
  ["Dogpatch Paddle",37.763198,-122.388308,"Waterfront sauna & cold plunge","Dogpatch",25,"$25 sauna only, 1 h, shared with up to three others · $35 with the cold plunge · private $100 / $140","no","",
-  "A waterfront sauna kept at about 190°F, ranging from 180 to 200, four people at most","A cold plunge kept at about 49°F (36–55°F), with the beach right outside","Tue–Sun 09:00–17:00, last public sauna 16:00 · closed Mon · one-hour sessions","An hour of hot and cold by the water",None,
+  "A waterfront sauna kept at about 190°F, four people at most","A cold plunge kept at about 49°F (36–55°F), with the beach right outside","Tue–Sun 09:00–17:00, last public sauna 16:00 · closed Mon · one-hour sessions","An hour of hot and cold by the water",None,
   "16 and over. Public sessions run 9 to 5; members get 07:30–21:00.",
   "https://www.dogpatchpaddle.com/sauna/"],
  ["Fjord",37.8669,-122.49484,"Floating sauna","Sausalito",45,"$45 shared session, 90 min · private sauna $270 for 2 h, up to 6 guests","no","",
