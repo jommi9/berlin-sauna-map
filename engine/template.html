@@ -1855,7 +1855,7 @@ function setMe(r){
   ME.been = new Set(SOC.visits.map(x => x.venue));
 }
 async function loadPublic(fresh){
-  try { SOC.pub = await api("/public" + (fresh ? "?t=" + Date.now() : "")); } catch { SOC.pub = null; }
+  try { SOC.pub = await api("/public?city=" + HERE + (fresh ? "&t=" + Date.now() : "")); } catch { SOC.pub = null; }
   COUNTS.clear();
   (SOC.pub?.venues || []).forEach(x => COUNTS.set(x.venue, { saved: x.saved || 0, visits: x.visits || 0 }));
   drawBoard(); drawPanel(); V.forEach(v => { drawLive(v); drawCounts(v); drawLogs(v); });

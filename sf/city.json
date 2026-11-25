@@ -8,5 +8,6 @@
   "notionIntro": "San Francisco sauna shortlist.",
   "currency": "$",
   "temp": "F",
-  "usc": false
+  "usc": false,
+  "live": true
 }

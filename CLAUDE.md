@@ -34,8 +34,14 @@ as it is and the jommi.fi Worker passes `/sauna/berlin/` through to it.
   connection from a cloud session: `engine/osm_extract.py <city> <extract.osm.pbf>` (BBBike has
   city extracts), then `engine/build_geo.py <city>`. It draws the sea from the coastline, which
   Berlin never needed. `engine/og.js` takes a city's share image.
-- The social layer on jommi.fi does not know about cities yet. It keys saved spots, visits and
-  reviews by venue name alone, so that has to change before a second city goes live.
+- The social layer on jommi.fi keys saved spots, visits and reviews by venue name alone, and
+  works out the city from the name. So a venue's name must be unique across the cities, and
+  `build_venues.py` refuses a name another city already uses. Each page asks for its own city's
+  board (`/public?city=<slug>`).
+- To open a city on jommi.fi: set `"live": true` in its `city.json` and rebuild every city, then
+  in `jommi9/jommi-fi` add the slug to `SAUNA_LIVE` in `worker/sauna-api.js`, add its two paths to
+  `run_worker_first` in `wrangler.jsonc`, and set its status to `live` in `src/lib/sauna.ts`.
+  Berlin and San Francisco are open; Helsinki and New York are not yet.
 - The repository was `berlin-sauna-map` until November 2026. `check_deployment.py` reads the
   repository's name from Actions, so the Pages address follows a rename by itself; `REPO` in
   `engine/city.py` is the one place the name is written down.
