@@ -29,6 +29,11 @@ ven = json.dumps(venues, separators=(',', ':'), ensure_ascii=True)
 embedded = json.load(open('img/embed.json', encoding='utf-8'))
 meta = json.load(open('meta.json', encoding='utf-8'))
 picks = json.dumps(meta['picks'], separators=(',', ':'), ensure_ascii=True)
+# Every city the engine builds, for the switcher in the title. A new city changes this list on
+# every page, so it means rebuilding them all.
+cities = json.dumps([{"slug": s, "name": c["name"], "live": bool(c.get("live"))}
+                     for s, c in ((s, city.load(s)) for s in city.slugs())],
+                    separators=(',', ':'), ensure_ascii=True)
 
 def assemble(TPL, OUT):
     artifact = OUT.endswith('artifact.html')
@@ -62,10 +67,12 @@ def assemble(TPL, OUT):
               .replace('__USC__', 'true' if CITY.get('usc') else 'false')
               .replace('__TU__', 'F' if CITY.get('temp') == 'F' else 'C')
               .replace('/*__COVER__*/', json.dumps(meta['cover'], separators=(',', ':'), ensure_ascii=True))
+              .replace('/*__CITIES__*/', cities).replace('__SLUG__', CITY['slug'])
+              .replace('__SIBLINGS__', 'false' if artifact else 'true')
               .replace('/*__CONTRIBUTORS__*/', json.dumps(meta['contributors'], separators=(',', ':'), ensure_ascii=True))
               .replace('__HUB__', city.HUB).replace('__REPO__', city.REPO))
     for token in ('__LAST_SCAN__', '__COUNT__', '__PRACTICAL__', '__CITY', '__LEDE__', '__TZ__', '__CUR__', '__USC__', '__TU__',
-                  '__HUB__', '__REPO__', '/*__'):
+                  '__HUB__', '__REPO__', '__SLUG__', '__SIBLINGS__', '/*__'):
         assert token not in doc, f"unfilled placeholder {token}"
     assert doc.isascii(), "non-ascii survived"
     if not artifact:

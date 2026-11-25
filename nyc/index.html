@@ -154,6 +154,33 @@ button{font:inherit; color:inherit}
   margin:0; font:700 clamp(30px, 3.3vw, 40px)/1.04 var(--font-display);
   letter-spacing:-.028em; text-wrap:balance;
 }
+/* The city in the title is the switcher: tap it for every other map. */
+.cityp{position:relative}
+.city-b{
+  display:inline-flex; align-items:center; gap:.16em; margin:0; padding:0; border:0; background:none;
+  color:inherit; font:inherit; letter-spacing:inherit; cursor:pointer;
+}
+.city-b svg{
+  flex:none; width:.62em; height:.62em; margin-top:.1em; padding:.1em; border-radius:50%;
+  color:var(--tint); background:var(--fill); transition:transform .25s var(--ease);
+}
+.city-b[aria-expanded="true"] svg{transform:rotate(180deg)}
+.city-m{
+  position:absolute; top:calc(100% + 8px); left:0; z-index:30; min-width:236px; padding:6px;
+  background:var(--surface); border-radius:var(--r-lg); box-shadow:var(--shadow-lift);
+  display:flex; flex-direction:column; font:500 15px/1.2 var(--font);
+}
+.city-m a, .city-m .soon{
+  display:flex; align-items:center; justify-content:space-between; gap:18px; padding:10px 12px;
+  border-radius:var(--r-sm); color:var(--label); text-decoration:none;
+}
+.city-m a:hover, .city-m a:focus-visible{background:var(--fill)}
+.city-m a[aria-current]{font-weight:600}
+.city-m a[aria-current] svg{width:16px; height:16px; color:var(--tint)}
+.city-m .soon{color:var(--label-3)}
+.city-m .soon i{font:500 12px/1 var(--font); font-style:normal; padding:4px 7px; border-radius:3px; background:var(--fill)}
+.city-m hr{margin:6px 12px; border:0; border-top:1px solid var(--sep)}
+.city-m a.all{color:var(--tint)}
 .lede{margin:14px 0 0; max-width:54ch; color:var(--label-2); font-size:16px; line-height:1.5}
 .stats{
   display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); margin:0;
@@ -728,7 +755,10 @@ button.btn{border:0; cursor:pointer}
         </svg>
         <div>
           <p class="eyebrow"><a class="crumb" href="https://jommi.fi/sauna/">sauna maps</a> / new york &middot; checked <time id="stamp-date">15.11.2026</time></p>
-          <h1 class="title">new york sauna map</h1>
+          <div class="cityp">
+            <h1 class="title"><button class="city-b" id="city-b" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="city-m" title="Switch city">new york<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button> sauna map</h1>
+            <nav class="city-m" id="city-m" aria-label="Sauna maps of other cities" hidden></nav>
+          </div>
         </div>
       </div>
       <p class="lede">5 saunas and spas across the city, priced and plotted. Russian baths, bathhouses and the new contrast-therapy studios.</p>
@@ -1672,6 +1702,33 @@ document.getElementById("q").addEventListener("focus", () => { if (isMobile() &&
 
 /* The panel. Until a review exists the member grid would be one card saying
    "0 reviews", which reads as unfinished, so only the invitation is shown. */
+/* The city switcher in the title. It lists every map the engine builds. The copy on GitHub Pages
+   has all of them side by side, so there each one is a link; on jommi.fi and in the artifact only
+   the cities open on the hub can be switched to, and the others say they are coming. */
+const CITIES = [{"slug":"berlin","name":"Berlin","live":true},{"slug":"helsinki","name":"Helsinki","live":false},{"slug":"nyc","name":"New York","live":false},{"slug":"sf","name":"San Francisco","live":false}], HERE = "nyc", HUB = "https://jommi.fi/sauna/";
+const cityB = document.getElementById("city-b"), cityM = document.getElementById("city-m");
+const besideEachOther = true && !location.pathname.startsWith("/sauna/");
+CITIES.forEach(c => {
+  const here = c.slug === HERE, open = here || c.live || besideEachOther;
+  const row = document.createElement(open ? "a" : "span");
+  row.textContent = c.name.toLowerCase();
+  if (!open){ row.className = "soon"; row.insertAdjacentHTML("beforeend", "<i>soon</i>"); }
+  else {
+    row.href = here ? "#" : besideEachOther ? `../${c.slug}/` : `${HUB}${c.slug}/`;
+    if (here){
+      row.setAttribute("aria-current", "page");
+      row.insertAdjacentHTML("beforeend", `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>`);
+    }
+  }
+  cityM.appendChild(row);
+});
+cityM.insertAdjacentHTML("beforeend", `<hr><a class="all" href="${HUB}">all sauna maps</a>`);
+const showCities = on => { cityM.hidden = !on; cityB.setAttribute("aria-expanded", String(on)); };
+cityB.addEventListener("click", () => showCities(cityM.hidden));
+cityM.addEventListener("click", e => { if (e.target.closest("[aria-current]")){ e.preventDefault(); showCities(false); } });
+document.addEventListener("click", e => { if (!cityM.hidden && !e.target.closest(".cityp")) showCities(false); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !cityM.hidden){ showCities(false); cityB.focus(); } });
+
 /* Who may add listings and cities: GitHub users named in contributors.json. The forms are on
    GitHub, so this part is the same on every copy of the page. */
 const CONTRIBUTORS = ["jommi9","Jaamuru"];
