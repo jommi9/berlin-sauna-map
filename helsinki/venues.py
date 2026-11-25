@@ -20,8 +20,10 @@ map takes one window a day, so OPEN holds the main window and the morning turn
 is only in the hours text.
 
 Looked at and left out:
-- Kaurilan Sauna: its own site says the public sauna ran from 2009 to 2019 and
-  ended in Meilahti in 2020; kaurilansauna.fi is now a cosmetics shop.
+- Kaurilan Sauna: its own story page says the public sauna was founded in Vanha
+  Meilahti in 2009 and that sauna operations were suspended in 2020, when the
+  premises had to be given up, with a search for new ones under way;
+  kaurilansauna.fi is now a natural cosmetics shop. (Re-read 25 November.)
 - Sauna Arla: arlansauna.net could not be reached on 25 November, so nothing
   about it is confirmed.
 - Kyrö Sauna Bar: its page now redirects to the distillery's visitor-centre
@@ -97,16 +99,16 @@ IMG = {
 }
 
 # --- Opening hours, as in berlin/venues.py: Mon..Sun, [open, close] in minutes,
-#     ending at the last entry where the venue gives one. One window a day: where a
-#     venue also keeps a morning turn (Löyly on Wed and Sat, Kulttuurisauna Fri to
-#     Sun) the main window is here and the morning one is in the hours text only.
+#     ending at the last entry where the venue gives one. A day with a morning turn
+#     and an evening one is a list of both windows (Löyly on Wed and Sat,
+#     Kulttuurisauna Fri to Sun, whose morning ends at its last entry, 10:30).
 D = lambda a, b: [[a, b]] * 7
 OPEN = {
- "Löyly": {"weekly": [[720, 1320], [720, 1320], [780, 1320], [720, 1320], [780, 1380], [780, 1380], [660, 1260]], "src": "venue"},
+ "Löyly": {"weekly": [[720, 1320], [720, 1320], [[540, 660], [780, 1320]], [720, 1320], [780, 1380], [[540, 660], [780, 1380]], [660, 1260]], "src": "venue"},
  "Allas Sea Pool": {"weekly": [[390, 1200]] * 5 + [[480, 1200]] * 2, "src": "venue"},
  "Kotiharjun sauna": {"weekly": [None] + [[840, 1200]] * 6, "src": "venue"},
  "Uusi Sauna": {"weekly": [None] + [[1020, 1440]] * 4 + [[960, 1440], [960, 1380]], "src": "venue"},
- "Kulttuurisauna": {"weekly": [None, None] + [[960, 1125]] * 5, "src": "venue"},
+ "Kulttuurisauna": {"weekly": [None, None] + [[960, 1125]] * 2 + [[[480, 630], [960, 1125]]] * 3, "src": "venue"},
  "Sompasauna": {"weekly": D(0, 1440), "src": "venue"},
  "Sauna Hermanni": {"weekly": [[900, 1200], None, [900, 1200], [900, 1200], [900, 1200], [840, 1080], None], "src": "venue"},
  # The hall's own hours end at 20:00; swimming goes on until 20:30.

@@ -33,9 +33,10 @@ as it is and the jommi.fi Worker passes `/sauna/berlin/` through to it.
   prices with a script, or does not say who throws the water, the field is empty rather than
   guessed. San Francisco and Helsinki were re-read and filled out on 25 November 2026; New York
   is still the first naive map. The Finnish scores and picks are empty everywhere but Berlin.
-- A day has one opening window in `OPEN`. Where a venue runs a morning turn and an evening one
-  (Löyly, Kulttuurisauna), `OPEN` holds the main window and the hours text says both, so the
-  status reads "closed now" during the other turn.
+- A day in `OPEN` is one window `[open, close]`, or a list of windows where a venue runs a morning
+  turn and an evening one (Löyly, Kulttuurisauna: `[[540, 660], [780, 1320]]`), or `None`. The
+  status and its countdown read every window (`spans`, `within`), so between two turns the tag
+  says "closed now · opens in ...".
 - Base maps for a new city come from an OpenStreetMap extract, not Overpass, which resets every
   connection from a cloud session: `engine/osm_extract.py <city> <extract.osm.pbf>` (BBBike has
   city extracts), then `engine/build_geo.py <city>`. It draws the sea from the coastline, which
@@ -47,6 +48,10 @@ as it is and the jommi.fi Worker passes `/sauna/berlin/` through to it.
   and saved in the same format. Where no extract reaches, no coastline is read and the land is
   drawn as open sea, so look at the whole base map after widening a frame. Geofabrik's downloads
   reset from a cloud session the way Overpass does.
+- The base map is most of a page's weight, so `assemble.py` packs it on the way in (`pack_path`):
+  every path becomes relative steps, and road pieces that meet end to end are joined into long
+  strokes. `geo.json` stays as `build_geo.py` wrote it. The segments drawn are the same ones; a
+  page went from about 500 KB to about 320 KB.
 - The social layer on jommi.fi keys saved spots, visits and reviews by venue name alone, and
   works out the city from the name. So a venue's name must be unique across the cities, and
   `build_venues.py` refuses a name another city already uses. Each page asks for its own city's
