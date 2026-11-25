@@ -11,6 +11,10 @@ as it is and the jommi.fi Worker passes `/sauna/berlin/` through to it.
 - Every engine script takes the city first: `python3 engine/selfupdate.py berlin --dry-run`.
   `engine/build.py` rebuilds one city or all of them, and `engine/each.py <script>` runs a
   script over every city for the workflows.
+- The city in each page's title is a switcher listing every city, so a new city, a renamed one
+  or a change to `"live"` alters every page: rebuild them all (`engine/build.py` with no city).
+  On GitHub Pages every city in it is a link, because the folders sit side by side; on jommi.fi
+  and in the artifact only live cities are links and the rest say "soon".
 - A fact about one city never goes in `engine/`. If the template needs to say something that
   differs by city, it becomes a field in `city.json` and a placeholder (`__CITY__`, `__LEDE__`,
   `__TZ__`), and `assemble.py` fails the build on a placeholder left unfilled.

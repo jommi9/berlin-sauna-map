@@ -31,6 +31,7 @@ const { chromium } = require('playwright');
       Object.assign(map.style, { position: 'fixed', left: 0, top: 0, width: '1200px', height: '630px', background: 'var(--land)', borderRadius: 0 });
       const hero = document.querySelector('header.top');
       hero.querySelectorAll('.stats').forEach(n => n.remove());
+      hero.querySelectorAll('.city-b svg, .city-m').forEach(n => n.remove());   // a picture has no switcher
       wrap.innerHTML = '';
       wrap.appendChild(map);
       const card = document.createElement('div');

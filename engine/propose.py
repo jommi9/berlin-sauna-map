@@ -239,7 +239,7 @@ def new_city():
     open(os.path.join(folder, "img", "credits.json"), "w").write("{}\n")
     open(os.path.join(folder, "img", "card", ".gitkeep"), "w").write("")
     out = engine("osm_extract.py", slug, pbf) + engine("build_geo.py", slug)
-    engine("build.py", slug)
+    engine("build.py")            # every city: each page's switcher lists the new one
     geo = json.load(open(os.path.join(folder, "geo.json")))
     drawn = sum(len(geo.get(k) or "") for k in ("primary", "secondary", "motorway"))
     if drawn < 2000:
