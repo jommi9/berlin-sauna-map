@@ -1072,15 +1072,13 @@ function openState(v, now){
                    : (md >= s.from || md <= s.to));   // wraps new year
   const week = season ? season.weekly : o.weekly;
   if (!week) return "unknown";
-  const today = week[now.day];
-  if (!today) return "shut";
-  let [a, b] = today;
-  if (b > 1440){                                      // closes after midnight
-    if (now.minutes < b - 1440) return "open";
-    b = 1440;
-  }
-  return now.minutes >= a && now.minutes < b ? "open" : "shut";
+  return spans(week[now.day]).some(s => within(s, now.minutes)) ? "open" : "shut";
 }
+/* A day in the weekly hours is one window [open, close], several of them where a place keeps a
+   morning turn and an evening one ([[540, 660], [780, 1320]]), or null for a closed day. */
+const spans = day => !day ? [] : Array.isArray(day[0]) ? day : [day];
+/* A window that closes after midnight (b > 1440) also covers the small hours of its own day. */
+const within = ([a, b], m) => (b > 1440 && m < b - 1440) || (m >= a && m < Math.min(b, 1440));
 const SRC_NOTE = { venue: "from the venue", osm: "from OpenStreetMap", listed: "as published" };
 const MONTH = ["January","February","March","April","May","June","July","August","September",
                "October","November","December"];
@@ -1135,15 +1133,17 @@ function untilChange(v, now){
   const season = (o.seasons || []).find(s => s.from <= s.to ? (md >= s.from && md <= s.to) : (md >= s.from || md <= s.to));
   const week = season ? season.weekly : o.weekly;
   if (!week) return null;
-  const m = now.minutes, today = week[now.day], next = week[(now.day + 1) % 7];
+  const m = now.minutes, today = spans(week[now.day]), next = spans(week[(now.day + 1) % 7]);
+  const first = day => Math.min(...day.map(s => s[0]));
   if (openState(v, now) === "open"){
-    let end = today[1];
+    let end = today.find(s => within(s, m))[1];
     if (end > 1440 && m < end - 1440) end -= 1440;                  // the tail of a late night
-    else if (end === 1440 && next && next[0] === 0) return null;     // open round the clock
+    else if (end === 1440 && next.length && first(next) === 0) return null;     // open round the clock
     return end - m;
   }
-  if (today && m < today[0]) return today[0] - m;
-  return next ? next[0] + 1440 - m : null;
+  const later = today.filter(s => m < s[0]);                        // a turn still to come today
+  if (later.length) return first(later) - m;
+  return next.length ? first(next) + 1440 - m : null;
 }
 const spanText = n => n < 60 ? `${n} min` : `${Math.floor(n / 60)} h${n % 60 ? ` ${n % 60} min` : ""}`;
 /* "open now", and when the change is three hours away or less, how long until it. */
@@ -1415,7 +1415,17 @@ function showName(id){
   nameTag.innerHTML = "";
   if (id == null) return;
   const v = V.find(x => x.id === id), q = POS.get(id) || v, im = v.img ? IMG[v.img] : null;
-  const top = (view || VB)[1], up = q.py - 112 * PS > top, k = up ? -1 : 1;
+  /* The zoom buttons stand over the map's top right corner. A bubble that would come up under them
+     hangs below its pin instead, if that keeps it clear. */
+  const underZoom = k => {
+    const z = document.querySelector(".zoom"), m = map.getScreenCTM();
+    if (!z || !m) return false;
+    const r = z.getBoundingClientRect(), inv = m.inverse();
+    const a = new DOMPoint(r.left, r.top).matrixTransform(inv), b = new DOMPoint(r.right, r.bottom).matrixTransform(inv);
+    const y0 = q.py + Math.min(k * 17, k * 112) * PS, y1 = q.py + Math.max(k * 17, k * 112) * PS;
+    return q.px + 60 * PS > a.x && q.px - 60 * PS < b.x && y1 > a.y && y0 < b.y;
+  };
+  const top = (view || VB)[1], fits = q.py - 112 * PS > top, up = fits && !(underZoom(-1) && !underZoom(1)), k = up ? -1 : 1;
   const cy = k * 59;                                   // centre of the photo
   nameTag.setAttribute("transform", `translate(${q.px.toFixed(1)} ${q.py.toFixed(1)}) scale(${PS.toFixed(3)})`);
   nameTag.innerHTML =
@@ -1977,6 +1987,10 @@ const showHottest = () => { if (HOTTEST) document.getElementById("stat-hot").tex
   }
 })();
 run();
+try {                                         // back from signing in: the sauna that was picked
+  const back = sessionStorage.getItem("sauna.back");
+  if (back){ sessionStorage.removeItem("sauna.back"); if (!location.hash) history.replaceState(null, "", back); }
+} catch {}
 fromHash();                                   // a link to one sauna opens on that sauna
 document.getElementById("wrap").classList.add("ready");
 addEventListener("hashchange", fromHash);
@@ -2034,7 +2048,9 @@ async function api(path, body){
   if (!r.ok) throw new Error(data.error || "something went wrong");
   return data;
 }
-const goSignIn = way => { location.href = `${API}/auth/start?back=${encodeURIComponent(location.pathname)}${way === "github" ? "&with=github" : ""}`; };
+/* Signing in leaves the page and comes back to its path alone, so the picked sauna's # is kept
+   aside for the way back (see the start-up lines after run()). */
+const goSignIn = way => { try { if (location.hash) sessionStorage.setItem("sauna.back", location.hash); } catch {} location.href = `${API}/auth/start?back=${encodeURIComponent(location.pathname)}${way === "github" ? "&with=github" : ""}`; };
 /* With one way in, go; with two, ask which. Either account does everything here; the two are
    separate accounts, so whoever started with one should keep using it. */
 function signIn(){

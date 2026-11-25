@@ -23,7 +23,61 @@ def jsesc(s): # JS context: \uXXXX escapes (entities would NOT be decoded here)
 def text(s):  # a city's own words, dropped into HTML text or a double-quoted attribute
     return ent(html.escape(s, quote=False).replace('"', '&quot;'))
 
-geo = json.dumps(json.load(open('geo.json', encoding='utf-8')), separators=(',', ':'), ensure_ascii=True)
+# The base map is most of the page, so it is packed before it goes in. geo.json holds each layer
+# as build_geo.py wrote it: absolute coordinates, and the roads as thousands of two-point pieces,
+# one per stretch between junctions. Here every path is rewritten as relative steps in tenths of
+# a unit, and the pieces of a line layer that meet end to end are joined into long strokes. The
+# segments drawn are exactly the same ones (roads have round caps and joins, so a joined line
+# looks as the pieces did); the text is under half the size.
+LINE_LAYERS = ('motorway', 'primary', 'secondary', 'rail', 'river', 'canal')
+def _n(t):
+    s = ('-' if t < 0 else '') + (str(abs(t) // 10) if abs(t) >= 10 else '') + ('.' + str(abs(t) % 10) if abs(t) % 10 else '')
+    return s if s not in ('', '-') else '0'
+def _join(lines):
+    """Join open lines that meet end to end. Only where exactly two ends meet: at a junction of
+    three or more, which two to join would be a guess, and they are left as they are."""
+    ends = {}
+    for i, l in enumerate(lines):
+        ends.setdefault(l[0], []).append(i); ends.setdefault(l[-1], []).append(i)
+    used, out = [False] * len(lines), []
+    for i, l in enumerate(lines):
+        if used[i]:
+            continue
+        used[i] = True
+        cur = list(l)
+        for tail in (True, False):
+            while True:
+                pt = cur[-1] if tail else cur[0]
+                free = [j for j in ends[pt] if not used[j]]
+                if len(free) != 1 or len(ends[pt]) != 2:
+                    break
+                nxt = lines[free[0]]; used[free[0]] = True
+                if tail: cur += nxt[1:] if nxt[0] == pt else nxt[-2::-1]
+                else:    cur = (nxt[:-1] if nxt[-1] == pt else nxt[:0:-1]) + cur
+        out.append(cur)
+    return out
+def pack_path(d, join):
+    if not d or not re.fullmatch(r'[MZ0-9.,\- ]*', d):
+        return d                       # not the plain M x,y x,y [Z] that build_geo.py writes
+    subs = []
+    for part in re.findall(r'M[^M]*', d):
+        nums = re.findall(r'-?\d+(?:\.\d+)?', part)
+        pts = [(round(float(nums[i]) * 10), round(float(nums[i + 1]) * 10)) for i in range(0, len(nums) - 1, 2)]
+        if pts:
+            subs.append((pts, 'Z' in part))
+    if join:
+        subs = [s for s in subs if s[1]] + [(p, False) for p in _join([p for p, z in subs if not z and len(p) > 1])]
+    out = []
+    for pts, closed in subs:
+        s, prev = 'M' + _n(pts[0][0]) + ',' + _n(pts[0][1]), pts[0]
+        for k, p in enumerate(pts[1:]):
+            a, b = _n(p[0] - prev[0]), _n(p[1] - prev[1]); prev = p
+            s += ('l' if k == 0 else '' if a[0] == '-' else ' ') + a + ('' if b[0] == '-' else ',') + b
+        out.append(s + ('Z' if closed else ''))
+    return ''.join(out)
+geo = json.load(open('geo.json', encoding='utf-8'))
+geo = json.dumps({k: pack_path(v, k in LINE_LAYERS) if isinstance(v, str) else v for k, v in geo.items()},
+                 separators=(',', ':'), ensure_ascii=True)
 venues = json.load(open('venues.json', encoding='utf-8'))
 ven = json.dumps(venues, separators=(',', ':'), ensure_ascii=True)
 embedded = json.load(open('img/embed.json', encoding='utf-8'))
