@@ -284,7 +284,7 @@ dropped, so revoking someone is a one-line delete.
 The path in is `.github/ISSUE_TEMPLATE/reviewer-application.yml` and `review.yml`.
 Applying the `approved` label fires `.github/workflows/ingest-reviews.yml`, which
 runs `engine/ingest_issue.py` (finds the city whose map lists the venue; validates venue name,
-handle, rating, date, length;
+handle, rating, date, length; a rating is 0.5 to 5 in halves, here and on the jommi.fi panel;
 strips markup and HTML-escapes, because review text lands in `innerHTML`),
 rebuilds every city, commits, then comments on the issue and closes it. A
 rejection exits non-zero, comments the reason and leaves the issue open.
