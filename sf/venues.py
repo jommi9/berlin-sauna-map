@@ -104,4 +104,12 @@ PLUNGE = {
 # --- A banya is a banya whoever throws the water; the badge says so.
 BANYA = {"Archimedes Banya"}
 
+# --- What heats the sauna: (fuel, brand, note, source). Fuel is wood, smoke, pellet, electric,
+#     gas or infrared, or None where that is not known; brand is the stove's maker, or None.
+#     Source is "venue" for what its own site says and "editor" for the owner's own knowledge.
+STOVE = {
+ "Alchemy Springs": ("gas", None, "Two gas stoves heat the sauna. Its own site does not describe them", "editor"),
+ "Archimedes Banya": (None, None, "Each Russian sauna is built around a 22,000 lb stove faced in handmade ceramic tiles from Russia", "venue"),
+}
+
 LAST_CHECKED = "25 November 2026"

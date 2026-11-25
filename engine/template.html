@@ -807,6 +807,7 @@ button.btn{border:0; cursor:pointer}
           <button class="chip" data-v="pool" aria-pressed="false">pool or plunge</button>
           <button class="chip" data-v="aufguss" aria-pressed="false">aufguss</button>
           <button class="chip" data-v="ownloyly" aria-pressed="false">throw your own</button>
+          <button class="chip" data-v="wood" aria-pressed="false">wood-fired</button>
           <button class="chip" data-v="group" aria-pressed="false">group hire</button>
         </div>
         <div class="grp usc-only" id="g-usc" role="group" aria-label="Filter by Urban Sports Club tier">
@@ -1034,6 +1035,15 @@ function trapText(now){
 }
 const AUFGUSS = { scheduled: "Run to a schedule", self: "Pour your own", request: "On request",
                   auto: "Automatic aroma", unknown: "Not known" };
+/* What heats the sauna: the fuel and, where it is known, who made the stove. */
+const FUEL = { wood: "Wood-fired", smoke: "Smoke sauna", pellet: "Wood pellets", electric: "Electric", gas: "Gas", infrared: "Infrared" };
+const stoveRow = v => {
+  const s = v.stove;
+  if (!s) return `<span class="ly ly-unknown">Not known</span>`;
+  const head = [FUEL[s.fuel], s.brand].filter(Boolean).join(" \u00b7 ");
+  return `${head ? `<b>${head}</b> ` : ""}<span class="src">${s.src === "editor" ? "from the editor" : "from the venue"}</span>${
+    s.note ? `<span class="src2">${tempText(s.note)}</span>` : ""}`;
+};
 const STATUS_TEXT = { open: "open now", shut: "closed now", unknown: "check hours" };
 const STATUS_CLASS = { open: "open", shut: "shut", unknown: "unk" };
 /* Minutes until an open place closes or a closed one opens, from the same weekly hours as
@@ -1365,6 +1375,7 @@ const TEST = {
   hotel: v => /^Hotel/.test(v.kind),
   pool:  v => !/^(No |Check)/i.test(v.pool),
   group: v => v.pricing === "group",
+  wood: v => !!v.stove && (v.stove.fuel === "wood" || v.stove.fuel === "smoke"),
   aufguss:  v => v.loyly === "staff",
   ownloyly: v => v.loyly === "self",
   saved:  v => ME.saved.has(v.name),
@@ -1382,7 +1393,8 @@ function ok(v){
     if (F[g].size && ![...F[g]].some(k => TEST[k](v))) return false;
   if (F.usc.size && ![...F.usc].some(t => v.uscTiers.includes(t))) return false;
   if (F.pmax < 90 && (v.price == null || v.price > F.pmax)) return false;
-  if (F.q && ![v.name, v.kind, v.district, v.sauna, v.pool, v.bestFor, v.priceLabel, v.uscLabel]
+  if (F.q && ![v.name, v.kind, v.district, v.sauna, v.pool, v.bestFor, v.priceLabel, v.uscLabel,
+               v.stove ? [FUEL[v.stove.fuel], v.stove.brand, v.stove.note].filter(Boolean).join(" ") : ""]
         .join(" ").toLowerCase().includes(F.q)) return false;
   return true;
 }
@@ -1460,6 +1472,7 @@ V.forEach(v => {
         ${v.usc !== "no" ? `<span class="tiers">${["Classic","Premium","Max"]
           .map(t => `<span class="tier${v.uscTiers.includes(t) ? "" : " off"}">${t}</span>`).join("")}</span>` : ""}</dd>` : ""}
       <dt>heat</dt><dd data-tp="sauna">${tempText(v.sauna)}</dd>
+      <dt>stove</dt><dd>${stoveRow(v)}</dd>
       <dt>l\u00f6yly</dt><dd><span class="ly ly-${v.loyly}">${v.loylyText}</span>${
         v.aufgussScore != null ? `<span class="augrade">Aufguss ${v.aufgussScore}<i>/10</i></span>` : ""}${
         v.aufgussNote ? `<span class="src2" data-tp="aufgussNote">${tempText(v.aufgussNote)}</span>` : ""}</dd>

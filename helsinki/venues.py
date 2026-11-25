@@ -134,6 +134,19 @@ PLUNGE = {}
 # --- Banyas. None of the listed venues is one.
 BANYA = set()
 
+# --- What heats the sauna: (fuel, brand, note, source). Fuel is wood, smoke, pellet, electric,
+#     gas or infrared, or None where that is not known; brand is the stove's maker, or None.
+#     Source is "venue" for what its own site says and "editor" for the owner's own knowledge.
+STOVE = {
+ "L\u00f6yly": ("wood", None, "A smoke sauna and a wood-heated sauna, both single-fired", "venue"),
+ "Kotiharjun sauna": ("wood", None, "The public saunas are wood-heated; the sauna for hire is electric", "venue"),
+ "Uusi Sauna": ("pellet", None, "The men's and women's saunas burn wood pellets; the mixed sauna is electric", "venue"),
+ "Kulttuurisauna": ("wood", None, "Wood and pellets in one single-fired mass stove", "venue"),
+ "Sauna Hermanni": (None, "IKI", "New IKI stoves on both sides; its site does not say what they burn", "venue"),
+ "Yrj\u00f6nkadun uimahalli": ("electric", None, "Two electric saunas on the first floor; the second floor adds a wood-heated sauna, a steam sauna and an infrared one", "venue"),
+ "Lonnan sauna": ("wood", None, "Two loft saunas, each with a large single-fired wood stove", "venue"),
+}
+
 LAST_CHECKED = "25 November 2026"
 
 # --- Wikimedia Commons file behind each photo key in IMG. engine/fetch_images.py
