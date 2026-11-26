@@ -96,7 +96,10 @@ IMG = {
  "Löyly": "loyly", "Allas Sea Pool": "allas", "Kotiharjun sauna": "kotiharju",
  "Uusi Sauna": "uusi", "Kulttuurisauna": "kulttuuri",
  "Lapinlahden Lähteen sauna": "lapinlahti", "Yrjönkadun uimahalli": "yrjo",
+ "Sompasauna": "sompa",
 }
+# Sent in through the photo desk on 26 November 2026 by a visitor, without a name to credit.
+PHOTOS = {"sompa": None}
 
 # --- Opening hours, as in berlin/venues.py: Mon..Sun, [open, close] in minutes,
 #     ending at the last entry where the venue gives one. A day with a morning turn

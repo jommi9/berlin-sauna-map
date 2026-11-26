@@ -91,6 +91,14 @@ V = [
   "https://www.good-hot.com/info"],
 ]
 
+# --- Photos. None of these is from Wikimedia Commons: they were sent in through the photo desk on
+#     26 November 2026 by visitors and reviewers, without a name to credit.
+IMG = {
+ "Archimedes Banya": "banya", "Kabuki Springs & Spa": "kabuki", "Alchemy Springs": "alchemy", "Onsen": "onsen",
+ "Dogpatch Paddle": "dogpatch", "Fjord": "fjord", "Good Hot": "goodhot",
+}
+PHOTOS = {"banya": None, "kabuki": None, "alchemy": None, "onsen": None, "dogpatch": None, "fjord": None, "goodhot": None}
+
 OPEN = {
  # windows end at last check-in
  "Archimedes Banya": {"weekly": [[720, 1260], None, [720, 1260], [720, 1260], [720, 1260], [600, 1260], [600, 1260]], "src": "venue"},
