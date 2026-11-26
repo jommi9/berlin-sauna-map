@@ -86,6 +86,14 @@ async function venues(b, city) {
   for (const city of args) {
     const p = await b.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1, colorScheme: 'light' });
     await p.goto(`http://localhost:8765/${city}/`, { waitUntil: 'networkidle' });
+    // The page keeps its header short so the map starts on the first screen. A share image has no
+    // map to make room for, so it gets the header at full size, photographs included.
+    await p.addStyleTag({ content: `
+      .title{font-size:clamp(54px,9.6vw,150px) !important; margin-top:10px !important}
+      .intro{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) !important; gap:10px 48px !important}
+      .intro .brand{grid-column:1 / -1 !important; grid-row:auto !important}
+      .lede{display:block !important; grid-column:auto !important; grid-row:auto !important; font-size:17px !important; max-width:44ch !important; margin:18px 0 0 !important}
+      .collage{display:block !important}` });
     await p.waitForTimeout(400);
     await p.evaluate(() => {
       const wrap = document.getElementById('wrap');

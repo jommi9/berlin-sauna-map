@@ -866,13 +866,6 @@ body{letter-spacing:0}
   .lede{display:none}
   .intro .stats{margin-top:12px !important} .stats .n{font-size:22px} .stats > div{padding-top:8px}
 }
-/* The key to a row: what the flag, the star and the pick mean. Open until it is closed once. */
-.lkey{margin:0 4px 10px; padding:8px 0 9px; border-top:1px solid var(--sep); border-bottom:1px solid var(--sep); font-size:12.5px; line-height:1.55; color:var(--label-2)}
-.lkey summary{cursor:pointer; list-style:none; font:500 11px/1.4 var(--mono); letter-spacing:.05em; text-transform:uppercase; color:var(--label)}
-.lkey summary::-webkit-details-marker{display:none}
-.lkey summary::after{content:" +"} .lkey[open] summary::after{content:" \2212"}
-.lkey p{margin:6px 0 0} .lkey b{font-weight:500; color:var(--label)} .lkey .flagi{vertical-align:-2px; margin-right:3px}
-.pick-tag .av{display:none}
 /* Signing in is offered quietly here and asked for where it earns something, on a sauna's card. */
 .acct-b:not(.me){background:none; color:var(--label); box-shadow:inset 0 0 0 1px var(--sep); font:500 11px var(--mono); letter-spacing:.05em; text-transform:uppercase; height:34px; padding:0 12px}
 .acct-b:not(.me) svg{display:none}
@@ -997,7 +990,6 @@ body{letter-spacing:0}
           <option value="visits">most visited first</option>
         </select>
       </div>
-      <details class="lkey" id="lkey" open><summary>how to read a row</summary><p id="lkey-p"></p></details>
       <ul class="cards" id="cards"></ul>
       <p class="none-msg" id="none" hidden>nothing matches. raise the price limit or clear a filter.</p>
     </div>
@@ -1591,7 +1583,6 @@ const STYLE = {
 };
 const hostOf = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return ""; } };
 function styleBadge(v){
-  if (v.style === "unknown" && v.finnish == null) return "";     // nothing known: no badge, rather than one that says so
   const s = STYLE[v.style] || STYLE.unknown;
   /* the score is stars out of 5, in halves: shown as the number and one star */
   const score = v.finnish == null ? "" : `<span class="sc">${v.finnish}<i>\u2605</i></span>`;
@@ -1629,7 +1620,7 @@ V.forEach(v => {
       <span class="status ${STATUS_CLASS[st]}" data-status title="As of this minute, Helsinki time">${statusText(v, cityNow())}</span>
       <span class="price">${priceShort(v)}</span>
       ${v.hot != null ? `<span class="temp" data-temp title="hottest sauna${v.plunge != null ? " / cold plunge" : ""}">${tempTag(v)}</span>` : ""}
-      ${v.badge ? `<span class="pick-tag" title="Picked by ${CURATOR.name}"><i class="av" aria-hidden="true">${CURATOR.name[0]}</i>editor\u2019s pick \u00b7 ${lower(v.badge)}</span>` : ""}
+      ${v.badge ? `<span class="pick-tag" title="Picked by ${CURATOR.name}"><i class="av" aria-hidden="true">${CURATOR.name[0]}</i>${lower(v.badge)}</span>` : ""}
     </div>
     <dl class="rows">
       <dt>entry</dt><dd><b>${v.priceLabel}</b></dd>
@@ -1637,10 +1628,10 @@ V.forEach(v => {
         ${v.usc !== "no" ? `<span class="tiers">${["Classic","Premium","Max"]
           .map(t => `<span class="tier${v.uscTiers.includes(t) ? "" : " off"}">${t}</span>`).join("")}</span>` : ""}</dd>` : ""}
       <dt>heat</dt><dd data-tp="sauna">${tempText(v.sauna)}</dd>
-      ${v.stove ? `<dt>stove</dt><dd>${stoveRow(v)}</dd>` : ""}
-      ${v.loyly === "unknown" ? "" : `<dt>l\u00f6yly</dt><dd><span class="ly ly-${v.loyly}">${v.loylyText}</span>${
+      <dt>stove</dt><dd>${stoveRow(v)}</dd>
+      <dt>l\u00f6yly</dt><dd><span class="ly ly-${v.loyly}">${v.loylyText}</span>${
         v.aufgussScore != null ? `<span class="augrade">Aufguss ${v.aufgussScore}<i>/10</i></span>` : ""}${
-        v.aufgussNote ? `<span class="src2" data-tp="aufgussNote">${tempText(v.aufgussNote)}</span>` : ""}</dd>`}
+        v.aufgussNote ? `<span class="src2" data-tp="aufgussNote">${tempText(v.aufgussNote)}</span>` : ""}</dd>
       <dt>water</dt><dd data-tp="pool">${tempText(v.pool)}</dd>
       <dt>open</dt><dd>${hoursText(v, cityNow())}${v.open && SRC_NOTE[v.open.src]
         ? ` <span class="src">${SRC_NOTE[v.open.src]}</span>` : ""}</dd>
@@ -2066,19 +2057,7 @@ const showHottest = () => { if (HOTTEST) document.getElementById("stat-hot").tex
     document.getElementById("stat-hot-s").textContent = at.length > 1 ? `at ${at.length} places` : short(at[0].name);
   }
 })();
-{
-  const has = k => V.some(v => v.style === k), parts = [];
-  if (has("finnish")) parts.push(`${STYLE.finnish.icon}<b>finnish</b> you throw the water yourself`);
-  if (has("german")) parts.push(`${STYLE.german.icon}<b>german</b> a sauna master throws it for you`);
-  if (has("russian")) parts.push(`${STYLE.russian.icon}<b>banya</b> a Russian bathhouse`);
-  if (has("none")) parts.push(`${STYLE.none.icon}<b>no l\u00f6yly</b> nobody may throw water`);
-  if (V.some(v => v.finnish != null)) parts.push(`<b>4.5\u2605</b> the editor\u2019s score as a sauna, out of 5`);
-  if (V.some(v => v.badge)) parts.push(`<b>editor\u2019s pick</b> the one answer for one kind of visit`);
-  const key = document.getElementById("lkey");
-  document.getElementById("lkey-p").innerHTML = `L\u00f6yly is the steam off the stones, and the flag says who makes it. ` + parts.join(" \u00b7 ") + ".";
-  key.hidden = !parts.length;
-  try { if (localStorage.getItem("sauna.key") === "closed") key.open = false; } catch {}
-  key.addEventListener("toggle", () => { try { localStorage.setItem("sauna.key", key.open ? "open" : "closed"); } catch {} });
+{                                             // the less common filters sit behind "more filters"
   const more = document.getElementById("more-f"), filters = document.querySelector(".filters");
   const hiddenOn = () => filters.querySelectorAll('#g-kind .chip[aria-pressed="true"], #g-usc .chip[aria-pressed="true"]').length;
   const label = () => { const n = hiddenOn(), open = filters.classList.contains("all"); more.textContent = open ? "fewer filters" : "more filters" + (n ? ` \u00b7 ${n} on` : ""); more.setAttribute("aria-expanded", String(open)); };

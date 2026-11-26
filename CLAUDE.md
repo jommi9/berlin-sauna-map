@@ -201,6 +201,13 @@ coherent:
   avatars.
 - The site is called "sauna map" and the city comes after it: the title reads "sauna map
   berlin", and so do the page title and share title ("Sauna Map Berlin").
+- **The list and the map start on the first screen.** The header is short on purpose: the title
+  on one line at about two thirds of its old size with the figures beside it, no collage above
+  the map (`.collage` is hidden on the page), and one row of filters with the kind and USC-tier
+  groups behind "more filters" on a computer. On a phone the lede is hidden and the figures are
+  one slim row. On a 1440 by 900 laptop the map starts about 320 px down; do not add anything
+  above the filter bar without checking that. The share image is the exception: `og.js` puts the
+  header back at full size, collage included, because a picture has no map to make room for.
 - The sauna is in three marks and no more. Birch bark fades in from the top of the page
   (`--bark`), the title thins toward its top edge like steam (`--title-fade`), and a
   thermometer line runs under the header from "cold plunge" to "hot stones" (`--cold`,
@@ -225,7 +232,8 @@ coherent:
   acronyms keep their case (`lower()` keeps USC).
 - The header figures and the collage are computed in the browser from the
   venue data, so they cannot drift. The collage shows the venues named in
-  `COVER`, and only those with a photograph.
+  `COVER`, and only those with a photograph; since 26 November 2026 it is drawn only in the
+  share image.
 - A photo is either from Wikimedia Commons (the city's `COMMONS`, credited with photographer and
   licence by `fetch_images.py`) or one a visitor or reviewer sent in (the city's `PHOTOS`, photo
   key to the name to credit, or `None`; its card is committed as `img/card/<key>.webp`, 640×400).
@@ -250,6 +258,17 @@ coherent:
   edge, on a computer and on a phone.
 - A picked sauna has its own address, the page's with `#<name-as-a-slug>` after it (`slugOf`).
   Picking one writes it to the address bar and opening such a link picks that sauna.
+- A card's first button is "directions": a Google Maps link to the sauna's coordinates, which
+  opens the visitor's maps app. "hours & booking" goes to the venue's own site and shows its
+  host. There is no street address on a card yet, because the data has districts and
+  coordinates only.
+- Signing in is quiet and asked for where it earns something. The button in the bar is an
+  outline at the far right. A signed-out card offers "save" and "i've been here", and either
+  opens the sign-in dialog with the reason in its heading (`signIn(why)`, from `data-why`).
+- Two things the owner tried and rejected on 26 November 2026, so do not bring them back
+  unasked: a key above the list explaining the badges (with the pick chip reworded to "editor's
+  pick"), and hiding the stove and löyly rows and the "not known" badge where nothing is known.
+  The J chip, the unknown badge and the "Not known" rows stay.
 - "share" on a card hands out a different address, `<city>/s/<slug>/`: a small page `assemble.py`
   writes per sauna (`stubs()`), because whatever draws a link preview never sees what follows a
   `#`. That page carries the sauna's name, a line about it and its picture in Open Graph tags, and
