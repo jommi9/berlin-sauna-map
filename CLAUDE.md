@@ -31,8 +31,11 @@ as it is and the jommi.fi Worker passes `/sauna/berlin/` through to it.
 - The other cities were built to the same sourcing rule as Berlin: every venue passed
   `verify_venue.py`, and every price and hour was read off its own site. Where a site renders
   prices with a script, or does not say who throws the water, the field is empty rather than
-  guessed. San Francisco and Helsinki were re-read and filled out on 25 November 2026; New York
-  is still the first naive map. The Finnish scores and picks are empty everywhere but Berlin.
+  guessed. San Francisco and Helsinki were re-read and filled out on 25 November 2026 and New
+  York on the 26th. Finnish scores and picks are the editor's own, entered on the score desk (a
+  private artifact, https://claude.ai/artifact/GaGofpEKqqdYqKFz9MT2QB: its `saunas` collection is
+  the list and its `scores` collection is what the editor entered); outside Berlin only the
+  saunas the editor has been to are scored.
 - A day in `OPEN` is one window `[open, close]`, or a list of windows where a venue runs a morning
   turn and an evening one (Löyly, Kulttuurisauna: `[[540, 660], [780, 1320]]`), or `None`. The
   status and its countdown read every window (`spans`, `within`), so between two turns the tag
@@ -59,7 +62,7 @@ as it is and the jommi.fi Worker passes `/sauna/berlin/` through to it.
 - To open a city on jommi.fi: set `"live": true` in its `city.json` and rebuild every city, then
   in `jommi9/jommi-fi` add the slug to `SAUNA_LIVE` in `worker/sauna-api.js`, add its two paths to
   `run_worker_first` in `wrangler.jsonc`, and set its status to `live` in `src/lib/sauna.ts`.
-  Berlin, San Francisco and Helsinki are open; New York is not yet.
+  Berlin, San Francisco, Helsinki and New York are open.
 - The repository was `berlin-sauna-map` until November 2026. `check_deployment.py` reads the
   repository's name from Actions, so the Pages address follows a rename by itself; `REPO` in
   `engine/city.py` is the one place the name is written down.
