@@ -814,6 +814,42 @@ body{letter-spacing:0}
   .findrow{display:contents} .acct{order:1} .filters{order:2} .unit{order:3; margin-left:auto}
 }
 @media (max-width:980px){.intro{display:block} .collage{aspect-ratio:5.4/1.05} .stats .n{font-size:26px} .title{font-size:clamp(46px,14vw,90px)}}
+/* The header is kept short so the list and the map start on the first screen: the title on one
+   line with the figures beside it, no photographs above the map, and one row of filters with the
+   less common ones behind "more filters". */
+.top{padding-block:26px 16px}
+.title{font-size:clamp(40px,6.2vw,96px); margin-top:8px}
+.intro{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:6px 40px}
+.intro .brand{grid-column:1; grid-row:1} .lede{grid-column:1; grid-row:2; font-size:15.5px; max-width:60ch; margin:10px 0 0}
+.intro .stats{grid-column:2; grid-row:1 / 3; align-self:end; margin-top:0 !important}
+.stats .n{font-size:30px} .stats .s{display:none}
+.collage{display:none}
+.bar{margin:14px 0 14px}
+.split{height:min(860px, calc(100dvh - 110px))}
+.more-f{display:none}
+@media (min-width:981px){
+  .more-f{display:inline-block}
+  .filters:not(.all) #g-kind, .filters:not(.all) #g-usc{display:none}
+}
+@media (max-width:980px){
+  .top{padding-block:16px 2px}
+  .bar{margin-top:30px}
+  .title{font-size:clamp(34px,10.4vw,64px)}
+  .lede{display:none}
+  .intro .stats{margin-top:12px !important} .stats .n{font-size:22px} .stats > div{padding-top:8px}
+}
+/* The key to a row: what the flag, the star and the pick mean. Open until it is closed once. */
+.lkey{margin:0 4px 10px; padding:8px 0 9px; border-top:1px solid var(--sep); border-bottom:1px solid var(--sep); font-size:12.5px; line-height:1.55; color:var(--label-2)}
+.lkey summary{cursor:pointer; list-style:none; font:500 11px/1.4 var(--mono); letter-spacing:.05em; text-transform:uppercase; color:var(--label)}
+.lkey summary::-webkit-details-marker{display:none}
+.lkey summary::after{content:" +"} .lkey[open] summary::after{content:" \2212"}
+.lkey p{margin:6px 0 0} .lkey b{font-weight:500; color:var(--label)} .lkey .flagi{vertical-align:-2px; margin-right:3px}
+.pick-tag .av{display:none}
+/* Signing in is offered quietly here and asked for where it earns something, on a sauna's card. */
+.acct-b:not(.me){background:none; color:var(--label); box-shadow:inset 0 0 0 1px var(--sep); font:500 11px var(--mono); letter-spacing:.05em; text-transform:uppercase; height:34px; padding:0 12px}
+.acct-b:not(.me) svg{display:none}
+@media (min-width:1001px){ .acct{order:4} .unit{margin-left:auto} }
+.btn .host{margin-left:8px; opacity:.6; text-transform:none; letter-spacing:0}
 /* Until the script at the foot of the page has run there is no list and no map. The page says so:
    steam rises where the map will be and the list shows ghost rows. .ready takes both away. */
 .loading{position:absolute; inset:0; z-index:3; display:grid; place-content:start center; justify-items:center; gap:14px; padding-top:min(22vh, 150px);
@@ -909,6 +945,7 @@ body{letter-spacing:0}
           <input type="range" id="pmax" min="12" max="90" step="1" value="90" aria-label="Maximum price">
           <output id="pout" for="pmax">Any</output>
         </label>
+        <button class="chip more-f" id="more-f" type="button" aria-expanded="false">more filters</button>
         <button class="clear" id="clear" type="button">reset</button>
       </div>
     </div>
@@ -930,6 +967,7 @@ body{letter-spacing:0}
           <option value="visits">most visited first</option>
         </select>
       </div>
+      <details class="lkey" id="lkey" open><summary>how to read a row</summary><p id="lkey-p"></p></details>
       <ul class="cards" id="cards"></ul>
       <p class="none-msg" id="none" hidden>nothing matches. raise the price limit or clear a filter.</p>
     </div>
@@ -1521,7 +1559,9 @@ const STYLE = {
     icon: `<svg class="flagi nodrop" width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.6C5 4.4 3.4 6.4 3.4 8.4a3.6 3.6 0 0 0 7.2 0C10.6 6.4 9 4.4 7 1.6Z" fill="none" stroke="currentColor" stroke-width="1.4"></path><path d="M2 12.5 12 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>` },
   unknown: { label: "not known", title: "Not known yet who throws the water here", icon: "" },
 };
+const hostOf = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return ""; } };
 function styleBadge(v){
+  if (v.style === "unknown" && v.finnish == null) return "";     // nothing known: no badge, rather than one that says so
   const s = STYLE[v.style] || STYLE.unknown;
   /* the score is stars out of 5, in halves: shown as the number and one star */
   const score = v.finnish == null ? "" : `<span class="sc">${v.finnish}<i>\u2605</i></span>`;
@@ -1559,7 +1599,7 @@ V.forEach(v => {
       <span class="status ${STATUS_CLASS[st]}" data-status title="As of this minute, New York time">${statusText(v, cityNow())}</span>
       <span class="price">${priceShort(v)}</span>
       ${v.hot != null ? `<span class="temp" data-temp title="hottest sauna${v.plunge != null ? " / cold plunge" : ""}">${tempTag(v)}</span>` : ""}
-      ${v.badge ? `<span class="pick-tag" title="Picked by ${CURATOR.name}"><i class="av" aria-hidden="true">${CURATOR.name[0]}</i>${lower(v.badge)}</span>` : ""}
+      ${v.badge ? `<span class="pick-tag" title="Picked by ${CURATOR.name}"><i class="av" aria-hidden="true">${CURATOR.name[0]}</i>editor\u2019s pick \u00b7 ${lower(v.badge)}</span>` : ""}
     </div>
     <dl class="rows">
       <dt>entry</dt><dd><b>${v.priceLabel}</b></dd>
@@ -1567,10 +1607,10 @@ V.forEach(v => {
         ${v.usc !== "no" ? `<span class="tiers">${["Classic","Premium","Max"]
           .map(t => `<span class="tier${v.uscTiers.includes(t) ? "" : " off"}">${t}</span>`).join("")}</span>` : ""}</dd>` : ""}
       <dt>heat</dt><dd data-tp="sauna">${tempText(v.sauna)}</dd>
-      <dt>stove</dt><dd>${stoveRow(v)}</dd>
-      <dt>l\u00f6yly</dt><dd><span class="ly ly-${v.loyly}">${v.loylyText}</span>${
+      ${v.stove ? `<dt>stove</dt><dd>${stoveRow(v)}</dd>` : ""}
+      ${v.loyly === "unknown" ? "" : `<dt>l\u00f6yly</dt><dd><span class="ly ly-${v.loyly}">${v.loylyText}</span>${
         v.aufgussScore != null ? `<span class="augrade">Aufguss ${v.aufgussScore}<i>/10</i></span>` : ""}${
-        v.aufgussNote ? `<span class="src2" data-tp="aufgussNote">${tempText(v.aufgussNote)}</span>` : ""}</dd>
+        v.aufgussNote ? `<span class="src2" data-tp="aufgussNote">${tempText(v.aufgussNote)}</span>` : ""}</dd>`}
       <dt>water</dt><dd data-tp="pool">${tempText(v.pool)}</dd>
       <dt>open</dt><dd>${hoursText(v, cityNow())}${v.open && SRC_NOTE[v.open.src]
         ? ` <span class="src">${SRC_NOTE[v.open.src]}</span>` : ""}</dd>
@@ -1586,7 +1626,8 @@ V.forEach(v => {
     <div class="revs" data-logs hidden></div>
     <div class="mine" data-mine hidden></div>
     <div class="acts">
-      <a class="btn primary" href="${v.url}" target="_blank" rel="noopener noreferrer">hours &amp; booking</a>
+      <a class="btn primary" href="https://www.google.com/maps/dir/?api=1&amp;destination=${v.lat},${v.lon}" target="_blank" rel="noopener noreferrer">directions</a>
+      <a class="btn" href="${v.url}" target="_blank" rel="noopener noreferrer">hours &amp; booking<span class="host">${hostOf(v.url)}</span></a>
       ${im ? "" : `<a class="btn" href="${v.url}" target="_blank" rel="noopener noreferrer">their photos</a>`}
       <button class="btn" type="button" data-share>share</button>
     </div>`;
@@ -1995,6 +2036,26 @@ const showHottest = () => { if (HOTTEST) document.getElementById("stat-hot").tex
     document.getElementById("stat-hot-s").textContent = at.length > 1 ? `at ${at.length} places` : short(at[0].name);
   }
 })();
+{
+  const has = k => V.some(v => v.style === k), parts = [];
+  if (has("finnish")) parts.push(`${STYLE.finnish.icon}<b>finnish</b> you throw the water yourself`);
+  if (has("german")) parts.push(`${STYLE.german.icon}<b>german</b> a sauna master throws it for you`);
+  if (has("russian")) parts.push(`${STYLE.russian.icon}<b>banya</b> a Russian bathhouse`);
+  if (has("none")) parts.push(`${STYLE.none.icon}<b>no l\u00f6yly</b> nobody may throw water`);
+  if (V.some(v => v.finnish != null)) parts.push(`<b>4.5\u2605</b> the editor\u2019s score as a sauna, out of 5`);
+  if (V.some(v => v.badge)) parts.push(`<b>editor\u2019s pick</b> the one answer for one kind of visit`);
+  const key = document.getElementById("lkey");
+  document.getElementById("lkey-p").innerHTML = `L\u00f6yly is the steam off the stones, and the flag says who makes it. ` + parts.join(" \u00b7 ") + ".";
+  key.hidden = !parts.length;
+  try { if (localStorage.getItem("sauna.key") === "closed") key.open = false; } catch {}
+  key.addEventListener("toggle", () => { try { localStorage.setItem("sauna.key", key.open ? "open" : "closed"); } catch {} });
+  const more = document.getElementById("more-f"), filters = document.querySelector(".filters");
+  const hiddenOn = () => filters.querySelectorAll('#g-kind .chip[aria-pressed="true"], #g-usc .chip[aria-pressed="true"]').length;
+  const label = () => { const n = hiddenOn(), open = filters.classList.contains("all"); more.textContent = open ? "fewer filters" : "more filters" + (n ? ` \u00b7 ${n} on` : ""); more.setAttribute("aria-expanded", String(open)); };
+  more.addEventListener("click", () => { filters.classList.toggle("all"); label(); });
+  filters.addEventListener("click", () => setTimeout(label, 0));
+  label();
+}
 run();
 try {                                         // back from signing in: the sauna that was picked
   const back = sessionStorage.getItem("sauna.back");
@@ -2062,20 +2123,22 @@ async function api(path, body){
 const goSignIn = way => { try { if (location.hash) sessionStorage.setItem("sauna.back", location.hash); } catch {} location.href = `${API}/auth/start?back=${encodeURIComponent(location.pathname)}${way === "github" ? "&with=github" : ""}`; };
 /* With one way in, go; with two, ask which. Either account does everything here; the two are
    separate accounts, so whoever started with one should keep using it. */
-function signIn(){
+function signIn(why){
   const w = ways();
   if (w.length < 2) return goSignIn(w[0] || "x");
   let d = document.getElementById("signin-d");
   if (!d){
     d = document.createElement("dialog"); d.id = "signin-d"; d.className = "signin";
     d.innerHTML = `<form method="dialog"><h3>sign in</h3>
-      <p>Save saunas, log visits and climb the board. Pick one and stick with it: the two are separate accounts here.</p>
+      <p data-say></p>
       <button class="btn primary" type="button" data-way="x">${XG}&nbsp;continue with X</button>
       <button class="btn primary" type="button" data-way="github">${GH}&nbsp;continue with GitHub</button>
       <button class="btn quiet" value="cancel">not now</button></form>`;
     d.addEventListener("click", e => { const b = e.target.closest("[data-way]"); if (b) goSignIn(b.dataset.way); else if (e.target === d) d.close(); });
     document.body.appendChild(d);
   }
+  d.querySelector("h3").textContent = why ? "sign in to " + why : "sign in";
+  d.querySelector("[data-say]").textContent = "An account keeps your saved saunas and your visits, and puts you on the board. Use the same one each time.";
   d.showModal();
 }
 let toastEl = null, toastT = 0;
@@ -2207,7 +2270,8 @@ function drawMine(v){
   box.hidden = !SOC.on;
   if (!SOC.on) return;
   if (!SOC.me){
-    box.innerHTML = `<div class="row"><button class="btn quiet" type="button" data-sign>${signGlyph()}sign in to save and log visits</button></div>`;
+    box.innerHTML = `<div class="row"><button class="btn quiet" type="button" data-sign data-why="save ${esc(v.name)} to your list">save</button>` +
+      `<button class="btn quiet" type="button" data-sign data-why="log your visit to ${esc(v.name)}">i\u2019ve been here</button></div>`;
     return;
   }
   const t = today(), days = SOC.visits.filter(x => x.venue === v.name).map(x => x.day).sort().reverse();
@@ -2354,7 +2418,7 @@ cards.addEventListener("change", e => {
 cards.addEventListener("click", async e => {
   const box = e.target.closest("[data-mine]"); if (!box) return;
   const v = V.find(x => cardOf.get(x.id).contains(box));
-  if (e.target.closest("[data-sign]")) return signIn();
+  { const sb = e.target.closest("[data-sign]"); if (sb) return signIn(sb.dataset.why); }
   if (e.target.closest("[data-save]")){
     const on = !ME.saved.has(v.name);
     try {
@@ -2445,7 +2509,7 @@ function drawJoin(){
         <div class="mine"><div class="row"><button class="btn quiet" type="button" data-verdict="revoke" data-h="${esc(x.handle)}" data-via="${x.via === "github" ? "github" : "x"}">take off the panel</button></div></div></div>`).join("")}</div>` : "");
 }
 join.addEventListener("click", async e => {
-  if (e.target.closest("[data-sign]")) return signIn();
+  { const sb = e.target.closest("[data-sign]"); if (sb) return signIn(sb.dataset.why); }
   if (e.target.closest("[data-apply]")){
     const err = join.querySelector(".err");
     try { const r = await api("/apply", { note: join.querySelector("textarea").value }); SOC.me.role = r.role; drawJoin(); drawAcct(); }
