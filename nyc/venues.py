@@ -33,6 +33,10 @@ V = [
 ]
 
 D = lambda a, b: [[a, b]] * 7
+# --- Photos. Sent in through the photo desk on 26 November 2026 by a visitor, without a name to credit.
+IMG = {"Russian & Turkish Baths": "rtb"}
+PHOTOS = {"rtb": None}
+
 OPEN = {
  "Bathhouse Williamsburg": {"weekly": D(480, 1410), "src": "venue"},
  "Bathhouse Flatiron": {"weekly": D(480, 1410), "src": "venue"},

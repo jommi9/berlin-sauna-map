@@ -223,6 +223,14 @@ coherent:
 - The header figures and the collage are computed in the browser from the
   venue data, so they cannot drift. The collage shows the venues named in
   `COVER`, and only those with a photograph.
+- A photo is either from Wikimedia Commons (the city's `COMMONS`, credited with photographer and
+  licence by `fetch_images.py`) or one a visitor or reviewer sent in (the city's `PHOTOS`, photo
+  key to the name to credit, or `None`; its card is committed as `img/card/<key>.webp`, 640×400).
+  `embed_images.py` joins the two, and the card and the credits list say "sent in by a visitor"
+  for the second kind, with a line on how to ask for a credit or a take-down. Sent-in photos
+  arrive through the photo desk, a private artifact (https://claude.ai/artifact/SHbPacgFe3q3xTeDJSrRQg):
+  its `wanted` collection is the venues without a photo and its `photos` collection is what was
+  sent, each pointing at an uploaded asset.
 - `og.png` is a screenshot of the hero over the map at 1200×630; retake it when
   the header changes (`node engine/og.js <city> ...`, which also does Berlin's collage).
 - The city in the title is the switcher: underlined, with a red chevron after it. The footer

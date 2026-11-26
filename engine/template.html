@@ -1005,7 +1005,7 @@ body{letter-spacing:0}
 
   <section class="credits" aria-labelledby="h-credits">
     <h3 id="h-credits">image credits</h3>
-    <p class="cnote">Photographs are used under their Creative Commons or Free Art licences, with the photographer and licence named below. Venues without a freely licensed photograph show a map of their street instead, and link to their own pictures.</p>
+    <p class="cnote">Photographs from Wikimedia Commons are used under their Creative Commons or Free Art licences, with the photographer and licence named below. The others were sent in by visitors and reviewers. Venues without a photograph show a map of their street instead, and link to their own pictures. If a photograph here is yours and should be credited differently or taken down, <a href="https://github.com/__REPO__/issues/new" target="_blank" rel="noopener noreferrer">say so</a> and it will be.</p>
     <ul id="credit-list"></ul>
   </section>
 
@@ -1533,7 +1533,7 @@ V.forEach(v => {
   const media = im
     ? `<figure class="shot">
          <img src="${im.src}" alt="${v.name}" loading="lazy" width="640" height="360">
-         <figcaption>Photo ${im.by} &middot; <a href="${im.page}" target="_blank" rel="noopener noreferrer">${im.lic}</a></figcaption>
+         <figcaption>${im.lic ? `Photo ${im.by} &middot; <a href="${im.page}" target="_blank" rel="noopener noreferrer">${im.lic}</a>` : `Photo sent in by ${im.by || "a visitor"}`}</figcaption>
        </figure>`
     : `<figure class="shot maptile">
          <svg viewBox="${(v.x - TW / 2).toFixed(1)} ${(v.y - TH / 2).toFixed(1)} ${TW} ${TH}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Map around ${v.name}">
@@ -1797,8 +1797,10 @@ const creditList = document.getElementById("credit-list");
 V.filter(v => v.img).forEach(v => {
   const im = IMG[v.img];
   const li = document.createElement("li");
-  li.innerHTML = `<b>${v.name}</b> &mdash; photo by ${im.by}, ` +
-    `<a href="${im.page}" target="_blank" rel="noopener noreferrer">${im.lic}</a>`;
+  // a photo with a licence is from Wikimedia Commons; one without was sent in by a visitor or reviewer
+  li.innerHTML = im.lic
+    ? `<b>${v.name}</b> &mdash; photo by ${im.by}, <a href="${im.page}" target="_blank" rel="noopener noreferrer">${im.lic}</a>`
+    : `<b>${v.name}</b> &mdash; sent in by ${im.by || "a visitor"}`;
   creditList.appendChild(li);
 });
 

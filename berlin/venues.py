@@ -87,7 +87,11 @@ IMG = {
  "Titanic Gendarmenmarkt \u2014 BeFine":"titanic", "Park Inn Alexanderplatz \u2014 Gezer Spa":"parkinn",
  "InterContinental Berlin":"intercon", "The Westin Grand \u2014 Gezer Spa":"westin",
  "LIQUIDROM":"liquidrom", "Stadtbad Neuk\u00f6lln":"neukoelln",
+ "Vabali":"vabali", "Olivin":"olivin", "Fitness Company Berlin":"fitnessco",
 }
+# Not from Wikimedia Commons: sent in through the photo desk on 26 November 2026 by visitors and
+# reviewers, without a name to credit. The Commons photos are named in COMMONS below.
+PHOTOS = {"vabali": None, "olivin": None, "fitnessco": None}
 
 
 # --- Which Urban Sports Club tiers actually get into the SAUNA (not just the gym).
