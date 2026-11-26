@@ -50,8 +50,8 @@ guests not to put water on the rocks, which is the "dry" kind in HEAT.
 Still empty: who throws the water at Kabuki, Alchemy Springs, Onsen and
 Dogpatch Paddle (their pages do not say); a plunge temperature for Archimedes Banya, Onsen and Fjord
 (none states a figure) and for Alchemy Springs (it gives a range, 45-55 F,
-which is in its pool text); the Finnish scores, picks and photos (no freely
-licensed photograph of any of these venues was found on Wikimedia Commons).
+which is in its pool text); the picks, and the Finnish scores
+of the venues the editor has not been to (Archimedes Banya and Alchemy Springs are scored).
 """
 
 # name, lat, lon, kind, district, price(from|None), priceLabel, usc, uscLabel,
@@ -148,6 +148,14 @@ STOVE = {
  "Archimedes Banya": (None, None, "Each Russian sauna is built around a 22,000 lb stove faced in handmade ceramic tiles from Russia", "venue"),
  "Albany Sauna": ("gas", None, "One central brick furnace holding several tons of river rocks, gas-fired for five hours each morning and then shut with the chimney closed, so the rocks stay hot through the day", "venue"),
  "Good Hot": (None, None, "Commercial heaters that take no water on the rocks", "venue"),
+}
+
+# --- One Finn's score of the place as a sauna, in stars out of 5: heat, löyly, and whether you
+#     may throw water. The editor's own, entered on the score desk on 26 November 2026; a venue
+#     missing here has not been scored, which for now means not visited.
+FINNISH = {
+ "Archimedes Banya": 4.5,
+ "Alchemy Springs": 3.5,
 }
 
 LAST_CHECKED = "25 November 2026"
