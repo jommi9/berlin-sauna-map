@@ -262,8 +262,14 @@ coherent:
   opens the visitor's maps app. "hours & booking" goes to the venue's own site and shows its
   host. There is no street address on a card yet, because the data has districts and
   coordinates only.
-- Signing in is quiet and asked for where it earns something. The button in the bar is an
-  outline at the far right. A signed-out card offers "save" and "i've been here", and either
+- The account stands in the top right corner of the page (`#acct` in `header.top`, not in the
+  filter bar): an outlined "sign in" when signed out, the avatar and handle when signed in, with
+  its menu hanging from the right edge. On a phone the line above the title makes room for it.
+- The panel is a dialog (`#panel-d`), opened by "the panel" in the footer and by the panel line
+  in the account menu (`openPanel`). It is one panel for every city, so no page carries it as a
+  section; the owner asked for that on 27 November 2026. The line about who adds listings is in
+  the small print.
+- Signing in is quiet and asked for where it earns something. A signed-out card offers "save" and "i've been here", and either
   opens the sign-in dialog with the reason in its heading (`signIn(why)`, from `data-why`).
 - Two things the owner tried and rejected on 26 November 2026, so do not bring them back
   unasked: a key above the list explaining the badges (with the pick chip reworded to "editor's
@@ -360,7 +366,7 @@ links instead. The code is the last block of `engine/template.html`'s script ("t
 - A visit is a person's own word. The board counts distinct saunas, one visit per sauna per
   day, so it is slow to pad and not proof of anything.
 - Becoming a reviewer is an application read by the editor (`SAUNA_ADMINS`, an X handle),
-  who approves it on the map's panel section. Reviews from the panel are served live by the
+  who approves it in the panel dialog. Reviews from the panel are served live by the
   API and render under each card's "reviews"; they never enter `reviews.json`.
 - Everything people type is escaped with `esc()` before it touches `innerHTML`. Keep it so.
 - A logged visit can carry a line of text and the temperatures the person saw (`POST /visit` with
