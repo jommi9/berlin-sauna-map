@@ -212,8 +212,8 @@ coherent:
   header back at full size, collage included, because a picture has no map to make room for.
 - The sauna is in three marks and no more. Birch bark fades in from the top of the page
   (`--bark`), the title thins toward its top edge like steam (`--title-fade`), and a
-  thermometer line runs under the header from "cold plunge" to "hot stones" (`--cold`,
-  `--cool`, `--mild`, `--warm`, `--hot`). The hottest figure is `--hot` and plunge
+  thermometer line runs under the header from cold blue to hot red (`--cold`,
+  `--cool`, `--mild`, `--warm`, `--hot`), with no words on it since 27 November 2026. The hottest figure is `--hot` and plunge
   temperatures are `--cold`.
 - Both typefaces are under the SIL Open Font License and live in `engine/fonts` with their
   licences. `assemble.py` copies them into one `fonts/` folder at the repo root, beside the
@@ -266,7 +266,8 @@ coherent:
   credit and the photo credits. It takes its colour tokens straight out of `template.html`, so
   the two cannot drift. The Artifact is one file, so its "about" link goes to the published page.
 - The °C / °F switch stands at the right end of the filter bar, in line with the map's right
-  edge, on a computer and on a phone.
+  edge, on a computer and on a phone. On a computer it is the height of the chips (30 px) and
+  square like them; on a phone it is the height of the search field beside it.
 - A picked sauna has its own address, the page's with `#<name-as-a-slug>` after it (`slugOf`).
   Picking one writes it to the address bar and opening such a link picks that sauna.
 - A card's first button is "directions": a Google Maps link to the sauna's coordinates, which
