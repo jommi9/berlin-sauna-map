@@ -841,6 +841,7 @@ body{letter-spacing:0}
 .sign .src + .src{margin-left:0}
 button.src{border:0; cursor:pointer}
 .btn .host{margin-left:8px; opacity:.6; text-transform:none; letter-spacing:0}
+.btn .lnk{flex:none; margin-right:7px; vertical-align:-2px}
 /* Until the script at the foot of the page has run there is no list and no map. The page says so:
    steam rises where the map will be and the list shows ghost rows. .ready takes both away. */
 .loading{position:absolute; inset:0; z-index:3; display:grid; place-content:start center; justify-items:center; gap:14px; padding-top:min(22vh, 150px);
@@ -1579,7 +1580,7 @@ V.forEach(v => {
       <a class="btn primary" href="https://www.google.com/maps/dir/?api=1&amp;destination=${v.lat},${v.lon}" target="_blank" rel="noopener noreferrer">directions</a>
       <a class="btn" href="${v.url}" target="_blank" rel="noopener noreferrer">hours &amp; booking<span class="host">${hostOf(v.url)}</span></a>
       ${im ? "" : `<a class="btn" href="${v.url}" target="_blank" rel="noopener noreferrer">their photos</a>`}
-      <button class="btn" type="button" data-share>share</button>
+      <button class="btn" type="button" data-share title="Copy a link to this sauna"><svg class="lnk" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5"/></svg><span>share</span></button>
     </div>`;
   cards.appendChild(li); cardOf.set(v.id, li);
   li.addEventListener("click", e => { if (!e.target.closest("a, [data-share], [data-mine], [data-live], [data-logs]")) choose(v.id, false); });
@@ -1626,7 +1627,7 @@ function fromHash(){
   if (v && sel !== v.id){ choose(v.id, true); if (isMobile()) cardOf.get(v.id).scrollIntoView({ block: "nearest" }); }
 }
 async function shareVenue(v, button){
-  const url = linkTo(v), said = t => { const was = button.textContent; button.textContent = t; setTimeout(() => { button.textContent = was; }, 1800); };
+  const url = linkTo(v), label = button.querySelector("span"), said = t => { const was = label.textContent; label.textContent = t; setTimeout(() => { label.textContent = was; }, 1800); };
   if (navigator.share && isMobile()){ try { await navigator.share({ title: v.name, url }); return; } catch (x) { if (x && x.name === "AbortError") return; } }
   if (sel !== v.id) choose(v.id, false);          // so the address bar holds this sauna's link too
   try { await navigator.clipboard.writeText(url); said("link copied"); }
@@ -2205,7 +2206,7 @@ function drawMine(v){
     <div class="row">
       <button class="btn ${saved ? "on" : "quiet"}" type="button" data-save aria-pressed="${saved}">${saved ? "★ saved" : "☆ save"}</button>
       <button class="btn ${been ? "on" : "quiet"}" type="button" data-today aria-pressed="${been}">${been ? "✓ been today" : "been here today"}</button>
-      <button class="btn quiet" type="button" data-other aria-expanded="false">another day</button>
+      <button class="btn quiet" type="button" data-other aria-expanded="false">log a past visit</button>
       ${canReview() ? `<button class="btn quiet" type="button" data-write>${mine ? "edit your review" : "write a review"}</button>` : ""}
     </div>
     <div class="row" data-pick hidden>
