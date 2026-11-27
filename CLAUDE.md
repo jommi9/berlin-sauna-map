@@ -161,11 +161,13 @@ into `****`, so notes are written as a bold **Heads up:** label followed by
 unbolded text rather than bolding the whole sentence.
 
 `PICKS`, `PRACTICAL`, `TRAPS` and `LAST_CHECKED` are defined once in the city's `venues.py` and
-injected into both the site template and the Notion page (the traps as a "Two traps"
-list under the table), so the fast-picks list cannot say two different things. The hero stamp ("Last scan dd.mm.yyyy") is derived from
+injected into both the site (the picks on the map page, the notes and traps on the about page)
+and the Notion page (the traps as a "Two traps" list under the table), so the fast-picks list
+cannot say two different things. The hero stamp ("Last scan dd.mm.yyyy") is derived from
 `LAST_CHECKED`, so bump that one string when you re-verify the venues. A trap is one
 sentence with no dates in it; when the venue has a `closedUntil` in force the browser
-appends the date itself, the same way the card's hours line is composed. Never write a
+appends the date itself (a few lines of script on the about page, from `data-until`), the same
+way the card's hours line is composed. Never write a
 closure date as prose in the template or in `TRAPS`.
 
 Never edit venue data with a bare `str.replace()`. Assert the old string exists
@@ -204,8 +206,8 @@ coherent:
 - **The list and the map start on the first screen.** The header is short on purpose: the title
   on one line at about two thirds of its old size with the figures beside it, no collage above
   the map (`.collage` is hidden on the page), and one row of filters with the kind and USC-tier
-  groups behind "more filters" on a computer. On a phone the lede is hidden and the figures are
-  one slim row. On a 1440 by 900 laptop the map starts about 320 px down; do not add anything
+  groups behind "more filters" on a computer. On a phone the figures are one slim row. On a
+  1440 by 900 laptop the map starts about 260 px down; do not add anything
   above the filter bar without checking that. The share image is the exception: `og.js` puts the
   header back at full size, collage included, because a picture has no map to make room for.
 - The sauna is in three marks and no more. Birch bark fades in from the top of the page
@@ -237,8 +239,9 @@ coherent:
 - A photo is either from Wikimedia Commons (the city's `COMMONS`, credited with photographer and
   licence by `fetch_images.py`) or one a visitor or reviewer sent in (the city's `PHOTOS`, photo
   key to the name to credit, or `None`; its card is committed as `img/card/<key>.webp`, 640×400).
-  `embed_images.py` joins the two, and the card and the credits list say "sent in by a visitor"
-  for the second kind, with a line on how to ask for a credit or a take-down. Sent-in photos
+  `embed_images.py` joins the two, and the card and the credits list on the about page say
+  "sent in by a visitor" for the second kind, with a line there on how to ask for a credit or a
+  take-down. Sent-in photos
   arrive through the photo desk, a private artifact (https://claude.ai/artifact/SHbPacgFe3q3xTeDJSrRQg):
   its `wanted` collection is the venues without a photo and its `photos` collection is what was
   sent, each pointing at an uploaded asset.
@@ -251,9 +254,17 @@ coherent:
   the header changes (`node engine/og.js <city> ...`, which also does Berlin's collage).
 - The city in the title is the switcher: underlined, with a red chevron after it. The footer
   carries the link to the repository with GitHub's mark.
-- The disclaimer and the data credit (OpenStreetMap's attribution among it) are small print
-  under the footer at the bottom right (`.fine`), not cards. "before you go" holds only the
-  city's own notes, benchmarks and traps, and is hidden in a city that has neither.
+- **The map page says as little as it can** (the owner, 27 November 2026: "way too wordy").
+  Under the header it is the filters, the list and map, fast picks, the leaderboard and a
+  footer of three links (about, the panel, GitHub) over one line of OpenStreetMap attribution
+  (`.fine`). No lede on the page (it is in the share image only), no blurb under "fast picks",
+  one short line under "leaderboard". Do not add explanatory prose to the map page: it goes on
+  the about page.
+- Everything else is on `<city>/about/`, a page `assemble.py` writes from `engine/about.html`
+  (`about()`): whose guide it is, where the data comes from, the city's "before you go" notes
+  (`PRACTICAL` and `TRAPS`, left out where a city has neither), who adds listings, the map
+  credit and the photo credits. It takes its colour tokens straight out of `template.html`, so
+  the two cannot drift. The Artifact is one file, so its "about" link goes to the published page.
 - The °C / °F switch stands at the right end of the filter bar, in line with the map's right
   edge, on a computer and on a phone.
 - A picked sauna has its own address, the page's with `#<name-as-a-slug>` after it (`slugOf`).
@@ -267,8 +278,8 @@ coherent:
   its menu hanging from the right edge. On a phone the line above the title makes room for it.
 - The panel is a dialog (`#panel-d`), opened by "the panel" in the footer and by the panel line
   in the account menu (`openPanel`). It is one panel for every city, so no page carries it as a
-  section; the owner asked for that on 27 November 2026. The line about who adds listings is in
-  the small print.
+  section; the owner asked for that on 27 November 2026. The line about who adds listings is on
+  the about page.
 - Signing in is quiet and asked for where it earns something. A signed-out card offers "save" and "i've been here", and either
   opens the sign-in dialog with the reason in its heading (`signIn(why)`, from `data-why`).
 - Two things the owner tried and rejected on 26 November 2026, so do not bring them back
@@ -309,7 +320,8 @@ built and committed here.
   `sauna-maps`, deployed by Cloudflare's Git connection on each push to `main`. It has no
   address of its own: the jommi.fi Worker reaches it through a service binding and serves each
   live city at `jommi.fi/sauna/<city>/`. `.assetsignore` is an allowlist: only each city's
-  `index.html`, `og.png`, `venues.json`, `img/card/*.webp`, `og/*.jpg` and `s/*/index.html`, plus
+  `index.html`, `og.png`, `venues.json`, `img/card/*.webp`, `og/*.jpg`, `s/*/index.html` and
+  `about/index.html`, plus
   the root `index.html` and `fonts/*.woff2`, are published. A new kind of file a page needs has
   to be added there or it will 404 on jommi.fi while working on GitHub Pages. The jommi.fi Worker
   sets how long a browser keeps each kind (`saunaCache` in `worker/index.js`): the typefaces for a

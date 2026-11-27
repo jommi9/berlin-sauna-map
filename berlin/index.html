@@ -526,6 +526,7 @@ svg .usc{fill:var(--tint); stroke:var(--pin-ring); stroke-width:1.7}
 .sec{margin-top:44px}
 .sec-h{margin:0; font:700 22px/1.2 var(--font-display); letter-spacing:-.022em; text-wrap:balance}
 .sec-sub{margin:5px 0 16px; color:var(--label-2); max-width:62ch}
+.sec-h + .pgrid{margin-top:16px}
 .pgrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:12px}
 /* ten picks: five across fills two rows exactly */
 @media (min-width:1100px){ #picks{grid-template-columns:repeat(5, minmax(0,1fr))} }
@@ -547,11 +548,6 @@ button.pk:active{transform:scale(.98)}
 .pk .v{font:600 16px/1.25 var(--font-display); letter-spacing:-.012em}
 .pk .p, .pk .who{font:500 13px/1.45 var(--font); color:var(--label-2); font-variant-numeric:tabular-nums}
 .panel-grid .pk .k{color:var(--label-2)}
-.info{display:grid; grid-template-columns:repeat(auto-fit, minmax(270px, 1fr)); gap:12px}
-.note{background:var(--surface); border-radius:var(--r-lg); padding:16px 18px 17px; box-shadow:var(--shadow); min-width:0}
-.note h3{margin:0 0 6px; font:600 15.5px/1.3 var(--font-display); letter-spacing:-.01em}
-.note p{margin:0; color:var(--label-2); font-size:14.5px; line-height:1.55; max-width:60ch}
-.note strong{color:var(--label); font-weight:600}
 .joinline{display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0}
 
 /* ---------------- the social layer: X sign-in, saved, visits, board, panel ----------------
@@ -688,25 +684,14 @@ button.btn{border:0; cursor:pointer}
   max-width:calc(100vw - 32px); padding:10px 16px; border-radius:var(--r); background:var(--label); color:var(--bg);
   font:500 14px var(--font); box-shadow:var(--shadow-lift);
 }
-.credits{margin-top:44px; padding-top:22px; border-top:1px solid var(--sep)}
-.credits h3{margin:0 0 6px; font:600 13px var(--font); color:var(--label-2)}
-.cnote{margin:0 0 12px; font-size:13.5px; color:var(--label-2); max-width:72ch; line-height:1.55}
-#credit-list{
-  list-style:none; margin:0; padding:0; display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:4px 24px;
-}
-#credit-list li{font-size:12.5px; color:var(--label-3); line-height:1.5}
-#credit-list b{color:var(--label-2); font-weight:500}
 .sign{
   display:flex; align-items:center; gap:14px; margin-top:32px; padding-top:22px;
   border-top:1px solid var(--sep); color:var(--label-2); font-size:13px;
 }
 .sign .appicon{width:36px; height:36px; border-radius:8px; box-shadow:none}
-/* The small print: whose guide this is and where the data comes from. It sits under the footer
-   at the bottom right, because it has to be there and nobody came for it. */
-.fine{margin:26px 0 0 auto; max-width:52ch; text-align:right; color:var(--label-3); font-size:11.5px; line-height:1.5}
-.fine p{margin:0 0 6px}
-.fine strong{font-weight:inherit; color:inherit}
+/* One line of attribution under the footer. Everything else that was small print (whose guide
+   this is, where the data comes from, the photo credits) is on the city's about page. */
+.fine{margin:18px 0 0 auto; text-align:right; color:var(--label-3); font-size:11.5px; line-height:1.5}
 .fine a{color:inherit; text-decoration:underline; text-underline-offset:2px}
 @media (max-width:560px){ .fine{text-align:left; margin-left:0} }
 .sign .src{
@@ -715,7 +700,7 @@ button.btn{border:0; cursor:pointer}
 }
 .sign .src:hover{background:var(--fill-2)}
 .sign > div{flex:1; min-width:0}
-@media (max-width:560px){ .sign{flex-wrap:wrap} .sign > div{flex-basis:200px} .sign .src{margin-left:50px} .sign .src + .src{margin-left:0} }
+@media (max-width:560px){ .sign{flex-wrap:wrap; gap:12px 8px} .sign > div{flex-basis:calc(100% - 60px)} .sign .src{margin-left:0} }
 .sign b{display:block; color:var(--label); font:600 17px/1.2 var(--font-display); letter-spacing:-.012em}
 
 /* ---------------- phone and small tablet: map first, list as a sheet ---------------- */
@@ -845,7 +830,7 @@ body{letter-spacing:0}
 .top{padding-block:26px 16px}
 .title{font-size:clamp(40px,6.2vw,96px); margin-top:8px}
 .intro{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:6px 40px}
-.intro .brand{grid-column:1; grid-row:1} .lede{grid-column:1; grid-row:2; font-size:15.5px; max-width:60ch; margin:10px 0 0}
+.intro .brand{grid-column:1; grid-row:1} .lede{display:none}
 .intro .stats{grid-column:2; grid-row:1 / 3; align-self:end; margin-top:0 !important}
 .stats .n{font-size:30px} .stats .s{display:none}
 .collage{display:none}
@@ -1040,37 +1025,22 @@ button.src{border:0; cursor:pointer}
 
   <section class="sec" id="sec-picks" aria-labelledby="h-picks">
     <h2 class="sec-h" id="h-picks">fast picks</h2>
-    <p class="sec-sub">The one answer for each way you might turn up: cash in hand, a membership card, or two hours to kill.</p>
     <div class="pgrid scroll" id="picks"></div>
   </section>
 
   <section class="sec" id="board" aria-labelledby="h-board" hidden>
     <h2 class="sec-h" id="h-board">leaderboard</h2>
-    <p class="sec-sub">Who has sat in the most of Berlin&rsquo;s saunas, and where everyone goes. Log a visit from a sauna&rsquo;s card once you&rsquo;re signed in; it counts each sauna once however often you go.</p>
+    <p class="sec-sub">Each sauna counts once. Log a visit from its card.</p>
     <div class="boards">
       <div class="board"><h3>most saunas</h3><ol class="lb" id="lb-people"></ol></div>
       <div class="board"><h3>most visited</h3><ol class="lb" id="lb-venues"></ol></div>
     </div>
   </section>
 
-  <section class="sec" id="sec-info" aria-labelledby="h-info">
-    <h2 class="sec-h" id="h-info">before you go</h2>
-    <div class="info" style="margin-top:16px">
-      <article class="note" id="note-practical">
-        <h3>benchmarks</h3>
-        <p>For a normal sauna session rather than a luxury spa day, <strong>KIEZ SAUNA, Saunabad, Olivin and L&#252;tzow</strong> are better benchmarks than most hotel spas. Hotel spas make more sense when the pool, terrace, relaxation area, or USC access is part of what you want.</p>
-      </article>
-      <article class="note" id="note-traps">
-        <h3>two traps</h3>
-        <p id="traps"></p>
-      </article>
-    </div>
-  </section>
-
   <dialog class="panel-d" id="panel-d" aria-labelledby="h-panel">
     <button class="x" type="button" data-shut aria-label="Close">&times;</button>
     <h2 class="sec-h" id="h-panel">the panel</h2>
-    <p class="sec-sub">Reviews come from a small panel rather than the open internet, so a review means something. Anyone who uses Berlin&rsquo;s saunas can ask to join.</p>
+    <p class="sec-sub">A small panel writes the reviews. Anyone who goes to these saunas can ask to join.</p>
     <div class="pgrid panel-grid" id="panel"></div>
     <div class="join" id="join" hidden></div>
     <p class="joinline" id="joinline">
@@ -1079,27 +1049,18 @@ button.src{border:0; cursor:pointer}
     </p>
   </dialog>
 
-  <section class="credits" aria-labelledby="h-credits">
-    <h3 id="h-credits">image credits</h3>
-    <p class="cnote">Photographs from Wikimedia Commons are used under their Creative Commons or Free Art licences, with the photographer and licence named below. The others were sent in by visitors and reviewers. Venues without a photograph show a map of their street instead, and link to their own pictures. If a photograph here is yours and should be credited differently or taken down, <a href="https://github.com/jommi9/sauna-maps/issues/new" target="_blank" rel="noopener noreferrer">say so</a> and it will be.</p>
-    <ul id="credit-list"></ul>
-  </section>
-
   <footer class="sign">
     <svg class="appicon" viewBox="0 0 64 64" aria-hidden="true">
       <rect width="64" height="64" rx="15" fill="#C4703F"/>
       <path d="M21 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11 M32 45 q-5 -6.5 0 -13 q5 -6.5 0 -13 M43 43 q-4.6 -5.5 0 -11 q4.6 -5.5 0 -11" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
       <path d="M15 52 h34" stroke="#FFFFFF" stroke-opacity=".6" stroke-width="4" stroke-linecap="round"/>
     </svg>
-    <div><b lang="fi">Hyv&auml;t l&ouml;ylyt.</b>What Finns wish each other on the way into the sauna.</div>
+    <div><b lang="fi" title="What Finns wish each other on the way into the sauna">Hyv&auml;t l&ouml;ylyt.</b></div>
+    <a class="src" href="about/">about</a>
     <button class="src" type="button" id="panel-b" aria-haspopup="dialog">the panel</button>
-    <a class="src" href="https://github.com/jommi9/sauna-maps" target="_blank" rel="noopener noreferrer"><svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/></svg><span>the maps on GitHub</span></a>
+    <a class="src" href="https://github.com/jommi9/sauna-maps" target="_blank" rel="noopener noreferrer"><svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/></svg><span>GitHub</span></a>
   </footer>
-  <aside class="fine" aria-label="About this guide">
-    <p>This is a personal, non-commercial guide with no affiliation to any venue listed. Prices<span class="no-usc-only"> and opening hours</span><span class="usc-only">, opening hours and Urban Sports Club terms</span> are recorded as each venue publishes them and <strong>change without notice</strong>, so check with the venue before a special trip. Where a schedule could not be confirmed, the card says so rather than guessing.</p>
-    <p>Every figure is read off the venue&rsquo;s own site and re-checked weekly; corrections are welcome. Locations from OpenStreetMap; roads, rail, water, parks and district outlines &copy; OpenStreetMap contributors, <a href="https://www.openstreetmap.org/copyright">ODbL</a>.</p>
-    <p class="contrib" id="contrib"></p>
-  </aside>
+  <p class="fine">map data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors</p>
 </div>
 
 <script>
@@ -1174,23 +1135,6 @@ function hoursText(v, now){
   return now.date <= o.closedUntil
     ? `Sauna closed until ${pretty}`
     : `Sauna break ended ${pretty} \u2014 hours not re-verified since`;
-}
-/* The "two traps" box. Each sentence is data; if the venue has a closedUntil
-   in force the date is appended here on every render, like hoursText, so a
-   closure never has to be written as prose and never outlives itself. */
-function trapText(now){
-  return TRAPS.map(([name, text]) => {
-    const v = V.find(x => x.name === name);
-    if (!v) return "";
-    const sep = text.startsWith("\u2019") ? "" : " ";
-    let s = `<strong>${v.name}</strong>${sep}${text}`;
-    const o = v.open;
-    if (o && o.closedUntil && now.date <= o.closedUntil){
-      const [y, m, d] = o.closedUntil.split("-").map(Number);
-      s += ` It is on break until ${d} ${MONTH[m - 1]} ${y}.`;
-    }
-    return s;
-  }).filter(Boolean).join(" ");
 }
 const AUFGUSS = { scheduled: "Run to a schedule", self: "Pour your own", request: "On request",
                   auto: "Automatic aroma", unknown: "Not known" };
@@ -1842,7 +1786,6 @@ setInterval(() => {
 const PICKS = [["Best overall sauna day","Vabali"],["Best proper local sauna","KIEZ SAUNA Friedrichshain"],["Best USC hotel experience","Hilton Berlin \u2014 LivingWell"],["Best USC for sauna quality","Steigenberger \u2014 Sky Spa"],["Best easy USC option","Park Inn Alexanderplatz \u2014 Gezer Spa"],["Best USC sauna + cold plunge","ANTI SPA"],["Best cash-value hotel spa","Hotel Palace \u2014 Palace Spa"],["Best premium hotel option","Grand Hyatt \u2014 Club Olympus"],["Most beautiful","Hotel de Rome \u2014 De Rome Spa"],["Best sauna you can't easily book","sly Berlin"]];
 if (!PICKS.length) document.getElementById("sec-picks").hidden = true;
 const REVIEWERS = {"jommi9":{"name":"Joakim Isoaho","bio":"Finn in Berlin. Started this map because every \"best saunas\" list was years out of date.","joined":"2026-09-04","founder":true}};
-const TRAPS = [["LIQUIDROM","is on Urban Sports Club, but USC entry does not include the sauna \u2014 you still pay the supplement."],["Stadtbad Neuk\u00f6lln","\u2019s sauna is women-only on Mondays, and it closes for a summer break most years."]];
 const pg = document.getElementById("picks");
 PICKS.forEach(([k, name]) => {
   const v = V.find(x => x.name === name);
@@ -1872,17 +1815,6 @@ COVER.map(n => V.find(v => v.name === n)).filter(v => v && v.img).forEach(v => {
   collage.appendChild(b);
 });
 
-/* Image credits, generated so they can never drift from what is embedded. */
-const creditList = document.getElementById("credit-list");
-V.filter(v => v.img).forEach(v => {
-  const im = IMG[v.img];
-  const li = document.createElement("li");
-  // a photo with a licence is from Wikimedia Commons; one without was sent in by a visitor or reviewer
-  li.innerHTML = im.lic
-    ? `<b>${v.name}</b> &mdash; photo by ${im.by}, <a href="${im.page}" target="_blank" rel="noopener noreferrer">${im.lic}</a>`
-    : `<b>${v.name}</b> &mdash; sent in by ${im.by || "a visitor"}`;
-  creditList.appendChild(li);
-});
 
 /* ---------- mobile explorer: peek card and bottom sheet ---------- */
 const listcol = document.querySelector(".listcol");
@@ -2010,15 +1942,8 @@ cityM.addEventListener("click", e => { if (e.target.closest("[aria-current]")){ 
 document.addEventListener("click", e => { if (!cityM.hidden && !e.target.closest(".cityp")) showCities(false); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !cityM.hidden){ showCities(false); cityB.focus(); } });
 
-/* Who may add listings and cities: GitHub users named in contributors.json. The forms are on
-   GitHub, so this part is the same on every copy of the page. */
+/* Who may add listings and cities: GitHub users named in contributors.json. */
 const CONTRIBUTORS = ["jommi9","Jaamuru"];
-document.getElementById("contrib").innerHTML =
-  `Listings are added by contributors (${CONTRIBUTORS.map(h => `<a href="https://github.com/${encodeURIComponent(h)}" target="_blank" rel="noopener noreferrer">@${h}</a>`).join(", ")}), ` +
-  `each one checked against the venue\u2019s own site and merged by the editor. ` +
-  `<a href="https://github.com/jommi9/sauna-maps/issues/new?template=new-listing.yml" target="_blank" rel="noopener noreferrer">Add a sauna</a> or ` +
-  `<a href="https://github.com/jommi9/sauna-maps/issues/new?template=new-city.yml" target="_blank" rel="noopener noreferrer">open a new city</a>; ` +
-  `from anyone else the same form is a suggestion.`;
 const panel = document.getElementById("panel");
 /* The panel is one for every city, so it is a dialog and not a part of each page. */
 const panelD = document.getElementById("panel-d");
@@ -2042,11 +1967,6 @@ if (anyReviews) Object.entries(REVIEWERS).forEach(([handle, r]) => {
   panel.appendChild(el2);
 });
 
-document.getElementById("traps").innerHTML = trapText(cityNow());
-if (!TRAPS.length) document.getElementById("note-traps").hidden = true;
-if (!document.querySelector("#note-practical p").textContent.trim()) document.getElementById("note-practical").hidden = true;
-/* "before you go" is the city's own notes; a city with neither has no such section */
-if (document.getElementById("note-traps").hidden && document.getElementById("note-practical").hidden) document.getElementById("sec-info").hidden = true;
 
 /* The cover figures are computed from the venues, so they cannot drift. */
 /* The hottest sauna in the header, said in the unit chosen. */
@@ -2172,7 +2092,7 @@ function signIn(why){
     document.body.appendChild(d);
   }
   d.querySelector("h3").textContent = why ? "sign in to " + why : "sign in";
-  d.querySelector("[data-say]").textContent = "An account keeps your saved saunas and your visits, and puts you on the board. Use the same one each time.";
+  d.querySelector("[data-say]").textContent = "Keeps your saves and visits. Use the same account each time.";
   d.showModal();
 }
 let toastEl = null, toastT = 0;
