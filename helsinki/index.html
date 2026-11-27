@@ -2237,7 +2237,7 @@ function drawMine(v){
     <div class="row">
       <button class="btn ${saved ? "on" : "quiet"}" type="button" data-save aria-pressed="${saved}">${saved ? "\u2605 saved" : "\u2606 save"}</button>
       <button class="btn ${been ? "on" : "quiet"}" type="button" data-today aria-pressed="${been}">${been ? "\u2713 been today" : "been here today"}</button>
-      <button class="btn quiet" type="button" data-other aria-expanded="false">another day</button>
+      <button class="btn quiet" type="button" data-other aria-expanded="false">log a past visit</button>
       ${canReview() ? `<button class="btn quiet" type="button" data-write>${mine ? "edit your review" : "write a review"}</button>` : ""}
     </div>
     <div class="row" data-pick hidden>
