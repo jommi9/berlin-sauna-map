@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>About &middot; Sauna Map __CITY__</title>
+<meta name="description" content="Whose guide the sauna map of __CITY__ is, where its data and photographs come from, and who adds to it.">
+<link rel="canonical" href="__SITE__about/">
+<link rel="icon" href="__ICON__">
+<style>
+/*__FONTFACES__*/
+/*__TOKENS__*/
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--bg); color:var(--label); font:400 15.5px/1.55 var(--font); -webkit-font-smoothing:antialiased}
+a{color:var(--label); text-decoration:underline; text-underline-offset:2px}
+.wrap{max-width:1000px; margin:0 auto; padding:26px max(16px, env(safe-area-inset-right, 0px)) 56px max(16px, env(safe-area-inset-left, 0px))}
+.eyebrow, dt, .back{font:500 11px/1.2 var(--mono); text-transform:uppercase; letter-spacing:.05em; color:var(--label-2)}
+.eyebrow{margin:0}
+.eyebrow a{color:inherit; text-decoration:none}
+h1{margin:8px 0 26px; font:300 clamp(40px,6.2vw,96px)/.86 var(--font-display); letter-spacing:-.055em}
+dl{margin:0; border-top:1px solid var(--label)}
+dl > div{display:grid; grid-template-columns:170px minmax(0,1fr); gap:6px 24px; padding:18px 0; border-bottom:1px solid var(--sep)}
+dt{padding-top:5px}
+dd{margin:0; max-width:64ch; color:var(--label-2)}
+dd p{margin:0 0 8px} dd p:last-child{margin-bottom:0}
+dd strong{color:var(--label); font-weight:500}
+ul{list-style:none; margin:12px 0 0; padding:0; display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:4px 24px; font-size:13px}
+ul b{color:var(--label); font-weight:500}
+.back{display:inline-block; margin-top:28px; padding:10px 14px; color:var(--label); text-decoration:none; box-shadow:inset 0 0 0 1px var(--label)}
+.motto{margin:28px 0 0; color:var(--label-2)}
+.motto b{display:block; color:var(--label); font:300 28px/1.1 var(--font-display); letter-spacing:-.03em}
+@media (max-width:640px){ dl > div{grid-template-columns:minmax(0,1fr)} dt{padding-top:0} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow"><a href="__HUB__">sauna maps</a> / <a href="../">__CITY_LC__</a> / about</p>
+  <h1>about</h1>
+  <dl>
+    <div><dt>the guide</dt><dd><p>A personal, non-commercial guide to the saunas of __CITY__, with no affiliation to any venue listed.</p></dd></div>
+    <div><dt>the data</dt><dd><p>Every price and opening hour__USC_TERMS__ is read off the venue&rsquo;s own site and re-checked weekly, most recently on __LAST_SCAN__. Venues change them without notice, so check with the venue before a special trip. Where a schedule could not be confirmed, the card says so.</p><p>Corrections are welcome <a href="https://github.com/__REPO__/issues/new" target="_blank" rel="noopener noreferrer">on GitHub</a>.</p></dd></div>
+__NOTES__    <div><dt>listings</dt><dd><p>Listings are added by contributors (__CONTRIBUTORS__), each one checked against the venue&rsquo;s own site and merged by the editor. <a href="https://github.com/__REPO__/issues/new?template=new-listing.yml" target="_blank" rel="noopener noreferrer">Add a sauna</a> or <a href="https://github.com/__REPO__/issues/new?template=new-city.yml" target="_blank" rel="noopener noreferrer">open a new city</a>; from anyone else the same form is a suggestion.</p></dd></div>
+    <div><dt>reviews</dt><dd><p>A small panel writes the reviews. Anyone who goes to these saunas can ask to join from &ldquo;the panel&rdquo; at the foot of the map.</p></dd></div>
+    <div><dt>the map</dt><dd><p>Locations, roads, rail, water, parks and district outlines &copy; OpenStreetMap contributors, <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">ODbL</a>.</p></dd></div>
+    <div><dt>photographs</dt><dd><p>Photographs from Wikimedia Commons are used under their Creative Commons or Free Art licences, with the photographer and licence named below. The others were sent in by visitors and reviewers. If a photograph here is yours and should be credited differently or taken down, <a href="https://github.com/__REPO__/issues/new" target="_blank" rel="noopener noreferrer">say so</a> and it will be.</p>
+      <ul>
+__CREDITS__      </ul></dd></div>
+  </dl>
+  <p class="motto"><b lang="fi">Hyv&auml;t l&ouml;ylyt.</b>What Finns wish each other on the way into the sauna.</p>
+  <a class="back" href="../">back to the map</a>
+</div>
+__SCRIPT__</body>
+</html>

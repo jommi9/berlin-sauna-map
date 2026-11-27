@@ -101,13 +101,13 @@ FONTS = [("Inter Tight", "100 900", "inter-tight-latin-wght-normal.woff2", LATIN
          ("Inter Tight", "100 900", "inter-tight-latin-ext-wght-normal.woff2", LATIN_EXT, False),
          ("IBM Plex Mono", "400", "ibm-plex-mono-latin-400-normal.woff2", LATIN, True),
          ("IBM Plex Mono", "500", "ibm-plex-mono-latin-500-normal.woff2", LATIN, True)]
-def fontfaces(inline):
+def fontfaces(inline, up="../"):
     out = []
     for family, weight, name, span, core in FONTS:
         if inline and not core:
             continue
         path = os.path.join(city.ENGINE, "fonts", name)
-        src = ("data:font/woff2;base64," + base64.b64encode(open(path, "rb").read()).decode()) if inline else f"../fonts/{name}"
+        src = ("data:font/woff2;base64," + base64.b64encode(open(path, "rb").read()).decode()) if inline else f"{up}fonts/{name}"
         out.append(f"@font-face{{font-family:'{family}'; font-style:normal; font-weight:{weight}; font-display:swap; "
                    f"src:url({src}) format('woff2'); unicode-range:{span}}}")
     return "\n".join(out)
@@ -207,16 +207,80 @@ def assemble(TPL, OUT):
               .replace('/*__FONTFACES__*/', fontfaces(artifact))
               .replace('__APPICON__', city.icon(CITY)).replace('/*__CITIES__*/', cities).replace('__SLUG__', CITY['slug'])
               .replace('__SIBLINGS__', 'false' if artifact else 'true')
+              # The about page sits beside the map on the website; the Artifact is one file, so
+              # there the link goes out to the published one.
+              .replace('__ABOUT__', f'href="{CITY["site"]}about/" target="_blank" rel="noopener noreferrer"' if artifact else 'href="about/"')
               .replace('/*__CONTRIBUTORS__*/', json.dumps(meta['contributors'], separators=(',', ':'), ensure_ascii=True))
               .replace('__HUB__', city.HUB).replace('__REPO__', city.REPO))
     for token in ('__LAST_SCAN__', '__COUNT__', '__PRACTICAL__', '__CITY', '__LEDE__', '__TZ__', '__CUR__', '__USC__', '__TU__',
-                  '__HUB__', '__REPO__', '__SLUG__', '__SIBLINGS__', '__APPICON__', '/*__'):
+                  '__HUB__', '__REPO__', '__SLUG__', '__SIBLINGS__', '__ABOUT__', '__APPICON__', '/*__'):
         assert token not in doc, f"unfilled placeholder {token}"
     assert doc.isascii(), "non-ascii survived"
     if not artifact:
         doc = document(doc)
     open(OUT, 'w', encoding='ascii').write(doc)
     print(f"{TPL} -> {CITY['slug']}/{OUT}: {len(doc)/1024:.0f} KB, pure ASCII")
+
+def tab_icon():
+    """The app icon from the header, as the tab icon: steam rising beside the city's landmark."""
+    return ('data:image/svg+xml,' +
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
+            '<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">'
+            '<stop offset="0" stop-color="#E9A462"/><stop offset="1" stop-color="#B3502A"/></linearGradient></defs>'
+            '<rect width="64" height="64" rx="15" fill="url(#g)"/>'
+            + city.icon(CITY) +
+            '</svg>').replace('"', "'").replace('<', '%3C').replace('>', '%3E').replace('#', '%23')
+
+def about():
+    """about/index.html: everything the map page does not need to say itself.
+
+    Whose guide this is, where the data and the map come from, the city's own notes and traps,
+    who adds listings, and the photo credits. The map page links here from its footer and keeps
+    one line of attribution. The colours are the template's own tokens, cut out of it here, so
+    the two pages cannot drift apart."""
+    tpl = open(os.path.join(city.ENGINE, 'template.html'), encoding='utf-8').read()
+    tokens = tpl[tpl.index(':root{'):tpl.index('*{box-sizing:border-box}')]
+    bold = lambda t: re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', html.escape(t, quote=False))
+    by_name = {v['name']: v for v in venues}
+    notes, script = '', ''
+    if meta['practical'].strip() or meta['traps']:
+        ps = [f"<p>{bold(meta['practical'])}</p>"] if meta['practical'].strip() else []
+        for name, said in meta['traps']:
+            v = by_name.get(name)
+            if not v:
+                continue
+            # A closure date is never prose: the browser adds it while it is in force (see TRAPS).
+            until = (v.get('open') or {}).get('closedUntil')
+            ps.append(f"<p{f' data-until={chr(34)}{until}{chr(34)}' if until else ''}><strong>{html.escape(name)}</strong>"
+                      f"{'' if said.startswith(chr(0x2019)) else ' '}{html.escape(said, quote=False)}</p>")
+        notes = f"    <div><dt>before you go</dt><dd>{''.join(ps)}</dd></div>\n"
+        script = ('<script>\n(() => { const today = new Intl.DateTimeFormat("en-CA", { timeZone: "' + CITY['timezone'] + '" }).format(new Date());\n'
+                  '  const M = ["January","February","March","April","May","June","July","August","September","October","November","December"];\n'
+                  '  document.querySelectorAll("[data-until]").forEach(p => { const u = p.dataset.until, [y, m, d] = u.split("-").map(Number);\n'
+                  '    if (today <= u) p.append(` It is on break until ${d} ${M[m - 1]} ${y}.`); }); })();\n</script>\n')
+    credits = ''
+    for v in venues:
+        im = embedded.get(v.get('img') or '')
+        if not im:
+            continue
+        credits += (f"        <li><b>{html.escape(v['name'])}</b>, photo by {html.escape(im['by'])}, "
+                    f"<a href=\"{html.escape(im['page'])}\" target=\"_blank\" rel=\"noopener noreferrer\">{html.escape(im['lic'])}</a></li>\n"
+                    if im.get('lic') else
+                    f"        <li><b>{html.escape(v['name'])}</b>, sent in by {html.escape(im.get('by') or 'a visitor')}</li>\n")
+    people = ', '.join(f'<a href="https://github.com/{h}" target="_blank" rel="noopener noreferrer">@{html.escape(h)}</a>' for h in meta['contributors'])
+    doc = open(os.path.join(city.ENGINE, 'about.html'), encoding='utf-8').read()
+    for k, val in (('/*__FONTFACES__*/', fontfaces(False, '../../')), ('/*__TOKENS__*/', tokens),
+                   ('__NOTES__', notes), ('__CREDITS__', credits), ('__SCRIPT__', script), ('__CONTRIBUTORS__', people),
+                   ('__USC_TERMS__', ' and Urban Sports Club term' if CITY.get('usc') else ''),
+                   ('__LAST_SCAN__', meta['lastCheckedStamp']), ('__ICON__', tab_icon()), ('__SITE__', CITY['site']),
+                   ('__CITY_LC__', text(NAME.lower())), ('__CITY__', text(NAME)), ('__HUB__', city.HUB), ('__REPO__', city.REPO)):
+        doc = doc.replace(k, val)
+    doc = ent(doc)
+    assert '__' not in re.sub(r'data:[^"\')]+', '', doc), "unfilled placeholder in about.html"
+    assert doc.isascii()
+    os.makedirs('about', exist_ok=True)
+    open(os.path.join('about', 'index.html'), 'w', encoding='ascii').write(doc)
+    print(f"about.html -> {CITY['slug']}/about/index.html: {len(doc)/1024:.0f} KB")
 
 def document(doc):
     head, sep, body = doc.partition('</style>')
@@ -227,14 +291,7 @@ def document(doc):
     TITLE = text(f"Sauna Map {NAME}")
     PLAIN = f"{meta['count']} {NAME} saunas and spas, priced and plotted on one map, with a Finn's notes on the loyly."
     DESC = text(PLAIN)
-    # The app icon from the header, as the tab icon: steam rising beside the city's landmark.
-    icon = ('data:image/svg+xml,' +
-            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
-            '<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">'
-            '<stop offset="0" stop-color="#E9A462"/><stop offset="1" stop-color="#B3502A"/></linearGradient></defs>'
-            '<rect width="64" height="64" rx="15" fill="url(#g)"/>'
-            + city.icon(CITY) +
-            '</svg>').replace('"', "'").replace('<', '%3C').replace('>', '%3E').replace('#', '%23')
+    icon = tab_icon()
     # Structured data: the list of places, so a search engine sees twenty named
     # venues with coordinates rather than one opaque page.
     ld = {"@context": "https://schema.org", "@type": "ItemList", "name": f"Sauna Map {NAME}",
@@ -282,5 +339,6 @@ elif len(sys.argv) == 1:
     assemble('template.html', 'index.html')
     assemble('template.html', 'artifact.html')
     stubs()
+    about()
 else:
     raise SystemExit("usage: assemble.py <city> [<template> <out>]")
