@@ -525,8 +525,6 @@ button.pk:active{transform:scale(.98)}
 .note p{margin:0; color:var(--label-2); font-size:14.5px; line-height:1.55; max-width:60ch}
 .note strong{color:var(--label); font-weight:600}
 .joinline{display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0}
-.contrib{margin:18px 0 0; font-size:14px; line-height:1.6; color:var(--label-2); max-width:70ch}
-.contrib a{color:var(--tint); font-weight:500}
 
 /* ---------------- the social layer: X sign-in, saved, visits, board, panel ----------------
    All of it stays hidden until /sauna/api/me says it is switched on, so a copy of the page
@@ -554,7 +552,7 @@ button.btn{border:0; cursor:pointer}
 }
 .av.s{width:24px; height:24px; font-size:11px}
 .acct-m{
-  position:absolute; top:calc(100% + 6px); left:0; z-index:30; width:270px; padding:14px;
+  position:absolute; top:calc(100% + 6px); right:0; z-index:30; width:270px; padding:14px;
   background:var(--surface); border-radius:var(--r-lg); box-shadow:var(--shadow-lift);
   display:flex; flex-direction:column; gap:10px; font-size:14px;
 }
@@ -681,7 +679,7 @@ button.btn{border:0; cursor:pointer}
 .fine{margin:26px 0 0 auto; max-width:52ch; text-align:right; color:var(--label-3); font-size:11.5px; line-height:1.5}
 .fine p{margin:0 0 6px}
 .fine strong{font-weight:inherit; color:inherit}
-.fine a{color:inherit}
+.fine a{color:inherit; text-decoration:underline; text-underline-offset:2px}
 @media (max-width:560px){ .fine{text-align:left; margin-left:0} }
 .sign .src{
   display:inline-flex; align-items:center; gap:8px; margin-left:auto; padding:8px 12px; flex:none;
@@ -689,7 +687,7 @@ button.btn{border:0; cursor:pointer}
 }
 .sign .src:hover{background:var(--fill-2)}
 .sign > div{flex:1; min-width:0}
-@media (max-width:560px){ .sign{flex-wrap:wrap} .sign > div{flex-basis:200px} .sign .src{margin-left:50px} }
+@media (max-width:560px){ .sign{flex-wrap:wrap} .sign > div{flex-basis:200px} .sign .src{margin-left:50px} .sign .src + .src{margin-left:0} }
 .sign b{display:block; color:var(--label); font:600 17px/1.2 var(--font-display); letter-spacing:-.012em}
 
 /* ---------------- phone and small tablet: map first, list as a sheet ---------------- */
@@ -715,7 +713,6 @@ button.btn{border:0; cursor:pointer}
   .bar{flex-direction:column; flex-wrap:nowrap; align-items:stretch; gap:10px; padding-bottom:12px}
   .findrow{flex:none}
   .find{flex:1 1 auto}
-  .acct-m{left:auto; right:0}
   .acct-b.me{padding:0 4px}
   .acct-b.me > span:not(.av){display:none}
   .filters{
@@ -811,7 +808,7 @@ body{letter-spacing:0}
 /* the unit switch stands at the right end of the bar, in line with the map's edge */
 @media (min-width:1001px){
   .bar{align-items:flex-start}
-  .findrow{display:contents} .acct{order:1} .filters{order:2} .unit{order:3; margin-left:auto}
+  .findrow{display:contents} .filters{order:2} .unit{order:3; margin-left:auto}
 }
 @media (max-width:980px){.intro{display:block} .collage{aspect-ratio:5.4/1.05} .stats .n{font-size:26px} .title{font-size:clamp(46px,14vw,90px)}}
 /* The header is kept short so the list and the map start on the first screen: the title on one
@@ -841,7 +838,24 @@ body{letter-spacing:0}
 /* Signing in is offered quietly here and asked for where it earns something, on a sauna's card. */
 .acct-b:not(.me){background:none; color:var(--label); box-shadow:inset 0 0 0 1px var(--sep); font:500 11px var(--mono); letter-spacing:.05em; text-transform:uppercase; height:34px; padding:0 12px}
 .acct-b:not(.me) svg{display:none}
-@media (min-width:1001px){ .acct{order:4} .unit{margin-left:auto} }
+/* The account stands in the top right corner of the page, where people look for it. On a phone
+   the line above the title makes room for it. */
+.top > .acct{position:absolute; top:18px; right:0; z-index:31}
+@media (max-width:980px){
+  .top > .acct{top:8px}
+  .top:has(> .acct:not([hidden])) .eyebrow{padding-right:84px; min-height:30px}
+  .top:has(> .acct:not([hidden]) .me) .eyebrow{padding-right:48px}
+}
+/* The panel is a dialog, opened from the footer and from the account menu, so no city page
+   carries it in its flow. */
+.panel-d{width:min(680px, calc(100vw - 24px)); max-height:min(86dvh, 760px); padding:26px 26px 24px; border:0; overflow:auto;
+  background:var(--surface); color:var(--label); box-shadow:0 0 0 1px var(--label)}
+.panel-d::backdrop{background:rgba(0,0,0,.35)}
+.panel-d .x{position:absolute; top:10px; right:10px; width:36px; height:36px; border:0; background:none; color:var(--label); font:300 26px/1 var(--font-display); cursor:pointer}
+.panel-d .sec-sub{max-width:none; padding-right:20px}
+.panel-d .pgrid{grid-template-columns:repeat(auto-fill, minmax(170px, 1fr))}
+.sign .src + .src{margin-left:0}
+button.src{border:0; cursor:pointer}
 .btn .host{margin-left:8px; opacity:.6; text-transform:none; letter-spacing:0}
 /* Until the script at the foot of the page has run there is no list and no map. The page says so:
    steam rises where the map will be and the list shows ghost rows. .ready takes both away. */
@@ -867,6 +881,7 @@ body{letter-spacing:0}
 
 <div class="wrap" id="wrap">
   <header class="top">
+    <div class="acct" id="acct" hidden></div>
     <div class="intro">
       <div class="brand">
         <svg class="appicon" id="appicon" viewBox="0 0 64 64" aria-hidden="true">
@@ -899,7 +914,6 @@ body{letter-spacing:0}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
           <input type="search" id="q" placeholder="search saunas" aria-label="Search saunas" autocomplete="off">
         </label>
-        <div class="acct" id="acct" hidden></div>
         <div class="unit" id="unit" role="group" aria-label="Temperature unit">
           <button type="button" data-u="C" aria-pressed="false" title="Show temperatures in Celsius">&deg;C</button>
           <button type="button" data-u="F" aria-pressed="false" title="Show temperatures in Fahrenheit">&deg;F</button>
@@ -1023,17 +1037,17 @@ body{letter-spacing:0}
     </div>
   </section>
 
-  <section class="sec" aria-labelledby="h-panel">
+  <dialog class="panel-d" id="panel-d" aria-labelledby="h-panel">
+    <button class="x" type="button" data-shut aria-label="Close">&times;</button>
     <h2 class="sec-h" id="h-panel">the panel</h2>
     <p class="sec-sub">Reviews come from a small panel rather than the open internet, so a review means something. Anyone who uses New York&rsquo;s saunas can ask to join.</p>
     <div class="pgrid panel-grid" id="panel"></div>
     <div class="join" id="join" hidden></div>
-    <p class="contrib" id="contrib"></p>
     <p class="joinline" id="joinline">
       <a class="btn primary" href="https://github.com/jommi9/sauna-maps/issues/new?template=reviewer-application.yml" target="_blank" rel="noopener noreferrer">apply to review</a>
       <a class="btn" href="https://github.com/jommi9/sauna-maps/issues/new?template=review.yml" target="_blank" rel="noopener noreferrer">post a review</a>
     </p>
-  </section>
+  </dialog>
 
   <section class="credits" aria-labelledby="h-credits">
     <h3 id="h-credits">image credits</h3>
@@ -1048,11 +1062,13 @@ body{letter-spacing:0}
       <path d="M15 52 h34" stroke="#FFFFFF" stroke-opacity=".6" stroke-width="4" stroke-linecap="round"/>
     </svg>
     <div><b lang="fi">Hyv&auml;t l&ouml;ylyt.</b>What Finns wish each other on the way into the sauna.</div>
+    <button class="src" type="button" id="panel-b" aria-haspopup="dialog">the panel</button>
     <a class="src" href="https://github.com/jommi9/sauna-maps" target="_blank" rel="noopener noreferrer"><svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/></svg><span>the maps on GitHub</span></a>
   </footer>
   <aside class="fine" aria-label="About this guide">
     <p>This is a personal, non-commercial guide with no affiliation to any venue listed. Prices<span class="no-usc-only"> and opening hours</span><span class="usc-only">, opening hours and Urban Sports Club terms</span> are recorded as each venue publishes them and <strong>change without notice</strong>, so check with the venue before a special trip. Where a schedule could not be confirmed, the card says so rather than guessing.</p>
     <p>Every figure is read off the venue&rsquo;s own site and re-checked weekly; corrections are welcome. Locations from OpenStreetMap; roads, rail, water, parks and district outlines &copy; OpenStreetMap contributors, <a href="https://www.openstreetmap.org/copyright">ODbL</a>.</p>
+    <p class="contrib" id="contrib"></p>
   </aside>
 </div>
 
@@ -1974,6 +1990,15 @@ document.getElementById("contrib").innerHTML =
   `<a href="https://github.com/jommi9/sauna-maps/issues/new?template=new-city.yml" target="_blank" rel="noopener noreferrer">open a new city</a>; ` +
   `from anyone else the same form is a suggestion.`;
 const panel = document.getElementById("panel");
+/* The panel is one for every city, so it is a dialog and not a part of each page. */
+const panelD = document.getElementById("panel-d");
+const openPanel = () => { if (!panelD.open) panelD.showModal(); };
+document.getElementById("panel-b").addEventListener("click", openPanel);
+panelD.addEventListener("click", e => {
+  const r = panelD.getBoundingClientRect();
+  const outside = e.target === panelD && (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom);
+  if (outside || e.target.closest("[data-shut]")) panelD.close();
+});
 const anyReviews = V.some(v => v.reviews.length);
 panel.hidden = !anyReviews;
 if (anyReviews) Object.entries(REVIEWERS).forEach(([handle, r]) => {
@@ -2122,7 +2147,8 @@ function signIn(why){
 }
 let toastEl = null, toastT = 0;
 function toast(text){
-  if (!toastEl){ toastEl = document.createElement("div"); toastEl.className = "toast"; toastEl.setAttribute("role", "status"); document.body.appendChild(toastEl); }
+  if (!toastEl){ toastEl = document.createElement("div"); toastEl.className = "toast"; toastEl.setAttribute("role", "status"); }
+  (panelD.open ? panelD : document.body).appendChild(toastEl);   /* a modal dialog covers the page, so the toast goes inside it */
   toastEl.textContent = text; toastEl.hidden = false;
   clearTimeout(toastT); toastT = setTimeout(() => { toastEl.hidden = true; }, 3200);
 }
@@ -2169,7 +2195,7 @@ function drawAcct(){
       <div class="who">${avatar(me)}<div><b>${esc(me.name)}</b><span>@${esc(me.handle)} on ${me.via === "github" ? "GitHub" : "X"}</span></div></div>
       <p class="tally"><b>${ME.been.size}</b> of ${V.length} saunas &middot; ${plural(SOC.visits.length, "visit")} &middot; ${ME.saved.size} saved</p>
       <button class="link" type="button" data-go="board">leaderboard</button>
-      ${role ? `<button class="link" type="button" data-go="h-panel">${role}</button>` : ""}
+      ${role ? `<button class="link" type="button" data-panel>${role}</button>` : ""}
       ${me.via === "github" && CONTRIBUTORS.some(h => h.toLowerCase() === me.handle.toLowerCase())
         ? `<a class="link" href="https://github.com/jommi9/sauna-maps/issues/new?template=new-listing.yml" target="_blank" rel="noopener noreferrer">add a sauna (you're a contributor)</a>` : ""}
       <label><input type="checkbox" data-show ${me.hidden ? "" : "checked"}> show me on the leaderboard</label>
@@ -2181,6 +2207,7 @@ acct.addEventListener("click", async e => {
   const menu = acct.querySelector(".acct-m"), b = acct.querySelector(".acct-b.me");
   if (!menu) return;
   if (e.target.closest(".acct-b")){ menu.hidden = !menu.hidden; b.setAttribute("aria-expanded", String(!menu.hidden)); return; }
+  if (e.target.closest("[data-panel]")){ menu.hidden = true; openPanel(); return; }
   const go = e.target.closest("[data-go]");
   if (go){ menu.hidden = true; document.getElementById(go.dataset.go).scrollIntoView({ behavior: "smooth", block: "start" }); return; }
   if (e.target.closest("[data-out]")){
